@@ -1,0 +1,52 @@
+
+{% extends "base+jqx+response.html" %}
+
+{% block title %}
+    ΠΛΗΡΟΦΟΡΙΕΣ
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<div class="container-fluid app-content-a">
+  <div class="container">        
+
+    <div class="row">
+        <!--<img src="{% static 'images/dide-ait-125x125.png' %}" class="img-responsive rounded mx-auto center-block"/>-->
+        <div class="col-md-12">
+            <h2 class="text-center app-content-header">{{ msg }}</h2>
+            <p class="text-center app-content-description"> 
+                <h4 class="text-center"><button  onclick="goBack()">Επιστροφή</button></h4>
+                <!--<h4 class="text-center"><a href="javascript:history.back()">Επιστροφή</a><h4>-->
+            </p>
+        </div>
+    </div>
+    <!--./row -->
+     
+
+  </div>
+</div>
+<!--./container -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">    
+
+function goBack() {
+    window.history.back();
+}
+
+$(document).ready(function () {
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+

@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+    <head>
+    <!--
+        <link href="{{ STATIC_URL }}css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/main.js"></script>
+    -->
+    </head>
+  <body>
+   
+    <form action='/post/form_upload.html' method='post'>{% csrf_token %}
+    {{ form.as_p }}
+    <input type='submit' value='Submit' />
+    </form>
+
+  </body>
+</html>

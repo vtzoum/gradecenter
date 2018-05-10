@@ -1,0 +1,265 @@
+{# % load staticfiles % #}
+{# % load template_filters % #}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title id="Description">{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <!-- Fonts -->
+    <!--
+    Change to local  'ext/font-awesome.min.css' to remove outsource dependency
+    -->
+
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:300,400' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+
+    <!--
+    <link rel="stylesheet" type="text/css" href="{% static 'ext/css-lato.font' %}" >
+    <link rel="stylesheet" type="text/css" href="{% static 'ext/css-roboto+condensed.font' %}" >
+    -->    
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/bootstrap.min.css' %}">   
+    <!-- vtzoum change 
+    <link rel="stylesheet" type="text/css" href="../lib/css/font-awesome.min.css">    
+    -->    
+    <!--
+    Change to local  'ext/font-awesome.min.css' to remove outsource dependency
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" media="all" rel="stylesheet" type="text/css">
+    -->
+    <!-- Font-Awesome CSS -->
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/animate.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/bootstrap-switch.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/checkbox3.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/jquery.dataTables.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/dataTables.bootstrap.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/select2.min.css' %}">   
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/css/style.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/css/themes/flat-blue.css' %}">   
+    <!-- JQXWIDGET > Boostrap theme by theme builder -->
+    <!--
+    <link href="{% static 'css/jqxwidget-custom-bootstrap.css' %}" rel="stylesheet" media="screen">    
+    <link href="{% static 'css/jqxwidget-custom.css' %}" rel="stylesheet" media="screen">    
+    <link href="{% static 'css/jqxwidget-custom2.css' %}" rel="stylesheet" media="screen">    
+    <link href="{% static 'css/jqxwidget-custom-darkblue.css' %}" rel="stylesheet" media="screen">    
+    -->
+    <link href="{% static 'css/jqxwidget-custom-darkblue.css' %}" rel="stylesheet" media="screen">    
+    
+    <!-- css > jqxwidgets -->
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.base.css' %}" type="text/css" />    
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.bootstrap.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.arctic.css' %}" type="text/css" />
+    <!--
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.energyblue.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.light.css' %}" type="text/css" />    
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.metro.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.metrodark.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.office.css' %}" type="text/css" />
+    -->
+
+    <!-- css > jqxwidgets > bootstrap -->
+    <!--
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap-theme.min.css' %}" type="text/css" />    
+    -->
+    <!-- tzoumak -->
+    <link rel="stylesheet" href="{% static 'css/tzoumak-helper.css' %}" type="text/css" />     
+    
+    <!-- SCRIPTS -->
+    
+    <!-- SCRIPTS > SB-ADMIN -->
+    <!-- jQuery -->
+
+    <!-- Javascript Libs -->
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.min.js' %}"></script>
+    <!-- Confilict with Defaults bootstrap.js
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/bootstrap.min.js' %}"></script>
+    -->
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/Chart.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/bootstrap-switch.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.matchHeight-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/select2.full.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/ace.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/mode-html.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/theme-github.js' %}"></script>
+
+    <!-- SCRIPTS > JQXWIDGETS -->
+    <!-- scripts > jqxwidgets > extras -->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/jquery-1.11.1.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/bootstrap.min.js' %}" ></script>
+    <!-- 
+    https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js 
+    https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js
+    -->    
+    <!-- scripts > jqxwidgets -->    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcore.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbargauge.js' %}" ></script>    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbuttons.js' %}" ></script>    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbuttongroup.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxradiobutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxchart.core.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcalendar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcheckbox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcombobox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdata.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdate.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdatatable.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdatetimeinput.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdragdrop.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdraw.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdropdownbutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdropdownlist.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdocking.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockinglayout.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockpanel.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxeditor.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxexpander.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxfileupload.js' %}" ></script> 
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgauge.js' %}" ></script>
+    <!-- jqxwidgets  jqxgrid -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.aggregates.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.columnsresize.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.columnsreorder.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.export.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.edit.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.filter.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.grouping.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.pager.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.reorder.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.selection.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.sort.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.storage.js' %}" ></script>
+    <!-- ...cont -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxinput.js' %}" ></script>
+    <!-- 
+    script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxkanban.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxknob.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxloader.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxlistbox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxmaskedinput.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxmenu.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxnotification.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxnumberinput.js' %}" ></script>
+    
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxpanel.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxprogressbar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxresponse.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxribbon.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxscheduler.js' %}" ></script>
+    -->
+
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxser.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxser.api.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxscrollbar.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxslider.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxsplitter.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxsortable.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxswitchbutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtagcloud.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtree.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtabs.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxvalidator.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxwindow.js' %}" ></script>
+    <!-- Layout.js loaded AFTER jqxlayout.js -->
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxlayout.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockinglayout.js' %}" ></script>
+    -->
+    <!-- globalization (!) -->
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/globalization/globalize.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/globalization/globalize.culture.de-DE.js' %}" ></script>
+    -->
+    <!-- scripts > tzoumak -->    
+    <script type="text/javascript" src="{% static 'js/tzoumak-csrf.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/tzoumak-helpers.js' %}" ></script>
+    
+    <!-- NA DW PLAI -->    
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/app.js' %}"></script>
+    <!--
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/app.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/index.js' %}"></script>
+    -->
+
+    
+    <!--
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+
+    <link rel="stylesheet" href="{% static 'js-isotope/css/isotope-search.css' %}" type="text/css" />
+
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.base.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.classic.css' %}" type="text/css" />
+
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap-theme.min.css' %}" type="text/css" />    
+    -->
+
+
+
+<style>
+
+</style>
+
+</head>
+
+<body class="flat-blue">
+<!-- CUSTOM TAGS & FILTERS -->
+
+<div class="app-container">
+<div class="row content-container">
+
+<nav class="navbar navbar-inverse navbar-fixed-top navbar-top">
+<div class="container-fluid">
+    <!-- dropdown Booking Station -->
+    {% block station %} {% endblock %}
+</div>
+</nav>
+
+<!-- START Main Content -->
+<div class="container-fluid">
+    <div class="side-body padding-top">
+
+    <!-- Start NxROWS -->
+    {% block html %}{% endblock %}
+    <!-- End ROWS -->
+    
+    </div>
+</div>
+
+
+
+<footer class="app-footer">
+  <div class="wrapper">
+    <span class="pull-right">2.1 <a href="#"><i class="fa fa-long-arrow-up"></i></a></span> © 2017 Δημιουργήθηκε με Εργαλεία Ελεύθερου Λοgισμικού!
+  </div>
+</footer>
+
+<div>
+</body>
+
+<!-- js code -->
+{% block js %}{% endblock %}
+
+
+</html>
+

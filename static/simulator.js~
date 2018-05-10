@@ -1,0 +1,140 @@
+﻿<title id='Description'>The jqxGrid. </title>
+
+{% extends "base+jqx.html" %}
+
+{% block title %}
+    The jqxGrid.
+{% endblock %}
+
+<!-- Block HTML -->
+{% block html %}
+
+    <div id="demoContainer" class="device-mobile-tablet">
+        <div id="container" class="device-mobile-tablet-container">
+            <div id='grid'>
+
+                <script type="text/javascript">
+                    function Edit(row, event) {
+                        that.editrow = row;
+                        $("#grid").jqxGrid('beginrowedit', row);
+                        if (event) {
+                            if (event.preventDefault) {
+                                event.preventDefault();
+                            }
+                        }
+                        return false;
+                    }
+                    function Update(row, event) {
+                        that.editrow = -1;
+                        $("#grid").jqxGrid('endrowedit', row);
+                        if (event) {
+                            if (event.preventDefault) {
+                                event.preventDefault();
+                            }
+                        }
+                        return false;
+                    }
+                    function Cancel(row, event) {
+                        that.editrow = -1;
+                        $("#grid").jqxGrid('endrowedit', row, true);
+                        if (event) {
+                            if (event.preventDefault) {
+                                event.preventDefault();
+                            }
+                        }
+                        return false;
+                    }
+                </script>
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+$(document).ready(function () {
+        
+
+
+////////////////////////////////
+// jqxgridTeaceher.RecordSet  //
+///////////////////////////////                        
+
+            // prepares the simulator. 
+            var theme = prepareSimulator("grid");
+
+            var data = generatedata(50);
+            this.editrow = -1;
+         
+            var source =
+            {
+                localdata: data,
+                datatype: "array",
+                updaterow: function (rowid, rowdata, commit) {
+                    // synchronize with the server - send update command
+                    // call commit with parameter true if the synchronization with the server is successful 
+                    // and with parameter false if the synchronization failder.
+                    commit(true);
+                },
+                datafields:
+                [
+                    { name: 'name', type: 'string' },
+                    { name: 'firstname', type: 'string' },
+                    { name: 'lastname', type: 'string' },
+                    { name: 'productname', type: 'string' },
+                    { name: 'available', type: 'bool' },
+                    { name: 'quantity', type: 'number' },
+                    { name: 'price', type: 'number' },
+                    { name: 'date', type: 'date' }
+                ]
+            };
+
+            var dataAdapter = new $.jqx.dataAdapter(source);
+
+            // initialize jqxGrid
+            $("#grid").jqxGrid(
+            {
+                width: '100%',
+                height: '100%',
+                source: dataAdapter,
+                editable: true,
+                columnsheight: 40,
+                columnsmenuwidth: 24,
+                rowsheight: 34,
+                theme: theme,
+                sortable: true,
+                selectionmode: 'none',
+                editmode: 'selectedrow',
+                columns: [
+                  { text: 'Name', columntype: 'textbox', datafield: 'name', width: '30%' },
+                  { text: 'Product', width: '40%', columntype: 'textbox', datafield: 'productname' },
+                  {
+                      text: 'Edit', align: "center", editable: false, sortable: false, datafield: 'available', cellsrenderer: function (row, column, value) {
+                          var eventName = "onclick";
+                          if ($.jqx.mobile.isTouchDevice()) {
+                              eventName = "on" + $.jqx.mobile.getTouchEventName('touchstart');
+                          }
+
+                          if (row === that.editrow) {
+                              return "<div style='text-align: center; width: 100%; top: 7px; position: relative;'><a " + eventName + "='Update(" + row + ", event)' style='color: inherit;' href='javascript:;'>Update</a><span style=''>/</span>" + "<a " + eventName + "='Cancel(" + row + ", event)' style='color: inherit;' href='javascript:;'>Cancel</a></div>";
+                          }
+
+                          return "<a " + eventName + "='Edit(" + row + ", event)' style='color: inherit; margin-left: 50%; left: -15px; top: 7px; position: relative;' href='javascript:;'>Edit</a>";
+                      }
+                  }
+                ]
+            });
+        
+            initSimulator("grid");
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

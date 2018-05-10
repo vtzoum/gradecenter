@@ -1,0 +1,357 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΜΑΘΗΜΑTA (ΔΙΑΧ.)-JN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- Loader (for timely actions) -->
+<div id="jqxloaderAction"></div>
+
+<!-- AJAXMessages Box -->
+<div id="jsonMessages"></div>
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+
+<!-- x/y.col  -->
+<div class="col-lg-12">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑTA </h3>
+        </div>
+        <div class="panel-body">
+        <!-- Status -->
+        <div id='jqxLessonStatus' style="margin-bottom:5px;"></div>
+        <!-- jqxGrid -->
+        <div id="jqxgridLesson"></div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- /.row -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+//handle Ajax messages
+helperAjaxMessagesProcess();
+
+/****************************
+-jqxLoader
+****************************/
+$("#jqxloaderAction").jqxLoader({ isModal: true, width: '10%', height: '10%', imagePosition: 'top' });
+/*        
+$('#jqxloaderAction').jqxLoader({  isModal: true, theme: 'energyblue', imagePosition: 'top', width: '80%', height: '80%', 
+    html:'<div style="padding: 10px;"><div style="font-size: small;">Loading</div><div style="font-size: x-large;">jQWidgets</div></div>'});
+*/
+
+/****************************
+// Status buttons
+****************************/
+// call func.
+makeStatusButtons();
+
+/****************************
+// Lesson data
+****************************/
+//Fields: booksAB booksABFolders booksC booksCFolders category name status type 
+var sourceLesson = {
+    datatype: "json",
+    url: '/lesson/crud/', 
+    datafields: [
+        {name: "id"}, 
+        {name: 'booksAB', type: 'integer' },
+        {name: 'booksABFolders', type: 'integer' },
+        {name: 'booksC', type: 'integer' },
+        {name: 'booksCFolders', type: 'integer' },
+        {name: 'category', type: 'string' },
+        {name: 'name', type: 'string' },
+        {name: 'status', type: 'integer' },
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+        
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    id: 'id',
+    sortcolumn: 'name',
+    sortdirection: 'asc',     
+    // UPDATE ONLY C Folder Data 
+    updaterow: function (rowid, rowdata, commit) {
+        var data = "action=updatelessonc&amp;" + $.param(rowdata);
+        //alert ('Edit B4 .ajax');
+        $.ajax({
+            method: 'POST', 
+            url: '/lesson/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+    }, //updaterow
+}; //source
+
+//DataAdapter create + 
+var dataAdapterLesson = new $.jqx.dataAdapter( sourceLesson, {
+    loadComplete: function () {
+    /*
+        var length = dataAdapterLesson.records.length;
+        var rec = dataAdapterLesson.records[0];
+        //alert (length + rec.name + rec.type + rec.lexType);            
+        // aggregates
+        aggregateData = $("#jqxgridLesson").jqxGrid('getcolumnaggregateddata', 'type', ['count', 'min', 'max']);
+    */
+    //var row=event.args.rowindex;
+    
+    console.log("loadComplete");
+    
+    // Handle StatusButtonUI only row selected
+    var row = $('#jqxgridLesson').jqxGrid('getselectedrowindex');
+    console.log("row="+row);
+    //if !(isNaN(row)) {    
+    //if (!(isNaN(row))) {    
+    if (row != -1) {
+        // display row in user view
+        $('#jqxgridLesson').jqxGrid('ensurerowvisible', row);
+        // pass status data to func.
+        var rowdata = $('#jqxgridLesson').jqxGrid('getrowdata', row);
+        setLessonStatusButtonUI (rowdata.status);
+    }
+
+    },  //loadComplete
+});
+
+/****************************
+-GRID jqxLessonGrid
+****************************/
+//Fields: booksAB booksABFolders booksC booksCFolders category name status type 
+$("#jqxgridLesson").jqxGrid({
+    source: dataAdapterLesson,
+    columns: [ //columntype: 'textbox', 
+        { text: 'id', datafield: 'id', editable: false, hidden:true, width: '5%'},
+        { text: "Όνομα", datafield: 'name',  editable: false, filtertype: 'input', },     // width: '35%' 
+        { text: "Κατηγορία", datafield: 'category',  editable: false, filtertype: 'checkedlist', width: '20%', },
+        { text: "Τύπος", datafield: 'type', editable: false, displayfield: 'lexType', columntype: 'dropdownlist', filtertype: 'checkedlist', width:'10%', 
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            aggregates: ['count'], 
+        },
+        { text: 'Τετράδια(AB)', datafield: 'booksAB', editable: false, filtertype: 'input', width: '8%',
+            aggregates: ['sum'], 
+        },
+        { text: 'Φάκελοι(AB)', datafield: 'booksABFolders', editable: false, filtertype: 'input', width: '8%',
+            aggregates: ['sum'], 
+        },
+        { text: 'Τετράδια(ANA.)', datafield: 'booksC', filtertype: 'input', width: '8%',
+            aggregates: ['sum'], 
+        },
+        { text: "Φάκελοι(ANA.)", datafield: 'booksCFolders', columntype: 'textbox', filtertype: 'input', width: '8%', 
+            aggregates: ['sum'], 
+        },
+        //{ text: "Κατηγορία", datafield: 'category', columntype: 'textbox', filtertype: 'input', width: '10%' }, 
+        //{ text: "Τύπος", datafield: 'type', editable: false, filtertype: 'input', width: '10%' },
+        { text: "Κατάσταση", datafield: 'status', editable: false, filtertype: 'input', width: '10%' },
+        //return '<div style="text-align: center; margin-top: 7px;"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></div>'
+    ],     
+    autoheight: false, columnsresize: true, editable: true, //editmode: 'selectedrow',
+    filterable: true,showfilterrow: true, selectionmode: 'singlerow', //multiplecellsextended
+    pageable: false, sortable: true, width: '100%', height:'500', theme: theme, 
+    showaggregates: true, 
+    showstatusbar:true, 
+    showtoolbar:true, rendertoolbar: function (statusbar) {
+
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        var reloadButton = $("<button type='button' class='btn btn-primary' style='float: right; margin-right: 10px;'> Ανανέωση </button>");
+        //var reloadButton = $("<div style='float: right; margin-left: 10px;'><span> Ανανέωση </span></div>");
+        container.append(reloadButton);
+        statusbar.append(container);
+        reloadButton.jqxButton();
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
+        });
+    } //render toolbar
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//Lesson grid
+
+
+/****************************
+-Grid > events 
+****************************/
+//Global
+//row1 = -1;
+$('#jqxgridLesson').on('rowselect', function (event) {      // .on('rowclick', 
+    
+    var row=event.args.rowindex;
+    //var row2 = $('#jqxgridLesson').jqxGrid('getselectedrowindex');
+
+    //console.log('row1:'+ row1 + '-row2:' + row2);
+    //var rowdata = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    var rowdata = $('#jqxgridLesson').jqxGrid('getrowdata', row);
+    //sourceFolder.url = '/jsonFolder/'+"?action=filter&LessonID="+ data.id; 
+    //handle Lesson Status
+    setLessonStatusButtonUI (rowdata.status);
+
+});
+
+/****************************
+// make Status Buttons 
+// jqxButtonGroup widgets.
+****************************/
+//$("#jqxbuttonStatus").find('button').css('font-size', '22px').css('margin-top', '0px');
+
+function makeStatusButtons() {
+
+    $("#jqxLessonStatus").jqxButtonGroup();  //mode: 'default' 
+    
+    for (var i = 0; i < ArrayLessonStatus2.length; i++) {
+        /*
+        $('#jqxLessonStatus').append('<button style="padding:4px 16px; height:40px;width:50px;" id=status-' 
+            + i + '" class="foo">' + ArrayLessonStatus[i] + '</ button>');
+        */
+        $('#jqxLessonStatus').append('<button style="font-size:11px; color:#333" id="jqxbuttonStatus-' 
+                + i + '" class="foo">' + ArrayLessonStatus2[i] + '</ button>');
+        $("#jqxbuttonStatus-" + i).jqxButton({ width: '10.25%', height: 23, theme: theme });
+    } 
+
+    $("#jqxLessonStatus").jqxButtonGroup({ mode: 'checkbox' });  //mode: 'default' 
+}    
+
+//Function to handle  LessonStatusButtons (enables etc.)
+//rowdata = {"status": 7, "booksc": 0, "id": 15};
+
+function setLessonStatusButtonUI (status) {   
+    
+    console.log('IN setLessonStatusButtonUI status=' + status);
+
+    /*
+    Button template values
+    'default' - the default button's template. The button's style depends only on its "theme" property value.
+    'primary' - dark blue button for extra visual weight.
+    'success' - green button for successful or positive action.
+    'warning' - orange button which indicates caution.
+    'danger' - red button which indicates a dangerous or negative action.
+    'inverse' - dark gray button, not tied to a semantic action or use.
+    'info' - blue button, not tied to a semantic action or use.
+    'link' - making it look like a link .
+    */
+
+    // reset all buttonStatus 
+    for (var i = 0 ; i < ArrayLessonStatus2.length-1; i++) {
+        $("#jqxbuttonStatus-" + i).jqxButton({ disabled: false, template: 'danger', });
+    }
+    
+    // Handle THE buttonStatus
+    //$("#jqxbuttonStatus-" + status).jqxButton({ disabled: false, template: 'danger', });
+    
+    // Handle < than buttonStatus
+    for (var i = 0 ; i <= status; i++) {
+        $("#jqxbuttonStatus-" + i).jqxButton({ disabled: true, template: 'inverse', });
+    }
+    
+    //$("#jqxbuttonStatus-" + rowdata.status).jqxButton({ disabled: true, template: 'info', });
+    // > than ststus 
+    for (var i = ArrayLessonStatus2.length - 1; i > status+1; i--) {
+        $("#jqxbuttonStatus-" + i).jqxButton({ disabled: true, template: 'default', });
+    }
+}
+
+
+/* ButtonGroup > events*/
+$("#jqxLessonStatus").on('buttonclick', function (event) {
+
+    var clickedButton = event.args.button;
+    $("#eventsLog").html("Clicked: " + clickedButton[0].id);
+    var buttonClicked = clickedButton[0].id;
+    
+    
+    var row = $('#jqxgridLesson').jqxGrid('getselectedrowindex');
+    //console.log("ststus+grid-row1:"+row1);
+    var rowdata = $('#jqxgridLesson').jqxGrid('getrowdata', row);
+    //console.log("ststus+grid-rowdata:"+rowdata);
+    
+    var statusId = parseInt((clickedButton[0].id).slice(-1));    // extract x as int x from status-xx
+
+    console.log("Button:"+buttonClicked + "-id:" + rowdata.id + "-status:" + statusId );
+    var disabled = $('#'+buttonClicked).jqxButton('disabled');
+    //console.log("disabled:"+disabled);
+    // If is disabled => do nothing 
+    if (disabled) {
+        return;
+    }
+    
+    // start updating 
+    $('#jqxgridLesson').hide();
+    $('#jqxloaderAction').jqxLoader('open'); 
+    
+    $.ajax({
+        method: 'POST', 
+        url: '/lesson/status/', 
+        data:  {id: rowdata.id, status: statusId}, 
+        dataType: 'json',
+        //cache: false, // Deprecated 
+        //async: false, //προσοχή ΕΔΩ >> ΝΟ ASYNC ώστε να περιμένουμε τα τελειώσει το call        
+        
+        //success: callback,        
+        //success: function (response, status, xhr) {
+        success: function (response) {            
+            console.log("AJAX success");
+            console.log(response);
+            $('#jqxgridLesson').jqxGrid('updatebounddata');            
+            $('#jqxloaderAction').jqxLoader('close'); 
+            $('#jqxgridLesson').show();
+            //dorest();
+            /*
+            //var row = $('#jqxgridLesson').jqxGrid('getselectedrowindex');
+            */
+            //setLessonStatusButtonUI (status);
+            //setLessonStatusButtonUI (row1);
+        },
+        
+        //*new* Executes after ajax>success finishes 
+        /*
+        complete: function (data) {
+            console.log("AJAX complete");
+            console.log(data);
+            //var rowdata = $('#jqxgridLesson').jqxGrid('getrowdata', row);
+            //console.info(row);
+            $('#jqxloaderAction').jqxLoader('close');    
+            //setLessonStatusButtonUI (row);      # fails
+        }, 
+        */        
+        error: function(jqxhr, textstatus, errorthrown) {
+            //console.log(errorthrown);
+            //close loader
+            console.log("error");
+            $('#jqxloaderaction').jqxloader('close'); 
+            $('#jqxgridlesson').show();
+        }
+    }); //.ajax
+    
+     event.preventDefault();
+                                     console.log("Clicked: " + clickedButton[0].id);
+});
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

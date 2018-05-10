@@ -1,0 +1,1868 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    BOOKING-JN
+{% endblock %}
+
+{% block station %}
+<!-- CUSTOM TAGS & FILTERS -->
+{# JINJA2#}
+{% set Station = jinjaCheckGroup(request.user) %}
+{% set StationName = Station[0] %}
+{% set StationID = Station[1] %}
+<input id='UserGroupID'  value={{StationID}} type="hidden"/>
+<input id='StationID' name={{StationName}} value={{StationID}} type="hidden" />
+
+<!-- Station DropDown-->
+<li id="BookingStationLinks" class="dropdown danger">
+  
+  <!-- Station DropDown-->
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <i class="fa fa-star-half-o"></i><span id="BookingStationName"> Επιλέξτε </span>
+  </a>
+
+  <!-- list -->
+  <ul id="StationSelector" class="dropdown-menu danger  animated fadeInDown">
+    <!-- title-->
+    <li class="title">
+        Σταθμός:<span class="badge pull-right">*</span>
+    </li>
+    <!-- ./title-->
+
+    <!-- links -->
+    <li>
+        <ul class="list-group notifications">
+          <li class="">
+          </li>
+            <!-- Αποθήκη Link Select -->
+            <a id="0" href="0" name="Αποθήκη">
+              <li class="list-group-item">
+                <span class="badge">1</span> <i class="fa fa-exclamation-circle icon"></i> Αποθήκη
+              </li>
+            </a>
+
+            <!-- Φύλαξη Link Select -->
+            <a id="1" href="1" name="Φύλαξη">
+              <li class="list-group-item">
+                <span class="badge">1</span> <i class="fa fa-exclamation-circle icon"></i> Φύλαξη
+              </li>
+            </a>
+        </ul>
+    </li>
+    <!-- /links -->    
+  </ul>                            
+  <!-- ./list -->
+</li>
+<!-- ./Station DropDown-->
+
+{% endblock %}           
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- AJAXRQST MessageBox -->
+<div id="jsonMessages"></div>
+
+
+<!-- row -->
+<div class="row ">
+
+    <div class="col-lg-5">
+        <input class="form-control" style="width:100%; " placeholder="Search" name="barcode-search" id="barcode-search" type="text" tabindex="1">
+        <!-- 
+        <input class="form-control" style="width:100%; " placeholder="Search" name="barcode-search" id="barcode-search" type="text" value="0001-000000000004" tabindex="1">
+        -->
+    </div>
+    <!-- /.col -->
+
+    <div class="col-lg-6"  style="margin-left: -10px;">
+        <button id="jqxbuttonBookings" type='button' class='btn btn-primary' tabindex="7"><i class="fa fa-exchange right"></i> Χρεώσεις</button>
+        <button id="jqxbuttonFolders" type='button'  class='btn btn-primary' tabindex="8"><i class="fa fa-book left"></i> Φάκελοι</button>
+    </div>
+
+    <div class="col-lg-1" style="margin-left: 0px;">
+        <button id="jqxbuttonCheck" type='button' class='btn btn-danger' tabindex="9"><i class="fa fa-check-square-o right"></i> Έλεγχος</button> <!-- style='float: right;' -->
+        <!--    
+        <button class="btn btn-default" style="visibility:hidden;" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+        
+        <a id="jqxbuttonBookings" class="btn btn-primary">Χρεώσεις <i class="fa fa-exchange right"></i></a>
+        <a id="jqxbuttonfolders" class="btn btn-primary"><i class="fa fa-book left"></i> Φάκελοι</a>
+        <button class="btn btn-primary" type="submit">Button  <i class="fa fa-exchange right"></i> </button>
+        -->
+    </div>
+<!-- /.col -->
+
+</div>
+<!-- /.row -->
+
+<!-- .row -->
+<div class="row no-margin-bottom ">
+
+<div class="col-lg-5 no-margin-bottom">
+    
+    <div class="panel panel-primary fresh-color" style="margin: -15px -0px 10px -0px;">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-barcode fa-fw"></i> ΜΑΘΗΜΑ</h3>
+        </div>
+        <div class="panel-body" >
+        <!-- Lesson-->
+        <!--
+        <div id='jqxcomboboxLesson'></div>
+        -->
+        <div id="jqxgridLesson" tabindex="3"></div>
+        </div>
+    </div>
+
+
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-user fa-fw"></i> ΒΑΘΜΟΛΟΓΗΤΕΣ </h3>
+        </div>
+        <div class="panel-body"  >
+        <!-- Grader -->
+        <div id="jqxgridGrader" tabindex="4"></div>        
+        </div>
+    </div>
+
+</div>
+<!-- /.col -->
+
+
+<div class="col-lg-7 no-margin-bottom">
+
+<!-- Tab panel -->
+<div role="tabpanel" class="tab tabs-below" style="margin: -35px -20px -30px -30px;">
+
+    <!-- tab panes -->
+    <div class="tab-content">
+
+        <!-- tab 1 -->
+        <div role="tabpanel" class="tab-pane active" id="tabFolders">                    
+
+            <div class="panel panel-primary fresh-color">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-book fa-fw"></i> ΦΑΚΕΛΟΙ </h3>
+                </div>
+                <div class="panel-body no-padding">
+                <!-- Folders -->
+                <div id="jqxgridFolder" tabindex="5"></div>        
+                </div>
+            </div>
+
+       </div>
+
+        <!-- tab 2 -->
+        <div role="tabpanel" class="tab-pane" id="tabBookings">
+
+            <div class="panel panel-primary fresh-color" >
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-exchange fa-fw"></i> ΧΡΕΩΣΕΙΣ </h3>
+                </div>
+                <div class="panel-body no-padding">
+                <!-- Bookings -->
+                <div id="jqxgridBooking" tabindex="6"></div>        
+                </div>
+            </div>
+
+        </div>
+                
+    </div>
+    <!-- ./tab panes -->
+
+    <!-- Nav tabs (li is hidden ) -->
+    <ul id="mytabs" class="nav nav-tabs" role="tablist" style="visible:false; margin:-30px 0px 0px 30px;">
+        <li role="presentation" class="hidden"><a href="#tabBookings" aria-controls="tabBookings" role="tab" data-toggle="tab">ΧΡΕΩΣΕΙΣ</a></li>
+        <li role="presentation" class="active hidden"><a href="#tabFolders" aria-controls="tabFolders" role="tab" data-toggle="tab">ΦΑΚΕΛΟΙ</a></li>
+    </ul>
+
+
+</div>
+<!-- ./Tab panel -->
+
+</div>
+<!-- /.col -->
+
+</div>
+<!-- /.row -->
+
+
+<!-- *****************************************-->
+<!-- Dialogue "ΧΡΕΩΣΗ ΦΑΚΕΛΟΥ ΣΕ ΒΑΘΜΟΛΟΓΗΤΗ" -->
+<!-- *****************************************-->
+<div id="jqxwindowFolderRegister" style="visible:false;" >
+  
+  <div>
+    <!-- modal-header -->
+    <!-- 
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> 
+        <h4 class="modal-title" id="myModalLabel">Βαθμολογητής:<span id='GraderInfo'></span></h4> 
+    </div>
+    -->
+    <!-- modal-body -->
+    <div class="modal-body" style="background:#fff;">       
+    <!--    
+    <h3>Πράξη:<span id='ActionInfo'></span></h3>    
+    <h3>Σταθμός:<span id='StationInfo'></span></h3>
+    <h3>Μάθημα:
+    <h3>Φάκελος:</h3>
+    <h3>Βαθμολογητής:</h3>
+    -->
+    <!-- Start Post Form -->
+    <form class="form-horizontal" id="formBookingPost" action="javascript:void(0);" is for action=none >
+    {% csrf_token %}    
+    <!-- HIDDENS -->
+    <input id='jqxinputStation' name='jqxinputStation' type="" value={{StationID}} />
+    <input id='jqxinputAction' type="" name='jqxinputAction' />
+    <input id='jqxinputGraderID' type="" name='jqxinputGraderID' />
+    <input id='jqxinputFolderID' type="" name='jqxinputFolderID' />
+    </form>
+    <!-- End Post Form -->
+    
+
+    <!-- row -->
+    <div class="row">    
+      <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12" >
+            <div class="card " style="margin:-30px 0px -30px 0px;">
+                <div class="card-body text-center">
+                    <div class="content text-center">
+                        <h2>
+                            <i class="icon fa fa-barcode"></i><span id='LessonInfo'></span><br/>
+                          <i class="icon fa fa-user"></i><span id='GraderInfo'></span>
+                        </h2>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+      </div>
+
+    </div>
+    <!-- ./row -->
+
+
+    <div class="row">
+
+    <!-- folder -->
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card green summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-book fa-4x"></i>
+                    <div class="content">
+                        <div class="title">
+                            <small><span id='FolderInfo'></span></small/>
+                        </div>
+                        <div class="sub-title">ΦΑΚEΛΟΣ-<span id='FolderLexType'></span></div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- books -->
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card green summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-file-text-o fa-4x"></i>
+                    <div class="content">
+                        <div class="title"><span id='BookInfo'></span></div>
+                        <div class="sub-title">ΤΕΤΡΑΔΙΑ</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- action -->
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card red summary-inline">
+                <div class="card-body">
+                    <!--<i class="icon fa fa-arrow-down fa-4x"></i>--> <!-- fa-inbox -->
+                    <div class="content">
+                        <div class="title">
+                            <small><span id='ActionInfo' class="small"></small></span>
+                        </div>
+                        <div class="sub-title">ΠΡΑΞΗ</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    </div>
+    <!-- ./row -->
+
+    <div class="row">
+        <!-- <div class="sub-title">Alert Message</div> -->
+        <div>
+            <div class="alert fresh-color alert-info fade in" role="alert">
+
+                <h4 id="oh-snap!-you-got-an-error!"> Ελέγξτε την ορθότητα των στοιχείων και κατόπιν προχωρήστε στην καταχώρηση!
+                    <a class="anchorjs-link" href="#oh-snap!-you-got-an-error!"><span class="anchorjs-icon"></span></a>
+                </h4>
+                <p></p>
+                <p class="text-center">
+                    <button id="jqxbuttonDo" type="button" class="btn btn-danger">Καταχώρηση</button>
+                    <button id="jqxbuttonCancel" type="button" class="btn btn-default">Ακύρωση</button>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- ./row -->
+
+    
+    <!--Ελέγξτε την ορθότητα των στοιχείων και κατόπιν προχωρήστε στην καταχώρηση!-->
+    </div>
+
+    <!-- modal-footer -->
+    <!--
+    <div class="modal-footer">
+     <button id="jqxbuttonCancel1" class="btn btn-primary">Άκυρο</button>
+     <button id="jqxbuttonDo1" class="btn btn-danger">Καταχώρηση</button>
+    </div>
+    -->
+
+
+  </div>
+
+</div>
+<!-- ./Dialog Modal -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+// Handle Ajax messages
+helperAjaxMessagesProcess();
+
+//Init station function
+setStationData();
+
+//Set focus to barcode-search
+$('#barcode-search').focus();
+//$('#parse').focus();
+//str.replace(/^0+(?!\.|$)/, '')
+//"014".replace(/^0+/, '')
+/*
+$('#jqxgridLesson').bind('rowselect', function (event) { 
+    console.log('binded');    
+});
+*/
+
+/*
+$('textarea').bind("enterKey",function(e){
+    alert("Enter");
+});
+
+$('textarea').keyup(function(e){
+    if(e.keyCode == 13)
+    {
+      $(this).trigger("enterKey");
+    }
+});
+ 
+*/
+
+// <TEST TEST ETST
+//$('#barcode-search').val('');
+$('#barcode-search').on("change paste", function() {
+   //console.log($(this).val()); 
+});
+
+$('#barcode-search').bind('input', function(){
+  console.log('this actually works');
+   console.log($(this).val()); 
+});
+
+
+$('#barcode-search').click(function(e){
+    //alert ('click');
+});
+
+$('#barcode-search').focusin(function(e){
+    //alert ('click');
+    $('#barcode-search').val('');
+});
+
+// END σTEST TEST ETST
+
+//$('#barcode-search').bind("enterKey",function(e){
+//$('#parse').click(function(event){
+/******************
+Handle barcode-input scan
+******************/
+$('#barcode-search').keyup(function(e){
+  // on enter
+  if(e.keyCode == 13) {
+
+    var data= document.getElementById("barcode-search").value;
+    var arr = data.split('-');
+    //alert(arr);
+    
+    //var LessonID = parseFloat(arr[0]).toFixed(0);
+    LessonID = parseInt(arr[0]).toFixed(0);
+    FolderID = parseInt(arr[1]).toFixed(0);
+    //console.log("FolderID(1)="+FolderID);
+
+    // Lesson
+    var rowindexL = $('#jqxgridLesson').jqxGrid('getrowboundindexbyid', LessonID);        
+    if (rowindexL ==-1) { // lesson not exists
+        //alert("Ανύπαρκτο Μάθημα!");
+        return;
+    }//LessonId valid
+    
+    // Select Grid Lesson row
+    $('#jqxgridLesson').jqxGrid('selectrow', rowindexL);
+
+    // filter 
+    //sourceFolder.async=false; // ensure dataloading completes on time
+    sourceFolder.url = '/folder/crud/'+'?action=filter&LessonID='+ LessonID;    
+    $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder});        
+    //sourceFolder.async=true; // restore
+    //console.log(dataAdapterFolder.records);
+
+    // select row                                                         
+    //var isCompleted = $("#jqxgridFolder").jqxGrid('isBindingCompleted');
+    var rowindexF = $('#jqxgridFolder').jqxGrid('getrowboundindexbyid', FolderID);
+    $('#jqxgridFolder').jqxGrid('selectrow', rowindexF);
+
+    // get rowdata                                                         
+    var selectedrowindex = $('#jqxgridFolder').jqxGrid('selectedrowindex'); 
+    var folderRowdata = $('#jqxgridFolder').jqxGrid('getrowdata', selectedrowindex);
+    //console.log (folderRowdata);
+
+    // Grader > update                                                          
+    sourceGrader.url = '/grader/crud/'+"?action=filter&LessonID="+ LessonID;    
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });                
+
+    // Booking > update
+    // -ensure dataloding completes on time
+    /*
+    sourceBooking.async=false; 
+    if (folderRowdata.codeStatus==1) {                                            //folder is booked
+        sourceBooking.url = '/booking/crud/'+"?action=filter&FolderID="+ FolderID;  
+    }
+    else {                                                                      //or nodata
+        sourceBooking.url = ''
+    }
+    */
+    sourceBooking.async=false; // ensure dataloading completes on time 
+    sourceBooking.url = (folderRowdata.codeStatus==1) ? ('/booking/crud/'+'?action=filter&FolderID='+ FolderID) : '';
+    $("#jqxgridBooking").jqxGrid({ source: dataAdapterBooking});
+    sourceBooking.async=true; // restore
+    //console.log (sourceBooking.url);
+
+    //SelectRow
+    //var isCompleted = $("#jqxgridBooking").jqxGrid('isBindingCompleted');     // unused
+    var rows = $("#jqxgridBooking").jqxGrid('getrows');
+    var rowsCount = rows.length;
+    console.log ("Booking rowsCount:"+rowsCount);
+    //var rowindexB = rows.length-1;        
+    if (rowsCount == 0) {
+        //alert("No Booking");
+        return;
+    }// rowsCount>0 (exist Booking Records)
+
+    // gridBooking has records
+    $("#jqxgridBooking").jqxGrid('selectrow', rowsCount - 1);     
+    // get last Booking record
+    //var selectedrowindex = $('#jqxgridBooking').jqxGrid('selectedrowindex'); 
+    var bookingRowData = $('#jqxgridBooking').jqxGrid('getrowdata', rowsCount - 1);
+    //console.log ('bookingRowData:');
+    //console.log (bookingRowData );
+   
+    // select related gridGrader record
+    var GraderID = bookingRowData.GraderID_id;
+    console.log("GraderID"+GraderID);
+    var rowindexG = $('#jqxgridGrader').jqxGrid('getrowboundindexbyid', GraderID);
+    console.log("rowindexG="+rowindexG);
+    $('#jqxgridGrader').jqxGrid('selectrow', rowindexG);
+
+
+    // Update related
+    //$('#LessonInfo').html(data.name);
+
+    //initGridInputHtml();
+
+  };//key 13
+
+  // reset content
+  //$('#barcode-search').val('');
+
+}); 
+//.function
+
+
+/******************
+// Station 
+******************/
+function setStationData() {
+    // console.log({{StationID}});     //OK
+    // $("#jqxDropDownList").jqxDropDownList({ disabled: true }); 
+    // Condition must change > Prevents Secretary from RE-select
+    if ( $("#UserGroupID").val() == 2 ) {
+        // USER Is free to select
+        $("#BookingStationName").html('ΓΡΑΜΜΑΤΕΙΑ'); 
+    }
+    else if ( $("#UserGroupID").val() == 1 ) {
+        $("#BookingStationName").html('ΦΥΛΑΞΗ');
+        $('ul#StationSelector').hide();
+        $("#StationInfo").html($("#BookingStationName").html());
+        $("#StationID").val(1);
+    }
+    else if ( $("#UserGroupID").val() == 0 ) {
+        $("#BookingStationName").html('ΑΠΟΘΗΚΗ');
+        $('ul#StationSelector').hide();
+        $("#StationInfo").html($("#BookingStationName").html());
+        $("#StationID").val(0);
+        //$("#BookingStationLinks li a#0").trigger("click");    
+    }
+    else {
+        $("#BookingStationName").html('ΣΦΑΛΜΑ');
+        $("#StationInfo").html($("#BookingStationName").html());
+        $("#StationID").val(-1);
+    }
+
+};
+
+/******************
+HELPERS 
+******************/
+//Action Data
+function initActionData(){    
+    //Action
+    $('#ActionInfo').html('');
+    $('#jqxinputAction').jqxInput('val', null); 
+};
+
+//rowdata = folder rowdata
+function setActionData(){
+    
+    // station data
+    var station = $("#StationID").val();    
+    
+    // folder data
+    var selectedrowindex = $('#jqxgridFolder').jqxGrid('selectedrowindex'); 
+    if (selectedrowindex ==-1) {
+      return;
+    } //check     
+    var folderData = $('#jqxgridFolder').jqxGrid('getrowdata', selectedrowindex);
+    var location = folderData.codeLocation;
+    var status = folderData.codeStatus;
+    var folderID = folderData.id;
+    
+    // grader data
+    var selectedrowindex = $('#jqxgridGrader').jqxGrid('selectedrowindex'); 
+    if (selectedrowindex ==-1) {
+      return;
+    } //check 
+    var graderData = $('#jqxgridGrader').jqxGrid('getrowdata', selectedrowindex);
+    var currentFolderID = graderData.currentFolderID;
+    
+    // folder > complete
+    if (status == 2){
+        alert("Ο Φάκελος Έχει Ολοκληρωθεί!");
+        $("#jqxwindowFolderRegister").jqxWindow('close');
+        return;
+    };
+    
+    // grader not owner
+    if ((status == 1) && (currentFolderID != folderID)){
+        $("#jqxwindowFolderRegister").jqxWindow('close');
+        alert("Ο Βαθμολογητής δεν έχει τον Φάκελο!");
+        return;
+    };
+
+    // grader not avail
+    if ((status == 0) && (currentFolderID != 'None')){
+        $("#jqxwindowFolderRegister").jqxWindow('close');
+        alert("Ο Βαθμολογητής δεν είναι Διαθέσιμος ");
+        return;
+    };
+
+    //console.log(folderData.codeType + "-" + graderData.isgraderC);
+    // grader is not graderC
+    if ((folderData.codeType==2) && !(graderData.isgraderC)){
+        $("#jqxwindowFolderRegister").jqxWindow('close');
+        alert("Ο Βαθμολογητής δεν μπορεί να κάνει Αναβαθμολόγηση!");
+        return;
+    };
+
+    // XREVSH
+    //else if (station == 0 || station == 1 ) && (status == 3 || status == 4 || status == 5) {        
+    if (((station == 0) && (location == 0)) || ((station == 1) && (location == 2))) {
+        $("#ActionInfo").html("ΧΡΕΩΣΗ");
+        $('#jqxinputAction').val(0);  
+    }
+    // PARALAVI
+    // else if (location == 1) && (station == 0 || station == 1) {
+    else if (((station == 0) && (location == 1)) || ((station == 1) && (location == 1))) {
+        //$("#ActionInfo").html("Παραλαβή");
+        $("#ActionInfo").html("ΠΑΡΑΛΑΒΗ");
+        $('#jqxinputAction').val(1);
+    }
+    else  {
+        $('#jqxinputAction').val(null); // UNKNOWN - STOP
+        $("#ActionInfo").html("Σφάλμα");
+    }
+};
+
+//Booking Data
+function initBookingData(){    
+    $('#jqxgridBooking').jqxGrid('clearselection');
+};
+
+function setBookingData(){    
+    $('#jqxgridBooking').jqxGrid('clearselection');
+};
+
+
+//Grader Data
+function initGraderData(){
+    $('#GraderInfo').html('');
+    $('#jqxinputGraderID').jqxInput('val', null); 
+    $('#jqxgridGrader').jqxGrid('clearselection');
+};
+
+function setGraderData(){
+  
+  var selectedrowindex = $('#jqxgridGrader').jqxGrid('selectedrowindex'); 
+  if (selectedrowindex !=-1){
+    var rowdata = $('#jqxgridGrader').jqxGrid('getrowdata', selectedrowindex);
+    //Update related
+    $('#jqxinputGraderID').jqxInput('val', rowdata.id); 
+    $('#GraderInfo').html(rowdata.surname + ' ' + rowdata.name);
+    //console.log (rowdata);
+    return (rowdata);
+  };//validity
+};
+
+
+// Folder Data
+function initFolderData(){    
+    //Folder
+    $('#BookInfo').html('');
+    $('#FolderLexType').html('');
+    $('#FolderInfo').html('');
+    $('#jqxinputFolderID').jqxInput('val', null); 
+    $('#jqxgridFolder').jqxGrid('clearselection');
+};
+
+function setFolderData(){          
+
+  var selectedrowindex = $('#jqxgridFolder').jqxGrid('selectedrowindex'); 
+  if (selectedrowindex ==-1){
+    return null;
+  }// validity check
+
+    var rowdata = $('#jqxgridFolder').jqxGrid('getrowdata', selectedrowindex);
+   
+    // Record data
+    var books = rowdata.books; 
+    var location = rowdata.codeLocation; 
+    var no = rowdata.no; 
+    var type = rowdata.codeType; 
+    var status = rowdata.codeStatus; 
+    
+    // Update related Inputs
+    $('#BookInfo').html(rowdata.books);
+    //$('#FolderInfo').html(rowdata.lexType+"/"+rowdata.no);
+    $('#FolderLexType').html(rowdata.lexType);
+    $('#FolderInfo').html(rowdata.no);    
+    $('#jqxinputFolderID').jqxInput('val', rowdata.id); 
+    //$('#FolderInfo').html('Φ:' + rowdata.no + ' Τετράδια:' + rowdata.books);
+    
+    // return data to be used by Action 
+    return (rowdata);
+    //console.log ($("#ActionInfo").html() + "-"+  $("#jqxinputAction").val());  //
+};
+
+
+//Lesson Data
+// Folder Data
+function initLessonData(){    
+    $('#LessonInfo').html('');
+};
+
+function setLessonData(){    
+  var selectedrowindex = $('#jqxgridLesson').jqxGrid('selectedrowindex'); 
+  if (selectedrowindex!=-1){
+    var rowdata = $('#jqxgridLesson').jqxGrid('getrowdata', selectedrowindex);
+    $('#LessonInfo').html(rowdata.name);
+  }
+};
+
+
+// Initialize grids 
+function initGridInputHtml(){
+    
+    initActionData();
+    initBookingData();
+    initFolderData();    
+    initGraderData();
+    //console.log($(this).attr('href'));
+    //console.log($(this).attr('name'));
+};
+
+
+// Initialize grids 
+function getGridInputHtml(){
+    
+    var folderRowdata, graderRowdata;
+    
+    folderRowdata = setFolderData();    
+    setActionData(folderRowdata);
+    graderRowdata = setGraderData();
+    setLessonData();
+    
+    setBookingData();
+    //console.log($(this).attr('href'));
+    //console.log($(this).attr('name'));
+};
+
+
+/* */
+$('#BookingStationLinks li a').click(function (event) {
+    event.preventDefault();
+    $("#StationID").val($(this).attr('href'));    
+    $("#BookingStationName").html($(this).attr('name'));
+    $("#StationInfo").html($("#BookingStationName").html());
+    
+    //Update Grids on Station Change (use in Secretariat)
+    //$('#jqxgridGrader').jqxGrid('clearselection');
+    //$('#jqxgridFolder').jqxGrid('clearselection');
+    
+    //console.log($(this).attr('href'));
+    //console.log($(this).attr('name'));
+});
+
+
+/****************************
+  My Tabs 
+****************************/
+//$('#jqxTabs').jqxTabs({ width: 580, position: 'top',  collapsible: true });
+
+
+/****************************
+    Grid Lesson
+****************************/
+//url:helperGetAjaxLinkForUser ("user.is_active}}", '/Lesson/crud/'), 
+var sourceLesson = {
+    url: '/lesson/crud/',
+    datatype: "json",    
+    datafields: [
+        {name: "id"}, 
+        {name: 'name', type: 'string' },
+        {name: 'category', type: 'string' },
+        {name: 'type', type: 'integer' },
+        //{name: 'lexType', value: 'type', values: { source: dataAdapterLessonType.records, value: 'type', name: 'lexType' } },
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    id: 'id',
+    sortcolumn: 'name',
+    sortdirection: 'asc',     
+}; //source
+
+//DataAdapter create + 
+var dataAdapterLesson = new $.jqx.dataAdapter( sourceLesson, {
+    beforeLoadComplete: function (records) {
+        //records[0]['firstname'] = "Michael";
+    },
+    loadComplete: function () {
+        //alert (dataAdapterLesson.records.length);
+    }
+});
+
+/****************************
+// GRID jqxLessonGrid
+****************************/
+$("#jqxgridLesson").jqxGrid({
+    source: dataAdapterLesson,
+    columns: [ //columntype: 'textbox', 
+        { text: '', datafield: 'id', width: '0%', hidden: false }, // id true
+        { text: "Όνομα", datafield: 'name',  filtertype: 'input', },
+        { text: "Κατηγορία", datafield: 'category',  filtertype: 'input', width: '20%', },
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'30%', 
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+    ],     
+    autoheight: false, columnsresize: true, //editable: true, //editmode: 'selectedrow',
+    filterable: true, showfilterrow: false, 
+    //selectionmode: 'singlerow', //multiplecellsextended
+    pageable: false, sortable: true, width: '100%', height:'200', theme:theme, 
+    //rowsheight: 30,    
+    showaggregates: true, 
+    showstatusbar:false,
+    rowsheight: 20,    
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//Lesson grid
+
+
+
+
+/**********************
+// jqxcombobox Lessons
+***********************/
+var sourceLesson = {
+    datatype: "json",
+    datafields: [{name: "id"}, {name: "name"}, ],
+    url: '/lesson/crud/', 
+}; //source
+
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+
+// GRID > EVENTS 
+$('#jqxgridLesson').on('rowselect', function (event) {
+ 
+  if (event.args) {
+    //var data = dataAdapterLesson.records[event.args.index];
+
+    var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+
+    // filter Grader
+    sourceGrader.url = '/grader/crud/'+"?action=filter&LessonID="+ data.id;    // SUPER 
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });                
+    
+    // filter Folder
+    sourceFolder.url = '/folder/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+    $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder});    
+ 
+    sourceBooking.url = ''
+    $("#jqxgridBooking").jqxGrid({ source: dataAdapterBooking});    
+        
+    // Update related
+    $('#LessonInfo').html(data.name);
+
+    initGridInputHtml();
+    
+  };
+
+});
+
+
+/**********************
+// jqxGrid Grader
+***********************/
+var sourceGrader = {
+    //url: '/grader/crud/', 
+    url: '', 
+    datatype: "json",
+    id: 'id',
+    datafields: [
+        { name: "id" }, 
+        //{name: 'name', map: '_TeacherID_cache&gt;name'},
+        {name: 'name', map: '_TeacherID_cache>name', type: 'string' },
+        {name: 'surname', map: '_TeacherID_cache>surname', type: 'string' },
+        {name: 'codeSpec', map: '_TeacherID_cache>codeSpec', type: 'string' },
+        {name: "isgraderC", type: 'string' },
+        {name: "currentFolder", },
+        {name: "currentFolderID", },
+        {name: 'type', type: 'integer' }, // number, 
+        //{name: 'lexType', value: 'type', values: { source: dataAdapterGraderType.records, value: 'type', name: 'lexType' } },
+    ],
+    sortcolumn: 'name', sortdirection: 'asc',     
+}; //source
+
+var dataAdapterGrader = new $.jqx.dataAdapter( sourceGrader );
+
+
+// GRID jqxGraderGrid
+// Render with use Bootstrap classses (www.w3schools.com/bootstrap/bootstrap_ref_css_helpers.asp)
+var CellRendererGrader= function (row, column, value, data) {
+    // return red if a number 
+    if (!isNaN(data.currentFolder)) {return "redClass";}
+};
+
+// Grid
+$("#jqxgridGrader").jqxGrid({
+    source: dataAdapterGrader,
+    columns: [ //columntype: 'textbox', editable : false, 
+        { text: "", datafield: "id", hidden: false,   width: '5%'},  // false id
+        { text: 'Επίθετο', datafield: 'surname', columntype: 'textbox', filtertype: 'input',},
+        { text: "Όνομα", datafield: "name", filtertype: 'input', width: '25%' },
+        //{ text: "Ειδικ.", datafield: 'codeSpec', editable : false, width: '17%' },
+        { text: "Αναβ.", datafield: 'isgraderC', columntype: 'checkbox', width: '10%'},
+        { text: "Φάκελος.", datafield: 'currentFolder', cellclassname:CellRendererGrader, width: '10%'},        
+        //{ text: "Status.", datafield: 'status', width: 60 },
+    ],
+    //columnsresize: true, selectionmode: 'singlerow', width: '100%', height:'300', 
+    autoheight: false, columnsresize: true, editable: false, //editmode: 'selectedrow',
+    filterable: true, showfilterrow: true, 
+    pageable: true, pagesize: 20, sortable: true,
+    //selectionmode: 'singlerow',
+    height: 400, width: '100%', theme: theme,     
+    //altrows: true, 
+    rowsheight: 22,    
+    showaggregates: true, 
+    showstatusbar:false, 
+});//Grader grid
+//editable:true, editmode: 'selectedrow', 
+//altrows: true, autoheight: true, 
+//ready: function () {$("#jqxnotificationServer").html(notificationServerMessage).jqxNotification("open");},
+
+
+// jqxgridGrader > EVENT 
+//$('#jqxgridGrader').on('rowselect', function (event) {
+$('#jqxgridGrader').on('rowclick', function (event) {  // updates grid even on api call
+    
+    var rowdata = $('#jqxgridGrader').jqxGrid('getrowdata', event.args.rowindex);
+    //console.log(event.args.rowindex);
+
+    // Filter Booking
+    sourceBooking.url = '/booking/crud/'+"?action=filter&GraderID="+ rowdata.id;    // SUPER 
+    $("#jqxgridBooking").jqxGrid({ source: dataAdapterBooking });                
+    //console.log('Grader.id='+rowdata.id)
+    
+    // clear
+    initBookingData();    
+    //Update related- might be unneeded
+    //$('#jqxinputGraderID').jqxInput('val', rowdata.id); 
+    //$('#GraderInfo').html(data.surname + ' ' + data.name);
+    //console.log ('#jqxinputGraderID:'+ $('#jqxinputGraderID').val());
+    //$('#jqxinputFolder').jqxInput('val', null); 
+});
+
+/**********************
+// jqxgridFolder
+***********************/
+//Data
+var sourceFolder = {
+    //url: '/folder/crud/', 
+    url: '', 
+    async: false, // must inorder to simulate auto-select in search-input 
+    datafields: [
+        {name: "id"}, 
+        {name: "no", type: 'number' }, 
+        {name: "books", type: 'number' }, 
+        {name: "type", type: 'number' }, 
+        { name: 'codeBarcode', type: 'string' },
+        { name: 'codeStatus', type: 'number' },
+        { name: 'codeType', type: 'number' },
+        { name: 'codeLocation', type: 'number' },
+        //{name: "typeChar"}, 
+        {name: 'lexType', value: 'codeType', values: { source: dataAdapterFolderType.records, value: 'codeType', name: 'lexType' } },
+        {name: 'lexStatus', value: 'codeStatus', values: { source: dataAdapterFolderStatus.records, value: 'codeStatus', name: 'lexStatus' } },
+        {name: 'lexLocation', value: 'codeLocation', values: { source: dataAdapterFolderLocation.records, value: 'codeLocation', name: 'lexLocation' } },
+    ],
+    datatype: "json",
+    id: 'id', 
+    //sortcolumn: 'type', sortdirection: 'asc',     
+    //$("#jqxnotificationServer").html('Update success!').jqxNotification("open");
+}; //source
+
+//DataAdapter 
+var dataAdapterFolder = new $.jqx.dataAdapter( sourceFolder);
+
+var cellclassname = function (row, column, value, data) {
+    //if (data.status == 4) {return "redClass";}
+    switch (data.codeStatus) {
+        /*
+        case 4:
+            return "redClass";
+            break;
+        case 3:
+            return "pinkClass";
+            break;
+        */
+        case 2:
+            return "blueClass";
+            break;
+        case 1:
+            return "orangeClass";
+            break;
+        case 0:
+            //return "greenClass";
+            break;
+        default: 
+            return "redClass";
+            //return "orangeClass";
+
+    } //switch 
+};
+
+//Grid
+$("#jqxgridFolder").jqxGrid({
+    source: dataAdapterFolder,
+    columns: [ //columntype: 'textbox', 
+        { text: "", datafield: "id", hidden: true,  editable : false, width: '5%'}, // id        
+        { text: "AA", datafield: 'no', width: '5%',  cellclassname: cellclassname, },
+        
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', editable : false, cellclassname: cellclassname, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'15%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexType', valueMember: 'value', });
+            }, // createeditor
+            aggregates: ['count'], 
+        },        
+        { text: "Τετράδια", datafield: 'books', filtertype: 'number', cellclassname: cellclassname, width: '8%', },
+        { text: "Κατάσταση", datafield: 'status', displayfield: 'lexStatus', columntype: 'dropdownlist', editable : false, 
+            filtertype: 'checkedlist', cellclassname: cellclassname, 
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderStatus, displayMember: 'lexStatus', valueMember: 'status', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },        
+        //{ text: "Location.", datafield: 'codeLocation',  width:'20%', },
+        { text: "Θέση", datafield: 'codeLocation', displayfield: 'lexLocation', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'15%', cellclassname: cellclassname, 
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderLocation, displayMember: 'lexLocation', valueMember: 'codeLocation', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+        { text: "Barcode", datafield: 'codeBarcode', width: '20%',  cellclassname: cellclassname, },        
+    ],
+    height: 710, filterable: true, showfilterrow: true, //showfilterrow: faalse, due to visibility grid issue
+    //pageable: true, pagesize: 20, 
+    sortable: true, 
+    //selectionmode: 'singlerow', //multiplecellsextended
+    width: '99.5%', theme: theme, 
+    rowsheight: 22,    
+
+    //selectionmode: 'multiplecellsadvanced', 
+
+});//Folder grid
+
+
+// jqxgridFolder > events
+$('#jqxgridFolder').on('rowclick', function (event) {
+    // Form field > update 
+    var rowdata = $('#jqxgridFolder').jqxGrid('getrowdata', event.args.rowindex);
+    
+    // Record data
+    var books = rowdata.books; 
+    var location = rowdata.codeLocation; 
+    var no = rowdata.no; 
+    var type = rowdata.codeType; 
+    var status = rowdata.codeStatus; 
+    
+    var station = $("#StationID").val();
+
+    // Update related Inputs
+    $('#jqxinputFolderID').jqxInput('val', rowdata.id); 
+    $('#FolderInfo').html(rowdata.lexType+"/"+rowdata.no);
+    $('#BookInfo').html(rowdata.books);
+    //$('#FolderInfo').html('Φ:' + rowdata.no + ' Τετράδια:' + rowdata.books);
+
+    //alert ('station:'+station + 'location:'+ location + 'status:'+ status + 'type:'+ type );
+    console.log ('station:'+station + 'location:'+ location + 'status:'+ status + 'type:'+ type );  //OK
+    
+    // XREVSH
+    //else if (station == 0 || station == 1 ) && (status == 3 || status == 4 || status == 5) {
+    if (((station == 0) && (location == 0)) || ((station == 1) && (location == 2))) {
+        $("#ActionInfo").html("Χρέωση");
+        $('#jqxinputAction').val(0);  
+    }
+    // PARALAVI
+    // else if (location == 1) && (station == 0 || station == 1) {
+    else if (((station == 0) && (location == 1)) || ((station == 1) && (location == 1))) {
+        $("#ActionInfo").html("Παραλαβή");
+        $('#jqxinputAction').val(1);
+    }
+    else  {
+        $('#jqxinputAction').val(null); // UNKNOWN - STOP
+        $("#ActionInfo").html("Σφάλμα");
+    }
+    console.log ($("#ActionInfo").html() + "-"+  $("#jqxinputAction").val());  //
+});
+
+/**********************
+// jqxgridBooking
+***********************/
+// RecordSet  
+var sourceBooking = {
+    url: '', 
+    //url: '/booking/crud/', 
+    datatype: "json",
+    //async: false, // must inorder to simulate auto-select in search-input 
+    datafields: [ 
+        { name: "id" }, 
+        { name: "action" }, 
+        { name: "actionTime", type: 'date' }, 
+        { name: "station" }, 
+        { name: "FolderID_id" }, 
+        { name: "GraderID_id" }, 
+        { name: "no", map: "_FolderID_cache>no" }, 
+        {name: 'lexAction', value: 'action', values: { source: dataAdapterBookingAction.records, value: 'action', name: 'lexAction' } },
+        {name: 'lexStation', value: 'station', values: { source: dataAdapterBookingStation.records, value: 'station', name: 'lexStation' } },
+    ],         
+    id: 'id', 
+    //sortcolumn: 'actionTime', //sortdirection: 'asc',     # not working
+}; //source
+
+
+// DataAdapter 
+var dataAdapterBooking = new $.jqx.dataAdapter(sourceBooking);
+
+// jqxGrid
+$("#jqxgridBooking").jqxGrid({
+    source: dataAdapterBooking,
+    columns: [ 
+        { text: "", datafield: "id", hidden: false,  width: '5%' },
+        { text: 'Ημ-νία', datafield: 'actionTime', columntype: 'datetimeinput', cellsformat: 'yyyy-MM-dd HH:mm:ss' , 
+         //{ text: 'Date', datafield: 'Date', width: 100, columntype: 'datetimeinput', width: 90, align: 'center', cellsalign: 'right', cellsformat: 'd', formatString: "dd/MM/yyyy",
+             createeditor: function (row, cellvalue, editor) {editor.jqxDateTimeInput({ showTimeButton: true, }); }, //createeditor
+        },
+
+        { text: "Σταθμός", datafield: 'station', displayfield: 'lexStation', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexStation', valueMember: 'station', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+        
+        { text: "Φακ.", datafield: 'no', width: '10%' },
+
+        { text: "Πράξη", datafield: 'action', displayfield: 'lexAction', editable : false,  
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexAction', valueMember: 'action', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },        
+    ], 
+    //altrows: true, autoheight: true, 
+    //selectionmode: 'singlerow', 
+    filterable: false, showfilterrow: false, sortable: false, 
+    //pageable: true, pagesize: 20,
+    width: '99.5%', height: 600, rowsheight: 22, theme: theme, 
+
+});  //Booking grid
+//$("#jqxgridBooking").jqxGrid('selectrow', -1);
+
+
+/**********************
+// BUTTONS UI
+***********************/
+// BUTTONS
+$("#jqxbuttonCheck").jqxButton({ width: 80, height: 30 });
+
+// BUTTONS' / Events
+$("#jqxbuttonCheck").click(function (event) {    
+    // Gather Values
+    $('#jqxinputStation').val($("#StationID").val());    
+    // Open Window
+    $("#jqxwindowFolderRegister").jqxWindow('open');
+    $("#jqxwindowFolderRegister").jqxWindow('focus');
+});
+
+/**********************
+// DIALOGUE > jqxwindowFolderRegister
+***********************/
+// DIALOGUE  
+$("#jqxwindowFolderRegister").jqxWindow({
+    autoOpen: false,
+    //cancelButton: $('#jqxbuttonCancel'), 
+    isModal: true, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    closeAnimationDuration: 200, showAnimationDuration: 600, 
+    //resizable: false, modalOpacity: 0.5, 
+    //position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
+    height: '420px', width: 'auto', resizable: false, //'auto',  // width: '700px', 
+    theme: theme, 
+    title: 'ΠΡΑΞΗ ΧΡΕΩΣΗΣ/ΠΑΡΑΛΑΒΗΣ ΦΑΚΕΛΟΥ', 
+});
+
+// DIALOGUE / Events
+$('#jqxwindowFolderRegister').on('open', function (event) {     
+
+    //getGridInputHtml();
+    var folderRowdata;
+    
+    folderRowdata = setFolderData();    
+    setActionData(folderRowdata);
+    setGraderData();
+    //setLessonData();
+    //setBookingData();
+    
+    //console.log($(this).attr('href'));
+    //console.log($(this).attr('name'));
+}); 
+
+// DIALOGUE > EVENT
+$('#jqxwindowFolderRegister').on('close', function (event) { 
+    
+    //Reset inputs
+        /*
+    $('#jqxinputGraderID').val(null);
+    $('#jqxinputFolderID').val(null);
+    $('#jqxinputAction').val(null);
+    */
+        
+    initActionData();
+    initFolderData();    
+    //initGraderData();
+    //initBookingData();
+    //console.log($(this).attr('href'));
+    //console.log($(this).attr('name'));
+
+    // give focus back to barcode search
+    $("#barcode-search").val('');
+    $("#barcode-search").focus();
+
+}); 
+
+
+// DIALOGUE > Input
+$('#jqxinputGraderID, #jqxinputFolderID').jqxInput({ width: 0.1, height: 0, disabled:true, value:null,});
+$('#jqxinputStation, #jqxinputAction').jqxInput({ width: 0.1, height: 0, disabled:true, value:null,});
+// To width einai gia to validation, miaw kai o validator does not validate hidden inputs
+
+// DIALOGUE > BUTTON
+$("#jqxbuttonCancel, #jqxbuttonDo").jqxButton({ width: 120, height: 30 });
+
+// DIALOGUE > BUTTON > EVENT
+//Cancel
+$("#jqxbuttonCancel").click(function (event) {    
+    $("#jqxwindowFolderRegister").jqxWindow('close');
+    event.preventDefault();    
+});
+//Do
+$("#jqxbuttonDo").click (function (event) {    
+    $('#formBookingPost').jqxValidator('validate');
+    //event.preventDefault();
+});
+
+
+/**********************
+// form > jqxValidator
+***********************/
+$('#formBookingPost').jqxValidator( { 
+    rules: [
+        { //input: '#StationInfo', 
+        input: '#jqxinputStation', 
+        rule: 'required',     //rule: 'length=4,12'  
+        message: 'Ο Σταθμός είναι ΚΕΝΟΣ!',
+        },        
+        
+        { //input: '#GraderInfo', 
+        input: '#jqxinputGraderID', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Ο Βαθμολογητής είναι ΚΕΝΟΣ!',
+        },        
+        
+        { //input: '#FolderInfo', 
+        input: '#jqxinputFolderID', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Ο Φάκελος είναι ΚΕΝΟΣ!',
+        },
+        /*
+        
+        { input: '#jqxinputFolderID', message: 'Your birth date must be between 1/1/1900 and 1/1/2014.', 
+        //action: 'valueChanged', 
+        rule: function (input, commit) {
+            //var date = $('#jqxinputFolder').jqxDateTimeInput('value');
+            //var result = date.getFullYear() >= 1900 && date.getFullYear() <= 2014;
+            // call commit with false, when you are doing server validation and you want to display a validation error on this field. 
+            var status = $('#jqxinputFolderID').val();
+            if (status != 4) return true; else return false;
+            //(result) ? alert("please give me a lemonade") : alert("then give me a beer");
+            //(result) ? alert("please give me a lemonade") : alert("then give me a beer");
+            //return result;
+            }
+        },
+        */
+
+        { //input: '#ActionInfo', 
+        input: '#jqxinputAction', 
+        rule: 'required',     //rule: 'length=4,12'
+        //action: 'keyup', 
+        message: 'H Πράξη  είναι ΚΕΝΗ!',
+        },
+       ],  //rules 
+ 
+    onSuccess: function () { 
+        //$.post("/booking/post/", 
+        $.post("/booking/post/", 
+            $('#formBookingPost').helperSerializeAll(), // serialize() + disabled.input
+            function (response) {                
+                $("#success").html(response.data);
+                console.log(response);
+                // na dw an pane sto dialogue.onClose event k oxi edw
+                $("#jqxgridBooking").jqxGrid('updatebounddata');    
+                $("#jqxgridFolder").jqxGrid('updatebounddata')
+                $("#jqxgridGrader").jqxGrid('updatebounddata');    
+                // close Dialoge
+                $("#jqxwindowFolderRegister").jqxWindow('close');
+            } 
+        );        
+        //console.log("Success");
+    },//onSuccess
+    onError: function () { 
+        console.log("Failed!");
+        alert('ΣΦΑΛΜΑ!'); 
+    }, 
+} );
+
+/*
+$('#formPost').on('validationSuccess', function (event) {
+    alert('You have filled the form correctly!')
+});   
+*/
+
+/**********************
+// Tab Buttons > Check/Folders/Bookings
+***********************/
+$("#jqxbuttonFolders, #jqxbuttonBookings").jqxButton({ width: 80, height: 30 });
+// TAB > BUTTON > EVENT
+$('#jqxbuttonFolders').click(function(e){
+    e.preventDefault();
+    $('#mytabs a[href="#tabFolders"]').tab('show');
+    // visibility issu here when updates return filter row is null
+    //showfilterrow
+    $("#jqxgridFolder").jqxGrid({ showfilterrow: true});
+});
+
+$('#jqxbuttonBookings').click(function(e){
+    e.preventDefault();
+    $('#mytabs a[href="#tabBookings"]').tab('show');
+
+    // visibility issu here when updates return filter row is null
+    //showfilterrow
+    $("#jqxgridFolder").jqxGrid({ showfilterrow: false});
+
+});
+
+// visibility issu here when updates return filter row is null
+//$("#jqxgridFolder").jqxGrid({ showfilterrow: true});
+
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+    <!--
+
+        <button id="parse" type='button' class='btn btn-primary' tabindex="2"><i class="fa fa-exchange right"></i> PARSE</button>
+
+      <form class="form-inline">    
+        <input class="form-control" style="width:100%; visibility:hidden;" placeholder="Search" name="barcode-search" id="barcode-search" type="text">
+        <input id ="hit-enter" type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;" tabindex="-1" />
+        <a id="jqxbuttonBookings" class="btn btn-primary">Χρεώσεις <i class="fa fa-exchange right"></i></a>
+        <a id="jqxbuttonFolders" class="btn btn-primary"><i class="fa fa-book left"></i> Φάκελοι</a>
+        <a class="btn btn-primary" href="#" role="button">Link</a>
+        <button class="btn btn-primary" type="submit">Button</button>
+        
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary">Apple</button>
+          <button type="button" class="btn btn-primary">Samsung</button>
+          <button type="button" class="btn btn-primary">Sony</button>
+        </div> 
+      </form>
+
+     <button type="button" class="btn btn-labeled btn-warning">
+            <span class="btn-label"><i class="glyphicon glyphicon-bookmark"></i></span>Bookmark</button>
+
+    -->
+
+
+<!-- TabsGrid -->
+<!--
+<div id='jqxTabs' style="float: left;">
+<ul style="margin-left: 30px;" id="unorderedList">
+    <li>Node.js</li>
+    <li>Active Server Pages</li>
+    <li canselect='false' hasclosebutton='false'>Add New Tab</li>
+</ul>
+<div>
+    Node.js is an event-driven I/O server-side JavaScript environment based on V8. It
+    is intended for writing scalable network programs such as web servers. It was created
+    by Ryan Dahl in 2009, and its growth is sponsored by Joyent, which employs Dahl.
+    Similar environments written in other programming languages include Twisted for
+    Python, Perl Object Environment for Perl, libevent for C and EventMachine for Ruby.
+    Unlike most JavaScript, it is not executed in a web browser, but is instead a form
+    of server-side JavaScript. Node.js implements some CommonJS specifications. Node.js
+    includes a REPL environment for interactive testing.
+</div>
+<div>
+    ASP.NET is a web application framework developed and marketed by Microsoft to allow
+    programmers to build dynamic web sites, web applications and web services. It was
+    first released in January 2002 with version 1.0 of the .NET Framework, and is the
+    successor to Microsoft's Active Server Pages (ASP) technology. ASP.NET is built
+    on the Common Language Runtime (CLR), allowing programmers to write ASP.NET code
+    using any supported .NET language. The ASP.NET SOAP extension framework allows ASP.NET
+    components to process SOAP messages.
+</div>
+<div>
+</div>
+</div>
+
+
+//TABS0
+$('#jqxTabs0').jqxTabs({ width: 550, height: 150 });
+$("#jqxTabs0").jqxTabs({ collapsible: true });
+$("#jqxTabs0").jqxTabs('select', 1);
+
+
+$('#jqxTabs').jqxTabs({ width: 550, height: 150 });
+$("#jqxTabs0").jqxTabs('select', 1);
+
+
+-->
+
+
+<!--
+
+
+
+
+
+<div class="row">
+<div class="col-xs-12">
+
+<div class="card">
+    
+    <div class="card-header">
+        <div class="card-title">
+            <div class="title"></div>
+            <div class="description">A card element for little data and clickable</div>
+        </div>
+        <div class="pull-right card-action">
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#modalCardBannerExample"><i class="fa fa-code"></i></button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <a href="#">
+                    <div class="card red summary-inline">
+                        <div class="card-body">
+                            <i class="icon fa fa-inbox fa-4x"></i>
+                            <div class="content">
+                                <div class="title">50</div>
+                                <div class="sub-title">New Mails</div>
+                            </div>
+                            <div class="clear-both"></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <a href="#">
+                    <div class="card yellow summary-inline">
+                        <div class="card-body">
+                            <i class="icon fa fa-comments fa-4x"></i>
+                            <div class="content">
+                                <div class="title">23</div>
+                                <div class="sub-title">New Message</div>
+                            </div>
+                            <div class="clear-both"></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <a href="#">
+                    <div class="card green summary-inline">
+                        <div class="card-body">
+                            <i class="icon fa fa-tags fa-4x"></i>
+                            <div class="content">
+                                <div class="title">20</div>
+                                <div class="sub-title">Product View</div>
+                            </div>
+                            <div class="clear-both"></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                <a href="#">
+                    <div class="card blue summary-inline">
+                        <div class="card-body">
+                            <i class="icon fa fa-share-alt fa-4x"></i>
+                            <div class="content">
+                                <div class="title">16</div>
+                                <div class="sub-title">Share</div>
+                            </div>
+                            <div class="clear-both"></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+
+</div>
+
+
+-->
+
+
+
+<!-- 
+<div class="row">
+
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΧΡΕΩΣΕΙΣ </h3>
+        </div>
+        <div class="panel-body">
+
+        </div>
+    </div>
+</div>
+
+</div>
+-->
+<!-- /.row -->
+   
+<!-- 
+<h2>ΜΑΘΗΜΑ</h2>    
+<div id="jqxgridLesson" style="float:left;" ></div>
+    
+<h2>ΦΑΚΕΛΟΙ</h2>    
+<div id="jqxgridFolder" ></div>
+
+<h2>ΒΑΘΜΟΛΟΓΗΤΕΣ</h2>    
+<div id="jqxgridGrader" style="float:left;" ></div>
+
+<h2>ΧΡΕΩΣΕΙΣ</h2>    
+<div id="jqxgridBooking" style="float:left;" ></div>
+-->
+
+<!-- Button to Open Dialogue Register New 
+<button id="jqxbuttonCheck">CHECK</button>
+-->
+
+<script type="text/javascript">
+
+//Update Grids on Station Change (use in Secretariat)
+/*
+$('ul#StationSelector li a').click(function(e) { 
+    //alert($(this).find("span.t").text());
+    alert("#StationSelector");
+});
+*/
+
+
+/*
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, displayMember: "name", height: 45, selectedIndex: 0, valueMember: "id", width: '100%',
+    placeHolder:"Επιλέξτε Μάθημα...",  
+});
+$("#jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
+
+// Combobox > events
+$('#jqxcomboboxLesson').on('select', function (event) {    
+  if (event.args) {
+    var data = dataAdapterLesson.records[event.args.index];
+    
+    // filter Grader
+    sourceGrader.url = '/grader/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });                
+    
+    // filter Folder
+    sourceFolder.url = '/folder/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+    $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder});    
+    //$("#jqxgridAcceptance").jqxGrid('updatebounddata');
+    //console.log(dataAdapterGrader.records);
+  }
+});// combo.event
+*/
+
+
+    /*
+            $("#jqxgrid").on("bindingcomplete", function (event) {
+                var rowCount = $("#jqxgrid").jqxGrid('getrows').length;
+                $('#rowsCountSpan').text(rowCount);
+            });
+        */
+
+
+    /*
+// DataAdapter create 
+var dataAdapterBooking = new $.jqx.dataAdapter(sourceBooking, {    
+    loadComplete: function () {
+        var records = dataAdapterBooking.records;        
+        //console.log (records.count);
+        console.log( records );
+    },  //loadComplete
+});
+
+    */
+
+
+    //var action = (status == 0) || (status == 2) ? 1 : 2;
+    //$('#jqxinputAction').jqxInput('val', action); // GO OUT
+    /*
+    switch (new Date().getDay()) {
+        case 1:
+        case 2:
+        case 3:
+        default:
+            text = "Looking forward to the Weekend";
+            break;
+        case 4:
+        case 5:
+           text = "Soon it is Weekend";
+            break;
+        case 0:
+        case 6:
+           text = "It is Weekend";
+    } 
+
+var cellclassname0 = function (row, column, value, data) {
+    if (data.status == 2)         
+        return "redClass";
+};
+var cellclassname3 = function (row, column, value, data) {
+    return "redClass";
+};
+
+// Renderer (custom)
+var cellsrenderer = function (row, column, value, defaultHtml) {
+    
+    var data = $('#jqxgridFolder').jqxGrid('getrowdata', row);
+    if (data.status == 2) {   // completed
+        var element = $(defaultHtml);
+        element.css('color', '#999');
+        return element[0].outerHTML;
+    }
+    return defaultHtml;
+};
+
+
+     
+// use Bootstrap classses http://www.w3schools.com/bootstrap/bootstrap_ref_css_helpers.asp
+var cellclassname = function (row, column, value, data) {
+    if (data.books < 10) {
+        return "redClass";
+        //return "bg-danger";
+    } else if (data.books < 20) {
+        return "greenClass";
+        return "bg-success";
+    } else if (data.books >= 20) {
+        return "bg-info";
+        //return "blueClass";
+    };
+};
+     
+     
+
+
+GRID FOLDER 
+        /*
+        { text: 'ΠΡΑΞΗ', editable: false, filterable: false, columntype: 'button', width: '15%', 
+            cellsrenderer: function () {
+                //return "<button id='gridbtnBook' style='padding:100px;height:130px;' type='button' class='btn btn-danger'> xxxx </button>";
+                return "ΠΡΑΞΗ";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                //$("#dialogDeleteLesson").jqxWindow('open');
+                myBook();
+          } // buttonclick
+        }, //remove        
+        */
+
+
+
+    /*
+    // Form field > update 
+    // var rowBoundIndex = args.rowindex;var rowData = event.args.row;
+    $('#jqxinputFolderID, #jqxinputGraderID, #jqxinputAction').jqxInput('val', null); 
+    $('#LessonInfo').html(data.name);
+    */
+
+
+/*
+TOP BARCODE FILTER BOX 
+
+$('#barcode-search').keypress(function (event) {
+    
+  if (event.which == 13) {
+    //$('form#login').submit();
+    var str = $("#barcode-search").val();
+    console.log (str);
+    event.preventDefault();    
+    //
+    if ( $("#UserGroupID").val() == 2 ) {
+      // USER Is free to select
+      $("#BookingStationName").html('ΓΡΑΜΜΑΤΕΙΑ'); 
+    }
+    //
+    var split = str.split("-"); 
+    var lID = split[0]; 
+    var fID = split[1]; 
+    
+    //alert( "<H1>LessonID:"+split[0]+"-FolderID:"+split[1] + "</H1>");
+
+    // GRID OR COMBO ?? filter Lesson
+    sourceLesson.url = '/lesson/crud/'+'?action=filter&id='+ lID;    // SUPER 
+    $("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
+
+    // filter Grader
+    sourceGrader.url = '/grader/crud/'+'?action=filter&LessonID='+ lID;    // SUPER 
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });                
+
+    // filter Folder
+    sourceFolder.url = '/folder/crud/'+'?action=filter&LessonID='+ lID;    // DOublecheck 
+    $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder});
+    
+    //
+    var fnameFilterGroup = new $.jqx.filter();
+    var filter_or_operator = 1;
+    var filtervalue = fID;
+    var filtercondition = 'starts_with';
+    //filtervalue = 'Andrew';
+    //filtercondition = 'starts_with';
+    var fnameFilter1 = fnameFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
+    fnameFilterGroup.addfilter(fnameFilter1); 
+
+    // apply the filters.
+    $("#jqxgridFolder").jqxGrid('addfilter', 'codeBarcode', quantityFilterGroup);
+    $("#jqxgridFolder").jqxGrid('applyfilters');
+    //
+
+    addfilter (str);
+    $("#jqxgridFolder").jqxGrid('applyfilters');
+
+    //
+    $('#clearfilteringbutton').click(function () {
+        $("#jqxgrid").jqxGrid('clearfilters');
+    });    
+    //
+    //return false;    //<---- Add this line
+  }
+});
+
+
+var addfilter = function (barCode) {
+    
+    // create a filter group for the FirstName column.
+    var fnameFilterGroup = new $.jqx.filter();
+    
+    // operator between the filters in the filter group. 1 is for OR. 0 is for AND.
+    var filter_or_operator = 1;
+    
+    // 1. create a string filter with 'contains' condition.
+    var filtervalue = barCode;
+    var filtercondition = 'contains';
+    var fnameFilter1 = fnameFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
+    
+    // 2. create second filter.
+    filtervalue = barCode;
+    filtercondition = 'starts_with';
+    var fnameFilter2 = fnameFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
+    // add the filters to the filter group.
+    fnameFilterGroup.addfilter(filter_or_operator, fnameFilter1);
+    fnameFilterGroup.addfilter(filter_or_operator, fnameFilter2);
+    // add the filter group to the 'firstname' column in the Grid.
+    $("#jqxgrid").jqxGrid('addfilter', 'codeBarcode', fnameFilterGroup);
+        
+
+    // create a filter group for the Quantity column.
+    
+    
+    //
+    var quantityFilterGroup = new $.jqx.filter();
+    // create a filter.
+    var filter_or_operator = 1;
+    var filtervalue = 3;
+    var filtercondition = 'less_than';
+    
+    var quantityFilter1 = quantityFilterGroup.createfilter('numericfilter', filtervalue, filtercondition);
+    quantityFilterGroup.addfilter(filter_or_operator, quantityFilter1);
+    
+    // add the filter group to the 'quantity' column in the Grid.
+    $("#jqxgrid").jqxGrid('addfilter', 'quantity', quantityFilterGroup);
+    //
+    // apply the filters.
+    //$("#jqxgrid").jqxGrid('applyfilters');
+}
+
+
+
+// test for Apothiki
+//$('#jqxinputStation').jqxInput('val', 0); 
+
+/**********************
+// MAIN > BUTTON
+***********************/
+
+
+$("#jqxgridFolder").on("bindingcomplete", function (event) {
+    var rowCount = $("#jqxgridFolder").jqxGrid('getrows').length;
+    //alert('FOlderrowsCount='+rowCount);
+    //         > select
+    var rowindexF = $('#jqxgridFolder').jqxGrid('getrowboundindexbyid', FolderID);
+    console.log("rowinex="+rowindexF);
+    $('#jqxgridFolder').jqxGrid('selectrow', rowindexF);
+});
+
+
+  // Fodler
+    var rowindexF = $('#jqxgridFolder').jqxGrid('getrowboundindexbyid', FolderID);
+    $('#jqxgridFolder').jqxGrid('selectrow', rowindexF);
+
+    //alert("LessonID :" + LessonID + "folderID:" + FolderID + 'rowindex:' + rowindex );
+
+    //$('#jqxgridLesson').jqxGrid('clearselection');
+    //$('#jqxgridFolder').jqxGrid('clearselection');
+
+    //rowdoubleclick
+    //$("#jqxgridlesson").focus();
+    //$("#jqxgridlesson").jqxgrid('selectrow', 0);
+
+
+
+// bind to 'click' event.
+//#jqxbuttonCheck, 
+function myBook() {
+    
+    // Gather Values
+    $('#jqxinputStation').val($("#StationID").val());
+    
+    // Open Window
+    $("#jqxwindowFolderRegister").jqxWindow('open');
+    $("#jqxwindowFolderRegister").jqxWindow('focus');
+
+    //$('#formPost').jqxValidator('validate');    
+    //event.preventDefault();
+    // check required values 
+};
+
+*/
+
+
+
+
+</script>
+

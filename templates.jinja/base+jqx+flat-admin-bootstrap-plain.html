@@ -1,0 +1,136 @@
+{# % load staticfiles % #}
+{# % load template_filters % #}
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title id="Description">{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <!-- Fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:300,400' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/bootstrap.min.css' %}">   
+    <!-- vtzoum change 
+    <link rel="stylesheet" type="text/css" href="../lib/css/font-awesome.min.css">    
+    -->    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" media="all" rel="stylesheet" type="text/css">
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/animate.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/bootstrap-switch.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/checkbox3.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/jquery.dataTables.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/dataTables.bootstrap.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/select2.min.css' %}">   
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/css/style.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/css/themes/flat-blue.css' %}">   
+    <!-- JQXWIDGET > Boostrap theme by theme builder -->
+    <link href="{% static 'css/jqxwidget-custom-darkblue.css' %}" rel="stylesheet" media="screen">    
+    
+    <!-- css > jqxwidgets -->
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.base.css' %}" type="text/css" />    
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.bootstrap.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.arctic.css' %}" type="text/css" />
+
+    <!-- css > jqxwidgets > bootstrap -->
+    <!-- tzoumak -->
+    <link rel="stylesheet" href="{% static 'css/tzoumak-helper.css' %}" type="text/css" />     
+    
+    <!-- SCRIPTS -->
+    
+    <!-- SCRIPTS > SB-ADMIN -->
+    <!-- jQuery -->
+
+    <!-- Javascript Libs -->
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/Chart.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/bootstrap-switch.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.matchHeight-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/select2.full.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/ace.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/mode-html.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/theme-github.js' %}"></script>
+
+    <!-- SCRIPTS > JQXWIDGETS -->
+    <!-- scripts > jqxwidgets > extras -->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/jquery-1.11.1.min.js' %}" ></script>
+    <!-- Confilict with SB-ADMIN bootstrap.js
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/bootstrap.min.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcore.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdata.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxwindow.js' %}" ></script>
+    <!-- Layout.js loaded AFTER jqxlayout.js -->
+    <!-- globalization (!) -->
+    <!-- scripts > tzoumak -->    
+    <script type="text/javascript" src="{% static 'js/tzoumak-helpers.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/app.js' %}"></script>
+    <!--
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/index.js' %}"></script>
+    -->
+
+
+<style>
+
+</style>
+
+</head>
+
+
+<body class="flat-blue landing-page">
+    <nav class="navbar navbar-inverse navbar-fixed-top  navbar-affix" role="navigation" data-spy="affix" data-offset-top="60">
+        <div class="container">
+            
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <div class="icon fa fa-paper-plane"></div>
+                    <div class="title">ΒΚ</div>
+                </a>
+            </div>
+            
+            <div id="navbar" class="navbar-collapse collapse " aria-expanded="true">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="active"><a href="/home">Home</a></li>
+                    <li><a href="/login">Login</a></li>
+                    <!-- <li><a href="#about">About</a></li> -->
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </nav>
+    
+
+    <!-- Start -->
+    {% block html %}{% endblock %}
+    <!-- End -->
+
+
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+      <div class="container">
+        <p class="text-muted">&copy; 2016, tzoumak@1gymagri.</p>
+      </div>
+    </footer>
+    <!-- Javascript Libs -->
+
+
+</body>
+
+<!-- js code -->
+{% block js %}{% endblock %}
+
+
+</html>

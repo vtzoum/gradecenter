@@ -1,0 +1,878 @@
+{% load staticfiles %}
+{# % load template_filters % #}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SB Admin - Bootstrap Admin Template</title>
+    <title id="Description">{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'themes/sb-admin/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'themes/sb-admin/css/sb-admin.css' %}" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="{% static 'themes/sb-admin/css/plugins/morris.css' %}" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{% static 'themes/sb-admin/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <!-- JQXWIDGET > Boostrap theme by theme builder -->
+    <link href="{% static 'css/jqxwidget-custom2.css' %}" rel="stylesheet" media="screen">
+    <!-- 
+    <link href="{% static 'css/ui-helper-jqxtheme-bootstrap.css' %}" rel="stylesheet" media="screen">
+    -->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+      
+
+    <!-- CSS> -->
+    
+    <!-- css > jquery-ui 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    -->
+    
+    <!-- css > bootstrap -->
+    <!-- conflict with grid+crud > edit
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+    -->
+
+    <!-- css > isotope-->
+    <!--
+    <link rel="stylesheet" href="{% static 'js-isotope/css/isotope-docs.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'js-isotope/css/isotope-search.css' %}" type="text/css" />
+    -->
+
+    <!-- css > jqxwidgets -->
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.base.css' %}" type="text/css" />    
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.bootstrap.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.arctic.css' %}" type="text/css" />
+    <!--
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.energyblue.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.light.css' %}" type="text/css" />    
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.metro.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.metrodark.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.office.css' %}" type="text/css" />
+    -->
+
+    <!-- css > jqxwidgets > bootstrap -->
+    <!--
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap-theme.min.css' %}" type="text/css" />    
+    -->
+    <!-- tzoumak -->
+    <link rel="stylesheet" href="{% static 'css/tzoumak-helper.css' %}" type="text/css" />  
+    
+    
+    <!-- SCRIPTS -->
+    
+    <!-- SCRIPTS > SB-ADMIN -->
+    <!-- jQuery -->
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/jquery.js' %}" ></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/bootstrap.min.js' %}" ></script>
+    <!-- Morris Charts JavaScript -->
+    <!--
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/plugins/morris/raphael.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/plugins/morris/morris.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/plugins/morris/morris-data.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/plugins/flot/jquery.flot.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/plugins/flot/jquery.flot.tooltip.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/plugins/flot/jquery.flot.resize.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/plugins/flot/jquery.flot.pie.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/sb-admin/js/plugins/flot/flot-data.js' %}" ></script>
+    -->
+
+    <!-- SCRIPTS > JQXWIDGETS -->
+    <!-- scripts > jqxwidgets > extras -->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/jquery-1.11.1.min.js' %}" ></script>
+    <!-- Confilict with SB-ADMIN bootstrap.js
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/bootstrap.min.js' %}" ></script>
+    -->
+    <!-- scripts > jqxwidgets -->    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcore.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbargauge.js' %}" ></script>    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbuttons.js' %}" ></script>    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbuttongroup.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxradiobutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxchart.core.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcalendar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcheckbox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcombobox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdata.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdate.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdatatable.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdatetimeinput.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdragdrop.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdraw.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdropdownbutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdropdownlist.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdocking.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockinglayout.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockpanel.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxeditor.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxexpander.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxfileupload.js' %}" ></script> 
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgauge.js' %}" ></script>
+    <!-- jqxwidgets > jqxgrid -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.aggregates.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.columnsresize.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.columnsreorder.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.export.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.edit.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.filter.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.grouping.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.pager.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.reorder.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.selection.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.sort.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.storage.js' %}" ></script>
+    <!-- ...cont -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxinput.js' %}" ></script>
+    <!-- 
+    script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxkanban.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxknob.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxlistbox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxmaskedinput.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxmenu.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxnotification.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxnumberinput.js' %}" ></script>
+    
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxpanel.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxprogressbar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxresponse.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxribbon.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxscheduler.js' %}" ></script>
+    -->
+
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxser.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxser.api.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxscrollbar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxslider.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxsplitter.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxsortable.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxswitchbutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtagcloud.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtabs.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtree.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxvalidator.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxwindow.js' %}" ></script>
+    <!-- Layout.js loaded AFTER jqxlayout.js -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxlayout.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockinglayout.js' %}" ></script>
+    <!-- globalization (!)-->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/globalization/globalize.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/globalization/globalize.culture.de-DE.js' %}" ></script>
+    <!-- init/custom JS-->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/demos.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/demos/sampledata/generatedata.js' %}" ></script>
+    <!-- -->
+    <!-- scripts > tzoumak -->    
+    <script type="text/javascript" src="{% static 'js/tzoumak-csrf.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/tzoumak-helpers.js' %}" ></script>
+    <!-- scripts (at-the-end)-->
+    <!-- scripts (at-the-end) > jquery-ui (.selectable) -->
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <!-- scripts (at-the-end) > isotope -->
+    <script type="text/javascript" src="{% static 'js-isotope/js/isotope-docs.min.js' %}" ></script>
+
+    <!-- ui-css -->
+    <!--
+    <link rel="stylesheet" href="{% static 'css/ui-helper.css' %}" type="text/css" />  
+    <script type="text/javascript" src="main.js"></script>
+    -->
+
+</head>
+
+<body>
+
+<!-- SB-ADMIN code -->
+
+<div id="wrapper">
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<!-- Brand and toggle get grouped for better mobile display -->
+
+<div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/index.html"> 43o ΒΑΘΜΟΛΟΓΙΚΟ ΚΕΝΤΡΟ </a>
+    
+    <!-- Πληροφοριακό Σύστημα Διαχείρισης -->
+</div>
+
+
+<!-- Top Menu Items -->
+<ul class="nav navbar-right top-nav">
+
+
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
+        <ul class="dropdown-menu message-dropdown">
+            <li class="message-preview">
+                <a href="#">
+                    <div class="media">
+                        <span class="pull-left">
+                            <img class="media-object" src="http://placehold.it/50x50" alt="">
+                        </span>
+                        <div class="media-body">
+                            <h5 class="media-heading"><strong>John Smith</strong>
+                            </h5>
+                            <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                            <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                        </div>
+                    </div>
+                </a>
+            </li>
+
+            <!--        
+            <li class="message-preview">
+                <a href="#">
+                    <div class="media">
+                        <span class="pull-left">
+                            <img class="media-object" src="http://placehold.it/50x50" alt="">
+                        </span>
+                        <div class="media-body">
+                            <h5 class="media-heading"><strong>John Smith</strong>
+                            </h5>
+                            <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                            <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                        </div>
+                    </div>
+                </a>
+            </li>
+
+            <li class="message-preview">
+                <a href="#">
+                    <div class="media">
+                        <span class="pull-left">
+                            <img class="media-object" src="http://placehold.it/50x50" alt="">
+                        </span>
+                        <div class="media-body">
+                            <h5 class="media-heading"><strong>John Smith</strong>
+                            </h5>
+                            <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                            <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            -->
+            <li class="message-footer">
+                <a href="#">Read All New Messages</a>
+            </li>
+        </ul>
+    </li>
+
+
+
+
+    <!--
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
+        <ul class="dropdown-menu alert-dropdown">
+            <li>
+                <a href="#">Alert Name <span class="label label-default">Alert Badge</span></a>
+            </li>
+            <li>
+                <a href="#">Alert Name <span class="label label-primary">Alert Badge</span></a>
+            </li>
+            <li>
+                <a href="#">Alert Name <span class="label label-success">Alert Badge</span></a>
+            </li>
+            <li>
+                <a href="#">Alert Name <span class="label label-info">Alert Badge</span></a>
+            </li>
+            <li>
+                <a href="#">Alert Name <span class="label label-warning">Alert Badge</span></a>
+            </li>
+            <li>
+                <a href="#">Alert Name <span class="label label-danger">Alert Badge</span></a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="#">View All</a>
+            </li>
+        </ul>
+    </li>
+    -->
+
+    <!--
+ <div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
+  <span class="caret"></span></button>
+  <ul class="dropdown-menu">
+    <li><a href="#">HTML</a></li>
+    <li><a href="#">CSS</a></li>
+    <li><a href="#">JavaScript</a></li>
+  </ul>
+</div>
+ <div class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Tutorials
+  <span class="caret"></span></button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+    <li role="presentation"><a role="menuitem" href="#">HTML</a></li>
+    <li role="presentation"><a role="menuitem" href="#">CSS</a></li>
+    <li role="presentation"><a role="menuitem" href="#">JavaScript</a></li>
+    <li role="presentation" class="divider"></li>
+    <li role="presentation"><a role="menuitem" href="#">About Us</a></li>
+  </ul>
+</div>
+<h2>user.username:{{ user.username }} </h2>
+<h3>user.is_active:{{ user.is_active}}</h3>
+<p>Homepage: {{ object.homepage }}</p>
+
+{% if group in request.user.groups.all %} "some action" {% endif %}
+
+
+<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example<span class="caret"></span></button>
+
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
+        <a class="btn btn-secondary dropdown-toggle" href="http://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
+    -->
+
+    <li class="select">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Σταθμός <b class="caret"></b></a>
+        
+        {% block station %}{% endblock %}
+    
+        <ul class="dropdown-menu" id="userDropDownMenu">
+            <li>
+                <a href="#"><i class="fa fa-fw fa-user"></i> Αποθήκη</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-fw fa-envelope"></i> Φύλαξη </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="#"><i class="fa fa-fw fa-cog"></i> Γραμματεία }</a>
+            </li>
+        </ul>
+
+    </li>
+
+
+
+    <li class="dropdown">
+    
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ user.username }} <b class="caret"></b></a>
+        
+        <ul class="dropdown-menu" id="userDropDownMenu">
+            <li>
+                <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-fw fa-cog"></i> active:{{ user.is_active}}</a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="/logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+            </li>
+        </ul>
+    </li>
+    
+</ul>
+<!-- End Top Menu Items -->
+
+
+<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+<div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav side-nav">        
+        
+        <li class="active">
+            <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+        </li>
+        
+        <!-- Μαθήματα -->        
+        <li>
+            <a href="/lesson"><i class="fa fa-fw fa-bars"></i> Μαθήματα </a>
+        </li>
+        
+        <!-- Βαθμολογητές -->        
+        <li>
+            <a href="/grader/"><i class="fa fa-fw fa-users"></i> Βαθμολογητές </a>
+        </li>
+
+        <!-- Παραλαβές -->        
+        <li>
+            <a href="/acceptance/"><i class="fa fa-fw fa-archive"></i> Παραλαβές </a>
+        </li>
+
+        <!-- Χρεώσεις - ΦΥΛΑΞΗ ΑΠΟΘΗΚΗ -->        
+        <li>
+            <a href="/booking/"><i class="fa fa-fw fa-cloud-upload"></i> Αποθήκη </a>
+        </li>
+        <li>
+            <a href="/booking/"><i class="fa fa-fw fa-cloud-download"></i> Φύλαξη </a>
+        </li>
+
+
+        <!-- Καθηγητές -->        
+        <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#teacherDropDownMenu">
+                <i class="fa fa-fw fa-user"></i> Καθηγητές <i class="fa fa-fw fa-caret-down"></i>
+            </a>
+            <ul id="teacherDropDownMenu" class="collapse">
+                <li>
+                    <a href="/teacher"> Καθηγητές </a>
+                </li>
+                <li>
+                    <a href="/teacher/upload/"> Εισαγωγή από Aρχείο CSV</a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Ειδικότητες -->        
+        <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#specialtyDropDownMenu">
+                <i class="fa fa-fw fa-cog"></i> Ειδικότητες <i class="fa fa-fw fa-caret-down"></i>
+            </a>
+            <ul id="specialtyDropDownMenu" class="collapse">
+                <li>
+                    <a href="/specialty"> Ειδικότητες </a>
+                </li>
+                <li>
+                    <a href="/specialty/upload/"> Εισαγωγή από Aρχείο CSV</a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Σχολεία Υποδοχής -->        
+        <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#schooltogradeDropDownMenu">
+                <i class="fa fa-fw fa-building"></i> Σχολεία Υποδοχής <i class="fa fa-fw fa-caret-down"></i>
+            </a>
+            <ul id="schooltogradeDropDownMenu" class="collapse">
+                <li>
+                    <a href="/schooltograde"> Σχολεία Υποδοχής </a>
+                </li>
+                <li>
+                    <a href="/schoolstograde/upload/"> Εισαγωγή από Aρχείο CSV</a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Αναφορές -->        
+        <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#reportingDropDownMenu">
+                <i class="fa fa-fw fa-bar-chart-o"></i> Αναφορές <i class="fa fa-fw fa-caret-down"></i>
+            </a>
+            <ul id="reportingDropDownMenu" class="collapse">
+                <li>
+                    <a href="/reporting/home/pdf/"> Αναφορές (PDF) </a>
+                </li>
+                <li>
+                    <a href="/reporting/home/xls/"> Αναφορές (XLSX) </a>
+                </li>
+            </ul>
+        </li>
+
+
+        
+
+
+
+        <!-- Άλλα -->        
+        <!--
+        <li>
+            <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
+        </li>
+        <li>
+            <a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
+        </li>
+        <li>
+            <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Forms</a>
+        </li>
+        <li>
+            <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
+        </li>
+        <li>
+            <a href="bootstrap-grid.html"><i class="fa fa-fw fa-wrench"></i> Bootstrap Grid</a>
+        </li>
+        -->
+
+        <!--
+        <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
+            <ul id="demo" class="collapse">
+                <li>
+                    <a href="#">Dropdown Item</a>
+                </li>
+                <li>
+                    <a href="#">Dropdown Item</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="blank-page.html"><i class="fa fa-fw fa-file"></i> Blank Page</a>
+        </li>
+        -->
+
+        <!-- menu-item -->
+        <li>
+            <a href="index-rtl.html"><i class="fa fa-fw fa-dashboard"></i> RTL Dashboard</a>
+        </li>
+    </ul>
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+
+<div id="page-wrapper">
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!--
+            <h2>43o ΒΑΘΜΟΛΟΓΙΚΟ ΚΕΝΤΡΟ <small> Πληροφοριακό Σύστημα Διαχείρισης </small></h2>
+            
+            <ol class="breadcrumb">
+                <li class="active">
+                    <i class="fa fa-dashboard"></i> Dashboard
+                </li>
+            </ol>
+            -->
+
+        </div>
+    </div>
+    <!-- /.row -->
+    <!-- 
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <i class="fa fa-info-circle"></i>  
+                    <strong>Like SB Admin?</strong> Try out 
+                    <a href="http://startbootstrap.com/template-overviews/sb-admin-2" class="alert-link">SB Admin 2</a> for additional features!
+            </div>
+        </div>
+    </div>
+    -->
+    <!-- /.row -->
+
+
+    <!-- Notification 
+    <span id="jqxnotificationServerContent" style="font-weight: bold;"></span>.
+    -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="jqxnotificationServer" class="alert alert-info alert-dismissable">
+                <span id="content" style="font-weight: bold;"></span>
+            </div>
+            <div id="jqxnotificationServerContent"></div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+
+
+    <!-- Info-Boxes
+    <div class="row">
+        <div class="col-lg-3 col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-comments fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">26</div>
+                            <div>New Comments!</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="panel panel-green">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-tasks fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">12</div>
+                            <div>New Tasks!</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="panel panel-yellow">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-shopping-cart fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">124</div>
+                            <div>New Orders!</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="panel panel-red">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-support fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">13</div>
+                            <div>Support Tickets!</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    -->
+    <!-- /.row -->
+
+    <!-- Start NxROWS -->
+    {% block html %}{% endblock %}
+    <!-- End NxROWS -->
+
+    <!--
+    <div class="row">
+        !-- Panel Chart Area --
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="morris-area-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+    <!-- /.row -->
+
+    
+
+
+    <!--
+    <div class="row">        
+        !-- Panel Chart Donut --
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-long-arrow-right fa-fw"></i> Donut Chart</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="morris-donut-chart"></div>
+                    <div class="text-right">
+                        <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        -- Panel Tasks --
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i> Tasks Panel</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <span class="badge">just now</span>
+                            <i class="fa fa-fw fa-calendar"></i> Calendar updated
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">4 minutes ago</span>
+                            <i class="fa fa-fw fa-comment"></i> Commented on a post
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">23 minutes ago</span>
+                            <i class="fa fa-fw fa-truck"></i> Order 392 shipped
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">46 minutes ago</span>
+                            <i class="fa fa-fw fa-money"></i> Invoice 653 has been paid
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">1 hour ago</span>
+                            <i class="fa fa-fw fa-user"></i> A new user has been added
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">2 hours ago</span>
+                            <i class="fa fa-fw fa-check"></i> Completed task: "pick up dry cleaning"
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">yesterday</span>
+                            <i class="fa fa-fw fa-globe"></i> Saved the world
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <span class="badge">two days ago</span>
+                            <i class="fa fa-fw fa-check"></i> Completed task: "fix error on sales page"
+                        </a>
+                    </div>
+                    <div class="text-right">
+                        <a href="#">View All Activity <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        !-- Panel --
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Transactions Panel</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Order Date</th>
+                                    <th>Order Time</th>
+                                    <th>Amount (USD)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>3326</td>
+                                    <td>10/21/2013</td>
+                                    <td>3:29 PM</td>
+                                    <td>$321.33</td>
+                                </tr>
+                                <tr>
+                                    <td>3325</td>
+                                    <td>10/21/2013</td>
+                                    <td>3:20 PM</td>
+                                    <td>$234.34</td>
+                                </tr>
+                                <tr>
+                                    <td>3324</td>
+                                    <td>10/21/2013</td>
+                                    <td>3:03 PM</td>
+                                    <td>$724.17</td>
+                                </tr>
+                                <tr>
+                                    <td>3323</td>
+                                    <td>10/21/2013</td>
+                                    <td>3:00 PM</td>
+                                    <td>$23.71</td>
+                                </tr>
+                                <tr>
+                                    <td>3322</td>
+                                    <td>10/21/2013</td>
+                                    <td>2:49 PM</td>
+                                    <td>$8345.23</td>
+                                </tr>
+                                <tr>
+                                    <td>3321</td>
+                                    <td>10/21/2013</td>
+                                    <td>2:23 PM</td>
+                                    <td>$245.12</td>
+                                </tr>
+                                <tr>
+                                    <td>3320</td>
+                                    <td>10/21/2013</td>
+                                    <td>2:15 PM</td>
+                                    <td>$5663.54</td>
+                                </tr>
+                                <tr>
+                                    <td>3319</td>
+                                    <td>10/21/2013</td>
+                                    <td>2:13 PM</td>
+                                    <td>$943.45</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-right">
+                        <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+
+    <!-- /.row -->
+
+</div>
+<!-- /.container-fluid -->
+
+</div>
+<!-- /#page-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+    
+</body>
+
+    <!-- js code -->
+    {% block js %}{% endblock %}
+
+</html>

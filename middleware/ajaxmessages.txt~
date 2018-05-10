@@ -1,0 +1,47 @@
+
+msg = "Αδυναμία διαγραφής! εγγραφής  (Acceptance (%s))" %(record.name)
+
+try:    #with transaction.atomic():
+    record = 
+    record.save()
+    msg = "Επιτυχής εισαγωγή εγγραφής!"                 
+    messages.info(request, msg, fail_silently=True)                
+except DatabaseError:
+    msg = "Αδυναμία εισαγωγής εγγραφής!"
+    messages.error(request, msg, fail_silently=True)                
+
+
+##############################
+#ERROR
+##############################
+'Αδυναμία εισαγωγής | τροποποίησης | διαγραφής | εγγραφής.'
+'Υπάρχει ήδη σχετική εγγραφή!'
+'Ανύπαρκτα στοιχεία Μαθήματος | Καθηγητών | Σχoλείου.'
+
+msg = 'Αδυναμία διαγραφής! εγγραφής  (Acceptance (%s))' %(record.name)
+messages.error(request, msg, fail_silently=True)
+helperMessageLog(request, msg, tag='error')
+
+print msg
+
+##############################
+#INFO
+##############################
+"Επιτυχής εισαγωγή | τροποποίηση | διαγραφή | εγγραφής."
+
+msg = "Αδυναμία διαγραφής! εγγραφής  (Acceptance (%s))" %(record.name)
+messages.info(request, msg, fail_silently=True)
+helperMessageLog(request, msg, tag='info')
+print msg
+
+##############################
+#WARNING
+##############################
+'Αδυναμία διαγραφής εγγραφής!
+
+msg = "Αδυναμία διαγραφής! εγγραφής  (Acceptance (%s))" %(record.name)
+helperMessageLog(request, msg, tag='warning')
+#messages.warning(request, msg, fail_silently=True)
+print msg
+
+

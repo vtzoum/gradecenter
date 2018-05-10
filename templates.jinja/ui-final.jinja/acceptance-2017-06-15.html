@@ -1,0 +1,390 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΠΑΡΑΛΑΒΕΣ ΤΕΤΡΑΔΙΩΝ ΑΠΟ ΣΧΟΛΕΙΑ-JN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- AJAXRQST MessageBox -->
+<div id="jsonMessages"></div>
+
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+<div class="col-lg-12 no-margin-bottom">
+    <div class="panel panel-primary fresh-color neg20-margin-bottom" style="border-bottom:0px">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑ</h3>
+        </div>
+        <div class="panel-body" >
+        <!-- Lesson-->
+        <div id='jqxcomboboxLesson'></div>        
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- /.row -->
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+
+<!-- /.col#1 -->
+
+<!-- .col#2 -->
+<div class="col-lg-12">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΠΑΡΑΛΑΒΕΣ ΤΕΤΡΑΔΙΩΝ ΑΠΟ ΣΧΟΛΕΙΑ </h3>
+        </div>
+        <div class="panel-body">
+        <!-- Acceptances -->
+        <div id="jqxgridAcceptance" class='table'></div>    
+        </div>
+    </div>
+</div>
+<!-- /.col#2 -->
+
+</div>
+<!-- /.row -->
+
+{% endblock %}
+<!-- End Block HTML -->
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+// Handle Ajax messages
+// Disable. must be changed to dlg update
+//helperAjaxMessagesProcess();
+
+        
+/**********************
+// jqxcomboboxLessons
+***********************/
+//Lessons > RecordSet  
+var sourceLesson = {
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: "name"}, 
+        {name: 'category', type: 'string' },
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+    ],
+    url: '/lesson/crud/', 
+}; //source
+
+// DataAdapter
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson,
+    {
+        beforeLoadComplete: function (records) {
+            for (var i = 0; i < records.length-1; i++) {
+                records[i]['name'] = records[i]['name']+"-"+ records[i]['category'] +"-"+ records[i]['lexType'] ;
+                //var row = {};
+            }//for
+                return records;
+        }//beforeLoadComplete
+    }
+);
+//var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+
+//http://jsfiddle.net/jqwidgets/5SnVH/
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, 
+    valueMember: "id", displayMember: "name", 
+    selectedIndex: -1, //selectIndex:-1, 
+    placeHolder:"Επιλέξτε Μάθημα...",  
+    //itemHeight: 20, height: 30, 
+    width: '100%', theme:theme, 
+    renderer: function (index, label, value) {
+        //var datarecord = data[index];
+        var datarecord = dataAdapterLesson.records[index];    
+        //var row = "<b>"+label +"</b> " + datarecord.category + "[<u>" + datarecord.lexType + "</u>]" ;
+        var row = "<b>"+label +"</b> ";
+        return row;
+    }
+    /*
+    */
+});
+//$("#jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
+
+//$("#jqxcomboboxLesson").find('input').css('font-size', '22px').css('margin-top', '0px');
+/////////////////////////////
+// jqxcomboboxLesson > Events
+$('#jqxcomboboxLesson').on('select', function (event) {    
+    if (event.args) {
+        var data = dataAdapterLesson.records[event.args.index];
+        sourceAcceptance.url = '/acceptance/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+        $("#jqxgridAcceptance").jqxGrid({ source: dataAdapterAcceptance });
+        //$("#jqxgridAcceptance").jqxGrid('updatebounddata');
+    }
+});// combo.event
+
+// LessonID, SchoolToGradeID, books, booksAbscent, booksZero, status, statusTime 
+///////////////////////////
+// jqxgridAcceptance
+//////////////////////////                        
+// jqxgridAcceptances.RecordSet  
+var sourceAcceptance = {
+    url: '', 
+    //url: '/acceptance/crud/', 
+    datatype: "json",
+    datafields: [ { name: "id" }, { name:"books" }, { name:"booksAbscent" }, { name:"booksZero" },  
+        { name:"status" }, { name:"statusTime", type: 'date' }, 
+        //{name: 'name', map: '_LessonID_cache>name', type: 'string' },
+        { name: "LessonID" }, 
+        { name: "SchoolToGradeID" }, 
+        {name: 'name', map: '_SchoolToGradeID_cache>name', type: 'string' },
+        {name: 'code', map: '_SchoolToGradeID_cache>code', type: 'string' },
+        {name: 'type', map: '_SchoolToGradeID_cache>type', type: 'integer' },
+        { name: "SchoolToGradeID" }, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+        // LessonID, SchoolToGradeID, books, booksAbscent, booksZero, status, statusTime 
+        //'SchoolToGradeID': s.SchoolToGradeID_id, 'name': s.name, 'type': s.type,         
+        {name: 'notes', type: 'string' },
+    ],
+    updaterow: function (rowid, rowdata, commit) {
+    // synchronize with the server - send update command
+        //var data = "action=update&" + $.param(rowdata);
+        //alert ($.param(rowdata));
+        //alert ('Edit B4 .ajax');
+        $.ajax({
+            method: 'POST', 
+            url: '/acceptance/crud/', 
+            //data: { action: 'update', data: $.param(rowdata) },
+            // MUST BE CHANGED 
+            data: { action: 'update', id: rowdata.id, 
+                books: rowdata.books, booksAbscent: rowdata.booksAbscent, booksZero: rowdata.booksZero, status: rowdata.status, notes: rowdata.notes,  }, 
+            //dataType: 'json',
+            //url: '/gradercrud/',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                //$("#jqxnotificationServer").html('Update success!').jqxNotification("open");
+                //$("#jqxgridGrader").jqxGrid('updatebounddata');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+    }, //updaterow
+    /*
+    */
+    
+}; //source
+
+// DataAdapter create 
+var dataAdapterAcceptance = new $.jqx.dataAdapter(sourceAcceptance);     
+
+// jqxgridAcceptances.Widget
+$("#jqxgridAcceptance").jqxGrid({
+    source: dataAdapterAcceptance,
+    columns: [ 
+        // { text: "id", datafield: "id", hidden: true,  editable : false, width: 40 },
+        //AcceptanceID
+        //{ text: "id", datafield: "id", hidden: false, editable : false, width: '5%' },
+        //SchoolToGrade
+        { text: "Κωδ.Σχολείου", datafield: 'code', editable : false, width: '7%' },
+        { text: "Επωνυμία", datafield: 'name', editable : false, filtertype: 'input', width: '25%' },
+        //{ text: "Τύπος", datafield: 'type', editable : false, width: '10%'},        
+        { text: "Τύπος", datafield: 'type', editable : false, displayfield: 'lexType', columntype: 'dropdownlist', width:'10%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            aggregates: ['count'], 
+        },
+        //AcceptanceInfo
+        { text: "Τετράδια", datafield: 'books', editable : true, width: '10%', 
+            aggregates: ['sum'],         
+        },
+        { text: 'Απουσίες', datafield: 'booksAbscent', editable : true, filtertype: 'number', width: '10%', 
+            aggregates: ['sum'],         
+        },
+        { text: "Μηδενισμένα", datafield: 'booksZero', editable : true, filtertype: 'number', width: '10%', 
+            aggregates: ['sum'],         
+        },
+        { text: "Κατάσταση", datafield: 'status', columntype: 'checkbox', filtertype: 'bool', editable : true, width: '6%' },
+        //{ text: "Ημ-νία", datafield: 'statusTime', editable : true, width: '15%' },
+        { text: 'Ημ-νία', datafield: 'statusTime', columntype: 'datetimeinput', cellsformat: 'yyyy-MM-dd HH:mm:ss' , editable : true, width: '12%',
+            createeditor: function (row, cellvalue, editor) {editor.jqxDateTimeInput({ showTimeButton: true, }); 
+            }, //createeditor
+            aggregates: ['count'], 
+        },
+        
+        { text: "Σημ.", datafield: 'notes', editable : true, },
+    ], 
+    //altrows: true, autoheight: true, 
+    editable: true, editmode: 'dblclick', selectionmode: 'singlerow', //multiplecellsextended
+    filterable: true, showfilterrow: true, 
+    pageable: true, pagesize: 20, 
+    sortable: true, 
+    width: '99.5%', height:'540', theme:theme, 
+    autoheight: false, columnsresize: true, 
+    rowsheight: 19, 
+    //toolbarheight:25,
+    showaggregates: true, 
+    showstatusbar:true, showtoolbar:true, rendertoolbar: function (statusbar) {
+        // appends buttons to the status bar.
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        //var addButton = $("<div style='float: right; margin-left: 10px;'><span>Add</span></div>");
+        var reloadButton = $("<button type='button' class='btn btn-primary' style='float: right; margin-right: 10px;'> Ανανέωση </button>");       
+
+        //container.append(addButton);
+        container.append(reloadButton);
+        statusbar.append(container);
+        reloadButton.jqxButton();
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridAcceptance").jqxGrid({ source: dataAdapterAcceptance });
+        });
+    } //render toolbar
+
+});  //Acceptance grid
+//$("#jqxgridAcceptance").jqxGrid('selectrow', -1);
+
+/*
+
+/////////////////////////////////
+// jqxgridLesson > Events (1)
+////////////////////////////////
+// jqxgridLesson > Events (2)
+$('#jqxgridLesson').on('rowclick', function (event) {    
+    var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    var url = "/jsonacceptance/?action=filter&LessonID="+ data.id;
+    //var data = "?action=filter&amp;LessonID=" + $.param(data.id);
+    sourceAcceptance.url = '/jsongradermn/'+"?action=filter&LessonID="+ data.id;    // SUPER 
+    //var dataAdapterGraderOnLesson = new $.jqx.dataAdapter(sourceGrader);
+    $("#jqxgridAcceptance").jqxGrid({ source: dataAdapterAcceptance});    
+    //$("#jqxgridGrader").jqxGrid('updatebounddata');
+
+    //$("#jqxbuttonGraderNew").jqxButton({ disabled: false, });
+
+});
+*/
+
+
+/*
+$('#jqxcomboboxLesson').on('select', function (event) {
+    var data = dataAdapterLesson.records[args.index];
+    $("#jqxinputGraderNewLesson").val(data.id);   // Lesson.id
+    //console.log ('Lesspnid:' + data.id);
+});
+*/
+
+
+
+
+///////////////////////////
+// jqxgridAcceptance
+//////////////////////////                        
+// renderer
+/*
+var cellsrenderer = function (row, column, value, defaultHtml) {
+    
+    var data = $('#jqxgridAcceptance').jqxGrid('getrowdata', row);
+    if (data.status == 4) {   // completed
+        var element = $(defaultHtml);
+        element.css('color', '#999');
+        return element[0].outerHTML;
+    }
+    return defaultHtml;
+}
+
+// use Bootstrap classses http://www.w3schools.com/bootstrap/bootstrap_ref_css_helpers.asp
+var cellclassname = function (row, column, value, data) {
+    if (data.status == 4)         
+        return "redClass";
+};
+
+*/
+
+/*
+
+/////////////////////////////////
+// Dialogue > jqxwindowAcceptanceRegister
+////////////////////////////////
+// Dialogue > jqxinput
+$('#jqxinputAction, #jqxinputGrader, #jqxinputAcceptance, #jqxinputStation').jqxInput({ width: 50, height: 25});
+// Dialogue > jqxbuttons
+$("#jqxbuttonCancel, #jqxbuttonCheck, #jqxbuttonDo").jqxButton({ width: 230, height: 30 });
+
+// test for Apothiki
+$('#jqxinputStation').jqxInput('val', 0); 
+
+// Dialogue > jqxwindowNewGrader
+$("#jqxwindowAcceptanceRegister").jqxWindow({
+    autoOpen: false,
+    cancelButton: $('#jqxbuttonCancel'), 
+    height: 250, // 'auto',
+    isModal: true, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    closeAnimationDuration: 200, showAnimationDuration: 600, 
+    //resizable: false, modalOpacity: 0.5, 
+    //position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
+    resizable: false, 
+    //theme: theme, 
+    title: 'Register Acceptance', 
+    width: 'auto', 
+});
+
+////////////////////////////
+// Event > jqxgridAcceptance
+////////////////////////////
+$('#jqxgridAcceptance').on('rowclick', function (event) {
+    // Form field > update 
+    var rowdata = $('#jqxgridAcceptance').jqxGrid('getrowdata', event.args.rowindex);
+    $('#jqxinputAcceptance').jqxInput('val', rowdata.id); 
+    //$('#jqxinputAcceptance').jqxInput('val', null); 
+
+    $('#AcceptanceInfo').html('Φάκελος:' + rowdata.no + ' Τετράδια:' + rowdata.books);
+    // Form field > update 
+    var status = rowdata.status; 
+    var type = rowdata.type; 
+    //var action = (status == 0) || (status == 2) ? 1 : 2;
+    //$('#jqxinputAction').jqxInput('val', action); // GO OUT
+    switch (new Date().getDay()) {
+        case 1:
+        case 2:
+        case 3:
+        default:
+            text = "Looking forward to the Weekend";
+            break;
+        case 4:
+        case 5:
+           text = "Soon it is Weekend";
+            break;
+        case 0:
+        case 6:
+           text = "It is Weekend";
+    } 
+
+    if (status == 0 || status == 2)  {
+        $('#jqxinputAction').jqxInput('val', 1);  // GO OUT
+    }
+    else if (status == 1) {
+        $('#jqxinputAction').jqxInput('val', 2);  // COME IN 
+    }
+    else  {
+        $('#jqxinputAction').jqxInput('val', null); // UNKNOWN - STOP
+    }
+
+});
+
+
+
+*/
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,484 @@
+﻿<title id='Description'>The jqxGrid. </title>
+
+{% extends "base+jqx.html" %}
+
+{% block title %}
+    The jqxGrid.
+{% endblock %}
+
+<!-- Block HTML -->
+{% block html %}
+
+<!-- buttons -->
+<div style="margin-top: 10px;">
+    <input id="jqxbuttonGraderNew" type="button" value="Select New Graders" />
+    <input id="jqxbuttonGraderEdit" type="button" value="Edit Grader" />
+    <input id="jqxbuttonGraderDelete" type="button" value="Remove Grader" />
+</div>
+
+<!-- Widgets -->
+<div id='jqxWidget' style="font-size: 13px; font-family: Verdana; ">
+    
+    <h2>ΜΑΘΗΜΑ</h2>    
+    <div id='jqxcomboboxLesson'></div><br/>
+    <div id="jqxgridLesson" style="float: left; visibility: hidden;" ></div>
+    <h2>ΒΑΘΜΟΛΟΓΗΤΕΣ</h2>    
+    <div id="jqxgridGrader" class="floatleft"></div>
+</div>
+
+<!-- Dialogue -->
+<div id="jqxwindowGraderNew">
+    <div> <!-- style="overflow: hidden;" -->
+    <h2>ΕΠΙΛΟΓΗ ΚΑΘΗΓΗΤΩΝ για ΒΑΘΜΟΛΟΓΗΤΕΣ</h2>
+
+    <!-- FORM HTML -->
+    <form id="formPost">
+    {% csrf_token %}
+    <div>
+        <!-- Dialogue > input -->
+        <h4>Dialogue Input </h4>    
+        Μάθημα:<input id='jqxinputGraderNewLesson' name='jqxinputGraderNewLesson'/>
+        Βαθμολογητής:<input id='jqxinputGraderNewTeacherArray' name='jqxinputGraderNewTeacherArray'/>
+    </div>
+    </form>
+
+    <div id="jqxgridTeacher"></div> <br />
+    <!-- Dialogue > button -->
+    <input id="jqxbuttonGraderNewSave" type="button" value="Save" />
+    <input id="jqxbuttonGraderNewCancel" type="button" value="Cancel" />
+    <input id="jqxbuttonGraderNewClear" type="button" value="Clear" />
+    <input id="jqxbuttonGraderNewGetSelected" type="button" value="Get Selected" />
+    </div> 
+    
+
+</div>
+
+
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+
+$(document).ready(function () {        
+
+///////////////////////////
+// jqxbutton
+//////////////////////////                        
+$("#jqxbuttonGraderNew, #jqxbuttonGraderDelete").jqxButton({ theme: theme, width: 210, height: 40, disabled: true});
+// Events
+$("#jqxbuttonGraderNew").click(function () {
+    if( $('#jqxgridTeacher').jqxGrid('getselectedrowindexes').length > 0 ) {
+        $('#jqxgridTeacher').jqxGrid('clearselection');
+    }
+    $("#jqxwindowGraderNew").jqxWindow('open');
+    $("#jqxwindowGraderNew").jqxWindow('focus');
+});
+// $('#window').jqxWindow('open');$('#window').jqxWindow('focus');
+// $('#window').jqxWindow('open');$('#window').jqxWindow('focus');
+///////////////////////////
+// jqxgridLessons       //
+//////////////////////////                        
+// jqxgridLessons.RecordSet  
+var sourceLesson = {
+    datatype: "json",
+    datafields: [{name: "id"}, {name: "name"},{name: "folders"},{name: "status"}, ],
+    //{name: "codeGrad"},{name: "codeSpec"},
+    url: '/jsonlesson/', 
+    id: 'id',
+}; //source
+// DataAdapter create 
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+// jqxgridLesson.Widget
+$("#jqxgridLesson").jqxGrid({
+    source: dataAdapterLesson,
+    columns: [
+        { text: "id", datafield: "id", width: 40 },
+        { text: "Μάθημα", datafield: "name", width: 300 },
+        //{ text: "Κατάσταση", datafield: 'status', width: 80 },
+        //{ text: 'Φάκελοι', datafield: 'folders', width: 70 },
+        //{ text: "Κ.Βαθμ.", datafield: 'codeGrad', width: 80 },
+        //{ text: "Ειδικ.", datafield: 'codeSpec', width: 80 },
+        /**/
+    ], 
+    autoheight: false, altrows: true, height: 230, pageable: true, pagesize: 5, selectionmode: 'singlerow', sortable: true, theme: 'classic', width: 340,    
+    //columnsresize: true, editable: true, editmode: 'selectedrow',filterable: true,
+    // selectionmode: 'singlerow', 'checkbox', 'singlerow', 'multiplerowsextended',
+});  //Teacher grid
+//$("#jqxgridLesson").jqxGrid('selectrow', 0);
+
+// jqxgridLesson > Events (1)
+$('#jqxgridLesson').on('rowclick', function (event) {    
+    $("#jqxbuttonGraderNew").jqxButton({ disabled: false, });
+});
+// Event > Lesson.onSelect
+/*
+$("#jqxgridLesson").on('rowclick', function (event) {
+    var rowindex = $('#jqxgridLesson').jqxGrid('getselectedrowindex');
+    var data = $('#jqxgridLesson').jqxGrid('getrowdata', rowindex);
+    alert(data.id + " " + data.name);
+    //alert(data);
+});//("#jqxgrid").on('rowselect',)
+*/
+
+///////////////////////////
+// jqxcomboboxLessons
+//////////////////////////                        
+// Create jqxcomboboxLessons
+
+//http://jsfiddle.net/jqwidgets/5SnVH/
+/*
+ var dataAdapter = new $.jqx.dataAdapter(source, {
+     formatData: function (data) {
+         if ($("#jqxComboBox").jqxComboBox('searchString') != undefined) {
+             data.name_startsWith = $("#jqxComboBox").jqxComboBox('searchString');
+             return data;
+         }
+     }
+ });
+*/
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, displayMember: "name", height: 45, selectedIndex: 0, valueMember: "id", width: 400,
+    /*
+    renderer: function (index, label, value) {
+        var datarecord = data[index];
+        var imgurl = '../../images/' + label.toLowerCase() + '.png';
+        var img = '<img height="50" width="45" src="' + imgurl + '"/>';
+        var table = '<table style="min-width: 150px;"><tr><td style="width: 55px;" rowspan="2">' + img + '</td><td>' + datarecord.firstname + " " + datarecord.lastname + '</td></tr><tr><td>' + datarecord.title + '</td></tr></table>';
+        return table;
+    }
+     renderer: function (index, label, value) {
+         var item = dataAdapterLesson.records[index];
+         if (item != null) {
+             var label = item.id + ", " + item.name;
+             return label;
+         }
+         return "";
+     },//render
+    */
+    /*     
+     renderSelectedItem: function (index, item) {
+         var item = dataAdapterLesson.records[index];
+         if (item != null) {
+             var label = item.id;
+             //var label = item.id + ", " + item.name;
+             return label;
+         }
+         return "";
+     },//renderSelectedItem 
+    search: function (searchString) {
+         dataAdapter.dataBind();
+     }//search
+    */
+});
+//Style
+$("#jqxcomboboxLesson").find('input').css('font-size', '22px').css('margin-top', '0px');
+//$(".jqx-listitem-state-selected").css({"font-size":"18px;"}); 
+//$("#jqxcomboboxLesson").jqxComboBox({ source: sourceLesson, selectedIndex: 0, width: '200px', height: '25px' });
+// disable the sixth item.
+//$("#jqxcombobox").jqxComboBox('disableAt', 5);
+
+
+// jqxcomboboxLesson > Events (1)
+$('#jqxcomboboxLesson').on('select', function (event) {    
+    $("#jqxbuttonGraderNew").jqxButton({ disabled: false, });
+});
+
+///////////////////////////
+// jqxgridGraders       //
+//////////////////////////                        
+// jqxgridGraders.RecordSet  
+var sourceGrader = {
+    datatype: "json",
+    datafields: [
+    //{name: "id"}, {name: "LessonID_id"},{name: "TeacherID_id"},{name: "status"},//{name: "codeGrad"},{name: "codeSpec"},
+    //[{'status': 0, 'isCoordinator': False, u'id': 1, u'TeacherID_id': 13, 'isgraderC': False, u'LessonID_id': 30}]
+    {name: "id"}, {name: "name"},{name: "surname"},{name: "codeAfm"},{name: "codeGrad"},{name: "codeSpec"},
+    ],
+    url: '/jsongradermn/', 
+    id: 'id',
+}; //source
+// DataAdapter create 
+var dataAdapterGrader = new $.jqx.dataAdapter(sourceGrader);
+       
+// jqxgridGraders.Widget
+$("#jqxgridGrader").jqxGrid({
+    source: dataAdapterGrader,
+    columns: [
+        { text: "id", datafield: "id", width: 40 },
+        { text: "Όνομα", datafield: "name", width: 100 },
+        { text: 'Επίθετο', datafield: 'surname', width: 150 },
+        //{ text: "ΑΦΜ", datafield: 'codeAfm', width: 80 },
+        //{ text: "Κ.Βαθμ.", datafield: 'codeGrad', width: 80 },
+        { text: "Ειδικ.", datafield: 'codeSpec', width: 80 },
+        //{ text: "Κ.Βαθμ.", datafield: 'codeGrad', width: 80 },
+        //{ text: "Ειδικ.", datafield: 'codeSpec', width: 80 },
+        /**/
+    ], 
+    altrows: true, height: 400, pageable: true, pagesize: 20, selectionmode: 'singlerow', sortable: true,theme: 'classic', width: 400, 
+    //autoheight: true, 
+});  //Grader grid
+// jqxgridGrader.Widget.Create 
+//$("#jqxgridGrader").jqxGrid('selectrow', 0);
+
+// jqxgridLesson > Events (2)
+$('#jqxgridLesson').on('rowclick', function (event) {    
+    var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    //var url = "/jsongrader/?action=filter&LessonID="+ data.id;
+    //var data = "?action=filter&amp;LessonID=" + $.param(data.id);
+
+    var sourceGraderOnLesson = {
+        datatype: "json",
+        url: '/jsongradermn/'+"?action=filter&LessonID="+ data.id, 
+        //url: '/jsongrader/',
+        //data:data,
+        datafields: [{name: "id"}, {name: "name"},{name: "surname"},{name: "codeAfm"},{name: "codeGrad"},{name: "codeSpec"},], 
+        //datafields: [{name: "id"}, {name: "LessonID_id"},{name: "TeacherID_id"},{name: "status"}, ],
+        //{name: "codeGrad"},{name: "codeSpec"},
+        id: 'id',
+    }; //source
+    
+    // DataAdapter create 
+    var dataAdapterGraderOnLesson = new $.jqx.dataAdapter(sourceGraderOnLesson);
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGraderOnLesson });
+    //$("#jqxgridGrader").jqxGrid('updatebounddata');
+    
+});
+
+// jqxcomboboxLesson > Events (2)
+$('#jqxcomboboxLesson').on('select', function (event) 
+{
+    if (event.args) {
+    data = dataAdapterLesson.records[args.index];
+    //var item = $('#jqxcomboboxLesson').jqxComboBox('getItem', args.index);
+    //var index = $("#jqxcomboboxLesson").jqxComboBox('selectedIndex');		
+    //var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    /*
+    if (index != -1) {
+        alert ('item:'+ item.id + '\nindex:' + index);
+    }
+    */
+    //alert ('/jsongradermn/'+"?action=filter&LessonID="+ data.id);
+    var sourceGraderOnLesson2 = {
+        datatype: "json",
+        url: '/jsongradermn/'+"?action=filter&LessonID="+ data.id, 
+        //url: '/jsongrader/'+"?action=filter&LessonID="+ data.id, 
+        datafields: [{name: "id"}, {name: "name"},{name: "surname"},{name: "codeAfm"},{name: "codeGrad"},{name: "codeSpec"},], 
+        //id: 'id',
+    }; //source
+    
+    // DataAdapter create 
+    var dataAdapterGraderOnLesson2 = new $.jqx.dataAdapter(sourceGraderOnLesson2);
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGraderOnLesson2 });
+    $("#jqxgridGrader").jqxGrid('updatebounddata');
+    }//if
+
+});// combo.event
+
+///////////////////////////////////
+// jqxgridTeacher
+//////////////////////////////////                        
+var TeacherIDArray = [];
+// jqxgridTeachers.RecordSet
+var sourceTeacher = {
+    datatype: "json",
+    url: '/jsonteachercrud/', 
+    datafields: [{name: "id"}, {name: "name"},{name: "surname"},{name: "codeAfm"},{name: "codeGrad"},{name: "codeSpec"},],
+    id: 'id',
+}; //source
+// DataAdapter create 
+var dataAdapterTeacher = new $.jqx.dataAdapter(sourceTeacher);       
+// jqxgridTeachers.Widget
+$("#jqxgridTeacher").jqxGrid({
+    source: dataAdapterTeacher,
+    columns: [
+        { text: "Όνομα", datafield: "name", width: 100 },
+        { text: 'Επίθετο', datafield: 'surname', width: 150 },
+        { text: "ΑΦΜ", datafield: 'codeAfm', width: 80 },
+        { text: "Κ.Βαθμ.", datafield: 'codeGrad', width: 80 },
+        { text: "Ειδικ.", datafield: 'codeSpec', width: 80 },
+        /**/
+    ], 
+    autoheight: true, altrows: true, columnsresize: true, pageable: true, pagesize: 10, selectionmode: 'checkbox', sortable: true, theme: 'classic', width: 530,    
+    //filterable: true,
+});  //Teacher grid
+// jqxgridTeachers.Widget.Create 
+//$("#jqxgrid").jqxGrid('selectrow', 0);
+
+// Events > gridLesson
+$('#jqxgridTeacher').on('rowclick', function (event) {    
+    //var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    //TeacherIDArray.push(data.id);
+    //$("#jqxinputGraderNewLesson").val(TeacherIDArray);   // Lesson.id
+    //console.log ('Lesspnid:' + data.id);
+});
+
+/////////////////////////////////
+// Dialogue > jqxwindowNewGrader
+////////////////////////////////
+$("#jqxwindowGraderNew").jqxWindow({
+    autoOpen: false,
+    cancelButton: $('#jqxbuttonGraderNewCancel'), 
+    height: 650, // 'auto', 
+    isModal: true, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    closeAnimationDuration: 200, showAnimationDuration: 600, 
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
+    resizable: false, 
+    theme: theme, 
+    title: 'New Grader', 
+    width: 'auto', 
+});
+
+// Dialogue > jqxwindowNewGrader > jqxbutton (1) 
+$("#jqxbuttonGraderNewSave, #jqxbuttonGraderNewCancel").jqxButton({ theme: theme, height: 30, width: 80 });
+$("#jqxbuttonGraderNewClear, #jqxbuttonGraderNewGetSelected").jqxButton({ theme: theme, height: 30, width: 80 });
+// Dialogue > jqxwindowNewGrader > input
+$("#jqxinputGraderNewLesson, #jqxinputGraderNewTeacherArray").jqxInput({ theme: theme, height: 30, width: 80 });
+
+//Events > this (1)
+$("#jqxbuttonGraderNewSave").click(function () {
+    $("#jqxwindowGraderNew").jqxWindow('close');
+});
+$("#jqxbuttonGraderNewCancel").click(function (event) {
+    // clear prev.data
+    //$("#name, #surname, #codeAfm, #codeGrad, #codeSpec").val(''); 
+    //$("#jqxgrid").jqxGrid({disabled:true});
+    $("#jqxwindowGraderNew").jqxWindow('close');
+});
+//$("#jqxwindowNewGrader").css('visibility', 'visible');        
+// $('#window').jqxWindow('open');$('#window').jqxWindow('focus');
+
+// Events > gridLesson (3)
+$('#jqxgridLesson').on('rowclick', function (event) {    
+    var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    $("#jqxinputGraderNewLesson").val(data.id);   // Lesson.id
+    //console.log ('Lesspnid:' + data.id);
+});
+
+// Events > jqxcomboboxLesson (3)
+$('#jqxcomboboxLesson').on('select', function (event) {
+    var data = dataAdapterLesson.records[args.index];
+    //var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    $("#jqxinputGraderNewLesson").val(data.id);   // Lesson.id
+    //console.log ('Lesspnid:' + data.id);
+});
+/*
+*/
+
+// Dialogue > jqxwindowNewGrader > jqxbuttons (2)
+$("#jqxbuttonGraderNewClear, #jqxbuttonGraderNewGetSelected").jqxButton({ theme: theme, height: 30, width: 80 });
+
+
+//Events
+//OK
+$("#jqxbuttonGraderNewGetSelected").on('click', function() {
+    var values = [];
+    /*
+    var rowindexes = $('#jqxgridTeacher').jqxGrid('getselectedrowindexes');
+    var values = [];
+    $.each(rowindexes, function() {
+     var value = $("#jqxgridTeacher").jqxGrid('getcellvalue', this, 'id');
+     values.push(value);
+    });
+    //alert('Selected Row Indexes: ' + rowindexes);
+    */
+    values = helperJqxgridGetSelectedIds('#jqxgridTeacher', 'id');
+    //alert('Selected Values (id): ' + values);   //OK
+    $("#jqxinputGraderNewTeacherArray").val(JSON.stringify(values));
+}); //on.click
+/*
+*/
+
+$("#jqxbuttonGraderNewSave").on('click', function() {
+    var TeacherArray = [];
+    var Lesson = $('#jqxinputGraderNewLesson').val();
+    TeacherArray = helperJqxgridGetSelectedIds('#jqxgridTeacher', 'id');
+    
+    //TeacherArray = JSON.stringify(TeacherArray);        // OK
+    $("#jqxinputGraderNewTeacherArray").val(TeacherArray);
+    //alert('ABOuT TO POST <br/> Lesson:'+ Lesson + ' TeacherArray: ' + TeacherArray);    //OK
+
+    //var jsonArray = JSON.parse(TeacherArray); //FAIL
+    var stringifyArray = JSON.stringify(TeacherArray);
+    var jsonStringifyArray = JSON.parse(JSON.stringify(TeacherArray));
+    //alert('jsonStringifyArray :' + jsonStringifyArray );    //OK
+
+    //data: JSON.stringify(newArray),
+    var data = $.param({'jqxinputGraderNewLesson': Lesson, 'jqxinputGraderNewTeacherArray': stringifyArray,});
+    var data = {'jqxinputGraderNewLesson': Lesson, 'jqxinputGraderNewTeacherArray': stringifyArray};
+    //var data = {'jqxinputGraderNewLesson': Lesson, 'jqxinputGraderNewTeacherArray': TeacherArray};
+    
+    
+    // POST data
+    $.post("/grader/add/", 
+        //$.param({'jqxinputGraderNewLesson': Lesson, 'jqxinputGraderNewTeacherArray': TeacherArray,}), 
+        //{'jqxinputGraderNewLesson': Lesson, 'jqxinputGraderNewTeacherArray': jsonStringifyArray}, 
+        data, 
+        function (response) {
+            $("#jqxgridGrader").jqxGrid('updatebounddata');
+            //$("#success").html(response.data);
+            //console.log(response.data);
+            //alert(response);
+            console.log(response);
+            //console.log("Success");
+        }); // post
+    $("#jqxwindowGraderNew").jqxWindow('close')
+
+}); //on.click
+
+
+
+/*
+// UPDATE THE ADDED ROW WHEN THE USER CLICKS THE 'SAVE' BUTTON. 
+$("#save").mousedown(function () {
+    // set record values
+    var newrow = {
+        name: $("#name").val(), 
+        surname: $("#surname").val(), 
+        codeAfm: $("#codeAfm").val(), 
+        codeGrad: $("#codeGrad").val(), 
+        codeSpec: $("#codeSpec").val(), 
+    };
+    $("#jqxgrid").jqxGrid('addrow', null, newrow);
+    $("#jqxgrid").jqxGrid('updatebounddata');
+    $("#dialogInsert").jqxWindow('hide');
+});
+*/
+
+// Do something on Dialogue.close 
+$("#jqxwindowNewGrader").on('close', function () {
+    //$("#jqxgrid").jqxGrid({ disabled: false });
+});
+
+
+
+/* EVENT HANDLERS */
+/*
+*/
+  
+//http://www.jqwidgets.com/jquery-widgets-demo/demos/jqxgrid/refreshdata.htm?classic
+/*
+// init buttons.
+$("#refresh").jqxButton({ theme: theme });
+$("#clear").jqxButton({ theme: theme });
+
+$("#refresh").click(function () {
+    source.localdata = generatedata(500);
+    // passing "cells" to the 'updatebounddata' method will refresh only the cells values when the new rows count is equal to the previous rows count.
+    //$("#jqxgrid").jqxGrid('updatebounddata', 'cells');
+    $("#jqxgrid").jqxGrid('updatebounddata',);
+});
+
+$("#clear").click(function () {
+    $("#jqxgrid").jqxGrid('clear');
+});
+*/
+
+
+});// (document).ready
+</script>
+{% endblock %}
+

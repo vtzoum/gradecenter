@@ -1,0 +1,730 @@
+﻿<title id='Description'>The jqxGrid. </title>
+
+{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    The jqxGrid.
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- buttons -->
+<div style="margin-top: 10px;">
+    <input id="jqxbuttonGraderNew" type="button" value="Select New Graders" />
+    <!-- 
+    <input id="jqxbuttonGraderEdit" type="button" value="Edit Grader" />
+    -->
+    <input id="jqxbuttonGraderDelete" type="button" value="Remove Grader" />
+</div>
+
+
+<div class="row">
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΒΑΘΜΟΛΟΓΗΤΕΣ </h3>
+        </div>
+        <div class="panel-body">
+        
+        <!-- Lessons -->
+        <div id='jqxcomboboxLesson'></div><br/>
+        <!-- Graders -->
+        <div id="jqxgridGrader" ></div>
+        
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- /.row -->
+</div>
+
+
+<!-- Dialogue -->
+<div id="jqxwindowGraderNew">
+    <div> <!-- style="overflow: hidden;" -->
+    <h2>ΕΠΙΛΟΓΗ ΚΑΘΗΓΗΤΩΝ για ΒΑΘΜΟΛΟΓΗΤΕΣ</h2>
+
+    <!-- FORM HTML -->
+    <form id="formPost">
+    {% csrf_token %}
+    <!-- <div > -->
+    <div style="visibility: hidden;" > <!-- in production to be invisible -->
+        <!-- Dialogue > input -->
+        <h4>Dialogue Input </h4>    
+        Μάθημα:<input id='jqxinputGraderNewLesson' name='jqxinputGraderNewLesson'/>
+        Βαθμολογητής:<input id='jqxinputGraderNewTeacherArray' name='jqxinputGraderNewTeacherArray'/>
+    </div>
+    </form>
+
+    <div id="jqxgridTeacher"></div> <br />
+    <!-- Dialogue > button -->
+    <input id="jqxbuttonGraderNewSave" type="button" value="Save" />
+    <input id="jqxbuttonGraderNewCancel" type="button" value="Cancel" />
+    <input id="jqxbuttonGraderNewClear" type="button" value="Clear" />
+    <input id="jqxbuttonGraderNewGetSelected" type="button" value="Get Selected" />
+    </div> 
+
+</div>
+
+<!-- Start Dialogue DELETE -->
+<div id="dialogDeleteGrader">
+<div>
+<h3>Θέλετε να κάνετε την διαγραφή της εγγραφής;</h3>
+<p><span></span></p>
+<button id="buttonDialogDeleteGraderYes">NAI</button> 
+<button id="buttonDialogDeleteGraderNo" style="margin-left: 5px;" >OXI</button>
+<!-- End Dialogue DELETE -->
+</div>
+</div>
+
+
+<!-- Dialogue Delete Grader Confirm -->
+<!--
+<div id="jqxwindowGraderDeleteConfirm">
+    <div> 
+    <h2>ΔΙΑΓΡΑΦΗ ΒΑΘΜΟΛΟΓΗΤΗ</h2>
+
+    <form id="formPostDelete">
+    {% csrf_token %}
+
+    <div style="visibility: hidden;" > 
+
+        <h4>Dialogue Input </h4>    
+        Βαθμολογητής:<input id='jqxinputGraderDeleteId' name='jqxinputGraderDeleteId'/>
+    </div>
+    </form>
+
+    <input id="jqxwindowGraderDeleteConfirmOK" type="button" value="OK" />
+    <input id="jqxwindowGraderDeleteConfirmCancel" type="button" value="Cancel" />
+    </div> 
+</div>
+-->
+
+<!-- Notification -->
+<div id="jqxnotificationServer">
+    <div id="jqxnotificationServerContent">Welcome to our website.</div>
+</div>
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+
+$(document).ready(function () {        
+
+
+///////////////////////////
+// jqxbutton
+////////////////////////// 
+$("#jqxbuttonGraderNew, #jqxbuttonGraderDelete").jqxButton({ theme: theme, width: 210, height: 40, disabled: true});
+
+///////////////////////////
+// jqxcomboboxLessons
+//////////////////////////                        
+// jqxgridLessons.RecordSet  
+var sourceLesson = {
+    datatype: "json",
+    datafields: [{name: "id"}, {name: "name"},{name: "folders"},{name: "status"}, ],
+    url: '/jsonlesson/', 
+}; //source
+
+// DataAdapter create 
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+
+//http://jsfiddle.net/jqwidgets/5SnVH/
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, displayMember: "name", height: 45, selectedIndex: 0, valueMember: "id", width: 690,
+});
+//Style
+$("#jqxcomboboxLesson").find('input').css('font-size', '22px').css('margin-top', '0px');
+
+///////////////////////////
+// jqxgridGraders
+//////////////////////////                        
+// jqxgridGraders.RecordSet  
+////////////////////////////////
+// Grader data
+///////////////////////////////                        
+var sourceGrader = {
+    datatype: "json",
+    datafields: [
+        { name: "id" }, 
+        { name: "name", type: 'string' },
+        { name: "surname", type: 'string' },
+        { name: "codeGrad", type: 'string' },
+        { name: "codeAfm", type: 'string' },
+        { name: 'isCoordinator', type: 'bool' }, 
+        { name: 'isgraderC', type: 'bool' }, 
+        { name: 'status', type: 'umber' },
+        //{name: 'type', type: 'integer' }, // number, 
+        //{name: 'lexType', value: 'type', values: { source: dataAdapterGraderType.records, value: 'type', name: 'lexType' } },
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    //datafields: [{name: "id"}, {name: "name"},{name: "surname"},{name: "codeAfm"},{name: "codeGrad"},{name: "codeSpec"},],
+    //{name: "id"}, {name: "LessonID_id"},{name: "TeacherID_id"},{name: "status"},//{name: "codeGrad"},{name: "codeSpec"},
+    //[{'status': 0, 'isCoordinator': False, u'id': 1, u'TeacherID_id': 13, 'isgraderC': False, u'LessonID_id': 30}]
+    url: '/grader/lesson/crud/', 
+    id: 'id',
+    sortcolumn: 'name',
+    sortdirection: 'asc',     
+    /*
+    // ADD
+    addrow: function (rowid, rowdata, position, commit) {
+        // synchronize with the server - send insert command
+        var data = "action=insert&amp;" + $.param(rowdata);
+        //var data = "insert=true&" + $.param(rowdata);
+        $.ajax({
+            method: 'POST', 
+            url: '/grader/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        }); //ajax
+    }, //addrow
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/grader/crud/', 
+            data: data,
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+    }, //delete
+    */
+    updaterow: function (rowid, rowdata, commit) {
+        //var data = "action=update&amp;" + $.param(rowdata);
+        //alert ($.param(rowdata));
+        $.ajax({
+            method: 'POST', 
+            url: '/grader/lesson/crud/', 
+            //data: { action: 'update', data: $.param(rowdata) },
+            //data: data,
+            // MUST BE CHANGED 
+            data: { action: 'update', id: rowdata.id, isCoordinator: rowdata.isCoordinator, isgraderC: rowdata.isgraderC, status: rowdata.status }, 
+            cache: false,
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+    }, //updaterow
+    //$("#jqxgridGrader").jqxGrid('updatebounddata');
+}; //source
+
+
+//DataAdapter create + 
+//AGGREGATES +
+//BARGAUGE
+var dataAdapterGrader = new $.jqx.dataAdapter( sourceGrader, {
+    loadComplete: function () {
+        var length = dataAdapterGrader.records.length;
+        var rec = dataAdapterGrader.records[0];
+        //alert (length + rec.name + rec.type + rec.lexType);    
+        // aggregates
+        aggregateData = $("#jqxgridGrader").jqxGrid('getcolumnaggregateddata', 'type', ['count', 'min', 'max']);
+        //$("#jqxnotificationServer").html(response.msg).jqxNotification("open");
+        //$("#jqxnotificationServer").html('OK!').jqxNotification("open");
+        console.log(response); 
+    },  //loadComplete
+});
+ 
+///////////////////////////
+// GRID jqxGraderGrid
+//////////////////////////                        
+$("#jqxgridGrader").jqxGrid({
+    source: dataAdapterGrader,
+    columns: [ //columntype: 'textbox', 
+
+        [ { text: "id", datafield: "id", hidden: true,  editable : false, width: '5%'},
+        { text: 'Επίθετο', datafield: 'surname', editable : false, columntype: 'textbox', filtertype: 'input', width: '30%'},
+        { text: "Όνομα", datafield: "name", editable : false, filtertype: 'input', width: '20%'},
+        { text: "Ειδικ.", datafield: 'codeSpec', editable : false, width: '10%'},
+        { text: "ΑΦΜ", datafield: 'codeAfm', editable : false, filtertype: 'input', width: '10%'},
+        { text: "Κ.Βαθμ.", datafield: 'codeGrad', editable : false, filtertype: 'input', width: '10%'},
+        { text: "Συντ.", datafield: 'isCoordinator', columntype: 'checkbox', width: '10%'},
+        { text: "ΑναΒαθ..", datafield: 'isgraderC', columntype: 'checkbox', width: '10%'},
+        { text: "Status.", datafield: 'status', width: 60 },
+        /*
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'15%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterGraderType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            aggregates: ['count'], 
+        },
+        */
+        { text: 'Edit', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "...";
+            }, 
+            buttonclick: function (row) {
+                $("#jqxgridGrader").jqxGrid('beginrowedit', row);
+            } // buttonclick
+        }, //edit 
+        { text: 'remove', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "X";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                $("#dialogDeleteGrader").jqxWindow('open');
+                //var datarow = $('#jqxgridGrader').jqxGrid('getrowdata', row);
+                //$('#jqxgridGrader').jqxGrid('deleterow', datarow.id);
+                //console.log('remove btn clicked id='+datarow.id);
+          } // buttonclick
+        }, //remove
+
+        //return '<div style="text-align: center; margin-top: 7px;"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></div>'
+        
+    ],     
+    autoheight: false, columnsresize: true, editable: true, //editmode: 'selectedrow',
+    filterable: true,showfilterrow: true, selectionmode: 'singlerow', //multiplecellsextended
+    pageable: false, sortable: true, width: '100%', height:'500', 
+    showaggregates: true, 
+    showstatusbar:true, 
+    showtoolbar:true, rendertoolbar: function (statusbar) {
+        // appends buttons to the status bar.
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        //var addButton = $("<button type='button' class='btn btn-default' style='float: right;'>Update Grid</button>");
+        var addButton = $("<div style='float: right; margin-left: 10px;'><span>Add</span></div>");
+        var reloadButton = $("<div style='float: right; margin-left: 10px;'><span>Reload</span></div>");
+        //<button type="button" class="btn btn-default">Update Grid</button>
+        //<button id="buttonAddGrader" type="button" class="btn btn-primary">Add Record</button>
+        
+        container.append(addButton);
+        container.append(reloadButton);
+        statusbar.append(container);
+        addButton.jqxButton({  width: 60, height: 18 });
+        reloadButton.jqxButton({  width: 65, height: 18 });
+        // add new row.
+        addButton.click(function (event) {
+            //var datarow = generatedata(1);
+            //$("#jqxgridGrader").jqxGrid('addrow', null, datarow[0]);
+            $( '#dialogAddGrader').jqxWindow('open');
+        });
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });
+        });
+    } //render toolbar
+
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//Grader grid
+
+//editable:true, editmode: 'selectedrow', height: 400, pageable: true, pagesize: 20, selectionmode: 'singlerow', sortable: true, theme: 'classic', width: 690, 
+//altrows: true, autoheight: true, 
+//ready: function () {$("#jqxnotificationServer").html(notificationServerMessage).jqxNotification("open");},
+
+
+
+/////////////////////////////////
+// Events
+////////////////////////////////
+$("#jqxbuttonGraderNew").click(function () {
+    if( $('#jqxgridTeacher').jqxGrid('getselectedrowindexes').length > 0 ) {
+        $('#jqxgridTeacher').jqxGrid('clearselection');
+    }
+    //$("#jqxwindowGraderNew").jqxWindow('open');
+    //$("#jqxwindowGraderNew").jqxWindow('focus');
+});
+
+////////////////////////////////
+// Teacher data
+///////////////////////////////                        
+var TeacherIDArray = [];
+var sourceTeacher = {
+    datatype: "json",
+    datafields: [
+        //id codeAfm codeGrad codeSpec name surname 
+        {name: "id"}, 
+        {name: 'name', type: 'string' },
+        {name: 'surname', type: 'string' },
+        {name: 'codeAfm', type: 'string' },
+        {name: 'codeGrad', type: 'string' },
+        {name: 'codeSpec', type: 'integer' },
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    url: '/teacher/crud/', 
+    id: 'id', sortcolumn: 'name', sortdirection: 'asc',     
+}; //source
+
+//DataAdapter create + 
+var dataAdapterTeacher = new $.jqx.dataAdapter( sourceTeacher, {
+    loadComplete: function () {
+        var length = dataAdapterTeacher.records.length;
+        var rec = dataAdapterTeacher.records[0];
+        //alert (length + rec.name + rec.type + rec.lexType);            
+        // aggregates
+        aggregateData = $("#jqxgridTeacher").jqxGrid('getcolumnaggregateddata', 'type', ['count', 'min', 'max']);
+    },  //loadComplete
+});
+
+///////////////////////////
+// GRID jqxTeacherGrid
+//////////////////////////                        
+$("#jqxgridTeacher").jqxGrid({
+    source: dataAdapterTeacher,
+    columns: [ //columntype: 'textbox', 
+        //id codeAfm codeGrad codeSpec name surname 
+        { text: 'id', datafield: 'id', visible: false },
+        { text: 'ΑΦΜ', datafield: 'codeAfm', filtertype: 'input', width: '10%' },
+        { text: "Επίθετο", datafield: 'surname', columntype: 'textbox', filtertype: 'input', width: '30%' },
+        { text: "Όνομα", datafield: 'name',  filtertype: 'input', width: '20%' },
+        { text: "Κωδ.βαθμολογ.", datafield: 'codeGrad', filtertype: 'input', width: '10%' },
+        { text: "Ειδικότητα", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'15%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterTeacherType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            aggregates: ['count'], 
+        },        
+    ],     
+    autoheight: false, columnsresize: true, editable: false, //editmode: 'selectedrow',
+    filterable: true,showfilterrow: true, selectionmode: 'singlerow', //multiplecellsextended
+    pageable: false, sortable: true, width: '100%', height:'500', 
+    showaggregates: true, 
+    showstatusbar:false, 
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//Teacher grid
+
+
+
+
+
+////////////////////////////////
+// Buttons 
+////////////////////////////////              
+//$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
+$( '#buttonAddGrader' ).click(function (event) {
+    $("#code, #name, #ddeCode, #ddeName, #type").val(''); 
+    //$("#jqxgridGrader").jqxGrid({disabled:true});
+    $( '#dialogAddGrader').jqxWindow('open');
+});
+$( '#buttonUpdateGridGrader' ).click(function (event) {
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });
+});
+
+
+/////////////////////////
+//Dialogue DELETE
+/////////////////////////                
+var theme = 'bootstrap';
+// Dialogue DELETE
+//buttonDialogDeleteGraderYes
+$( '#dialogDeleteGrader' ).jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', isModal: true, 
+    //cancelButton: $('#buttonDialogDeleteGraderNo'), 
+    keyboardNavigation: true, keyboardCloseKey: 13,
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
+    width: 'auto', height: '200', theme: theme, 
+});        
+
+//Dialogue > Buttons
+$('#buttonDialogDeleteGraderYes, #buttonDialogDeleteGraderNo').jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Event > Dialogue
+$("#dialogDeleteGrader").on('close', function () {
+    //$("#jqxgridGrader").jqxGrid({ disabled: false });
+});
+// Event > Button > Yes
+$('#buttonDialogDeleteGraderYes').click(function () {
+    var row = $('#jqxgridGrader').jqxGrid('getselectedrowindex');
+    var datarow = $('#jqxgridGrader').jqxGrid('getrowdata', row);
+    $('#jqxgridGrader').jqxGrid('deleterow', datarow.id);
+    //console.log('remove btn clicked id='+datarow.id);
+    $('#dialogDeleteGrader').jqxWindow('close');
+});
+// Event > Button > No
+$('#buttonDialogDeleteGraderNo').click(function () {
+    $('#dialogDeleteGrader').jqxWindow('close');
+});
+
+
+/////////////////////////
+//Dialogue ADD
+/////////////////////////                
+// Dialogue 
+$('#dialogAddGrader').jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', isModal: true, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
+    width: 'auto', height: 'auto',
+});        
+
+//Dialogue > Input
+//$("#addWinRowButton").jqxButton({ theme: theme, width: 210, height: 40 });
+$("#code, #name, #ddeCode, #ddeName").jqxInput();
+//$("#code, #ddeCode").width(50); $("#name, #ddeName").width(150);
+$( '#type' ).jqxDropDownList({ source: ArrayGraderSchoolType, selectedIndex: 1, });
+
+//$("#price").jqxNumberInput({ spinMode: 'simple', symbol: '$', width: 150, min: 0, height: 23, spinButtons: true });
+
+//Dialogue > Buttons
+$('#buttonDialogAddGraderYes, #buttonDialogAddGraderNo').jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Event > Dialogue
+$( '#dialogAddGrader' ).on('close', function () {
+    //$("#jqxgridGrader").jqxGrid({ disabled: false });
+});
+
+// Event > Button > Yes
+$( '#buttonDialogAddGraderYes' ).click(function (event) {
+    
+    $('#formAddGrader').jqxValidator('validate');
+    event.preventDefault();
+    /*    
+    // set record values
+    var newrow = { name: $("#code").val(), name: $("#name").val(), surname: $("#ddeCode").val(), codeAfm: $("#ddeName").val(), codeGrad: $("#type").val(), };
+    $( "#jqxgridGrader" ).jqxGrid('addrow', null, newrow);
+    $( "#jqxgridGrader" ).jqxGrid('updatebounddata');
+    $( "#dialogAddGrader" ).jqxWindow('close');
+    */
+});
+
+// Event > Button > No
+$( '#buttonDialogAddGraderNo' ).click(function () {
+    $( '#dialogAddGrader' ).jqxWindow('close');
+});
+
+//code, #name, #ddeCode, #ddeName
+////////////////////////////
+//Form ADD > jqxValidator
+////////////////////////////
+/*
+$('#formAddGrader').jqxValidator( { 
+    rules: [
+        { input: '#code', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Code is required!',
+        },        
+        { input: '#name', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Name is required!',
+        },        
+        { input: '#ddeCode', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Folder is required!',
+        },        
+        { input: '#ddeName', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Folder is required!',
+        },
+    ],  //rules 
+
+    onSuccess: function (event) { 
+        //event.preventDefault();        
+        // set record values
+        var newrow = { name: $("#code").val(), name: $("#name").val(), surname: $("#ddeCode").val(), codeAfm: $("#ddeName").val(), codeGrad: $("#type").val(), };
+        $( "#jqxgridGrader" ).jqxGrid('addrow', null, newrow);
+        $( "#jqxgridGrader" ).jqxGrid('updatebounddata');
+        $( "#dialogAddGrader" ).jqxWindow('close');        
+        console.log("Success");
+        //alert('Success!'); 
+    },//onSuccess
+
+    onError: function () { 
+        console.log("Failed!");
+        //alert('Failed!'); 
+    },//onError
+
+}); 
+*/
+
+//$('#jqxValidator').on('validationError', function (event) { event.preventDefault(); }); 
+//$('#jqxValidator').on('validationSuccess', function (event) { event.preventDefault(); }); 
+
+
+
+/////////////////////////////////
+// Events > Dialogue jqxwindowNewGrader > jqxbuttonGraderNewSave
+////////////////////////////////
+$("#jqxbuttonGraderNewSave").on('click', function() {
+    var TeacherArray = [];
+    var Lesson = $('#jqxinputGraderNewLesson').val();
+    TeacherArray = helperJqxgridGetSelectedIds('#jqxgridTeacher', 'id');
+    
+    $("#jqxinputGraderNewTeacherArray").val(TeacherArray);
+    //alert('ABOuT TO POST <br/> Lesson:'+ Lesson + ' TeacherArray: ' + TeacherArray);    //OK
+    
+    //var jsonArray = JSON.parse(TeacherArray); //FAIL
+    var stringifyArray = JSON.stringify(TeacherArray);
+    var jsonStringifyArray = JSON.parse(JSON.stringify(TeacherArray));
+    //alert('jsonStringifyArray :' + jsonStringifyArray );    //OK
+
+    //data: JSON.stringify(newArray),
+    //var data = $.param({'jqxinputGraderNewLesson': Lesson, 'jqxinputGraderNewTeacherArray': stringifyArray,});
+    //var data = "action=update&amp;" + $.param(rowdata);
+    var data = {action:'update', 'jqxinputGraderNewLesson': Lesson, 'jqxinputGraderNewTeacherArray': stringifyArray};
+    $.ajax({
+        method: 'POST',
+        url: '/grader/lesson/crud/',
+        data: data,
+        dataType: 'json',
+        cache: false,
+        success: function (response, status, xhr) {
+            //commit(true);
+            //$("#jqxnotificationServer").html('Grader Add success!').jqxNotification("open");
+            console.log(response);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            //commit(false);
+            console.log(jqXHR);
+        }
+    }); //ajax
+    
+    $("#jqxgridGrader").jqxGrid('updatebounddata');
+    $("#jqxwindowGraderNew").jqxWindow('close')
+
+}); //on.click
+
+
+/*
+/////////////////////////////////
+// Dialogue > jqxwindowNewGrader
+////////////////////////////////
+// Dialogue > jqxwindowNewGrader > jqxbutton (1) 
+$("#jqxbuttonGraderNewSave, #jqxbuttonGraderNewCancel").jqxButton({ theme: theme, height: 30, width: 80 });
+$("#jqxbuttonGraderNewClear, #jqxbuttonGraderNewGetSelected").jqxButton({ theme: theme, height: 30, width: 80 });
+// Dialogue > jqxwindowNewGrader > input
+$("#jqxinputGraderNewLesson, #jqxinputGraderNewTeacherArray").jqxInput({ theme: theme, height: 30, width: 80 });
+// Dialogue > jqxwindowNewGrader > jqxbuttons (2)
+$("#jqxbuttonGraderNewClear, #jqxbuttonGraderNewGetSelected").jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Dialogue > jqxwindowNewGrader
+$("#jqxwindowGraderNew").jqxWindow({
+    autoOpen: false,
+    cancelButton: $('#jqxbuttonGraderNewCancel'), 
+    height: 650, // 'auto', 
+    isModal: true, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    closeAnimationDuration: 200, showAnimationDuration: 600, 
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
+    resizable: false, 
+    theme: theme, 
+    title: 'New Grader', 
+    width: 'auto', 
+});
+
+
+
+
+
+
+/////////////////////////////////
+// jqxcomboboxLesson > Events (1)
+////////////////////////////////
+// jqxcomboboxLesson > Events (1)
+$('#jqxcomboboxLesson').on('select', function (event) 
+{    
+    if (event.args) {
+    data = dataAdapterLesson.records[args.index];
+    //if (index != -1) {alert ('item:'+ item.id + '\nindex:' + index);} 
+    // SUPER 
+    sourceGrader.url = '/jsongradermn/'+"?action=filter&LessonID="+ data.id;    // SUPER 
+    //var dataAdapterGraderOnLesson = new $.jqx.dataAdapter(sourceGrader);
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader});
+    //$("#jqxgridGrader").jqxGrid('updatebounddata');
+    }//if
+    
+    // related button
+    $("#jqxbuttonGraderNew").jqxButton({ disabled: false, });
+
+    // related form input
+    var data = dataAdapterLesson.records[args.index];
+    //var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    $("#jqxinputGraderNewLesson").val(data.id);   // Lesson.id
+    //console.log ('Lesspnid:' + data.id);
+
+    //$("#jqxnotificationServer").html('Lesson selected!').jqxNotification("open");
+
+});// combo.event
+
+
+/////////////////////////////////
+// jqxgridGrader > Events 
+////////////////////////////////
+$('#jqxgridGrader').on('rowclick', function (event) {    
+    $("#jqxbuttonGraderDelete").jqxButton({ disabled: false, });
+
+    // related form input
+    var data = $('#jqxgridGrader').jqxGrid('getrowdata', event.args.rowindex);
+    $("#jqxinputGraderDeleteId").val(data.id);   // Lesson.id
+    console.log ('GraderId:' + data.id);
+});
+
+
+
+/////////////////////////////////
+// Events > Dialogue jqxwindowDeleteGrader > Buttons
+////////////////////////////////
+// Events 
+$("#jqxbuttonGraderDelete").click(function () {
+    $("#jqxwindowGraderDeleteConfirm").jqxWindow('open');
+});
+
+// Dialogue jqxwindowDeleteGrader > OK
+$("#jqxwindowGraderDeleteConfirmOK").click(function () {
+    
+    //var data = "action=delete&" + $.param( { id: $("#jqxinputGraderDeleteId").val() } );
+    $.ajax({
+        url: '/jsongradermn/',
+        method: "POST",
+        data: { action: "delete", id: $("#jqxinputGraderDeleteId").val() }, 
+        //dataType: 'json',
+        cache: false,
+        success: function (response, status, xhr) {
+            $("#jqxgridGrader").jqxGrid('updatebounddata');
+            console.log('success');
+            //console.log(response);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });//ajax
+    
+    $("#jqxgridGrader").jqxGrid('updatebounddata');
+    $("#jqxwindowGraderDeleteConfirm").jqxWindow('close');
+
+});
+
+*/
+
+    
+});// (document).ready
+</script>
+{% endblock %}
+
+

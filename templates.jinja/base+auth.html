@@ -1,0 +1,65 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>        
+    <title>Rango - {% block title %}How to Tango with Django!{% endblock %}</title>
+    
+    <!-- CSS> -->
+    <!-- css > jquery-ui -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <!-- css > bootstrap -->
+    <!-- conflict with grid+crud > edit
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+    -->
+    
+    <!-- css > isotope -->
+    <!-- css > jqxwidgets -->
+    <!-- css > jqxwidgets > bootstrap -->
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap-theme.min.css' %}" type="text/css" />    
+    <!-- tzoumak -->
+   
+    <!-- SCRIPTS -->
+    <!-- scripts > jqxwidgets > extras -->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/jquery-1.11.1.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/bootstrap.min.js' %}" ></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>    
+    
+    </head>
+
+    <body>
+        <div>
+            {% block body_block %}{% endblock %}
+        </div>
+
+        <hr />
+
+        <div>
+            <ul>
+            {% if user.is_authenticated %}
+                <li><a href="/rango/restricted/">Restricted Page</a></li>
+                
+                <li><a href="{% url 'auth_logout' %}?next=/rango/">NEXT Logout</a></li>
+                
+                <li><a href="/logout/">Logout</a></li>
+
+
+            {% else %}
+                <li> <a href="{% url 'registration_register' %}">NEW Register Here</a> </li>
+
+                <li> <a href="/register/">Register Here</a> </li>
+                
+                <li><a href="{% url 'auth_login' %}"> NEW Login</a></li>
+
+                <li><a href="/login/">Login</a></li>
+                
+                
+
+            {% endif %}
+
+                <li><a href="/about/">About</a></li>
+            </ul>
+        </div>
+    </body>
+</html>
+

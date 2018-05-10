@@ -1,0 +1,88 @@
+{# % load template_filters % #}
+<!doctype html>
+<html>
+  <head>
+    <link href="{% static 'themes/sb-admin/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>        
+    <script type="text/javascript" src="{% static 'js/jquery-1.9.1.js' %}" ></script>
+    <!-- scripts > tzoumak -->    
+    <script type="text/javascript" src="{% static 'js/tzoumak-csrf.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/tzoumak-helpers.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/app.js' %}"></script>
+    <!--
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/index.js' %}"></script>
+    -->
+    <!--
+    -->
+  </head>
+    
+<body style="margin:50px 0px 0px 50px;">
+
+<!-- Alert Message Box 
+<div id="jsonMessages"></div>
+-->
+
+<!-- Alert Message Box 
+-->
+<div id="messages">
+    {% for message in get_messages(request) %}
+        <div {% if message.tags %}class="alert alert-dismissable alert-{{ message.tags }}"{% endif %}>
+            <a class="close" data-dismiss="alert" href="#">&times;</a>
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Alert Message Box -->
+{% if messages %}
+  {% for message in get_messages(request) %}
+    <div class="alert fresh-color alert-{{message.tags}} alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <span id="alertMessage"><strong>Warning!</strong> {{message}}</span>
+    </div>
+  {% endfor %}
+{% endif %}
+    
+</body>
+
+  
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    function addMessage(text, extra_tags) {
+        var message = $(`
+            <div class="alert alert-dismissable alert-${extra_tags}">\n
+                <a class="close" data-dismiss="alert" href="#">&times;</a>\n
+                    ${text}\n
+            </div>`).hide();
+        $("#messages").append(message);
+        message.fadeIn(500);
+
+        setTimeout(function() {
+            message.fadeOut(500, function() {
+                message.remove();
+            });
+        }, 3000);
+    }
+
+    $(document).ajaxComplete(function (e, xhr, settings) {
+        var contentType = xhr.getResponseHeader("Content-Type");
+        if (contentType == "application/javascript" || contentType == "application/json") {
+            var json = $.evalJSON(xhr.responseText);
+            $.each(json.django_messages, function (i, item) {
+                addMessage(item.text, item.tags);
+            });
+
+        }
+    }).ajaxError(function (e, xhr, settings, exception) {
+        addMessage("There was an error processing your request, please try again.", "error");
+    })
+
+
+}); //doc.ready
+
+</script>
+
+</html>
+

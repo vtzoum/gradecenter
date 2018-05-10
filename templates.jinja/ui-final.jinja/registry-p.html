@@ -1,0 +1,464 @@
+<title id='Description'>REGISTRY FORM</title>
+
+{% extends "base+jqx.html" %}
+
+{% block title %}
+    REGISTRY FORM 
+{% endblock %}
+
+<!-- Block HTML -->
+{% block html %}
+<div id='jqxWidget' style="width:100%; font-size: 13px; font-family: Verdana; ">
+    
+    <!-- Lessons -->
+    <h2>ΜΑΘΗΜΑ</h2>    
+    <div id="jqxgridLesson" style="float:left;" ></div>
+    
+    <!-- Graders -->
+    <h2>ΒΑΘΜΟΛΟΓΗΤΕΣ</h2>    
+    <div id="jqxgridGrader" style="float:left;" ></div>
+    
+    <!-- Folders -->
+    <!-- Folders > filter box -->
+    Search Folders<input id='filter1' name='filter1' class="filter"/><br/>
+    <!-- Folders > Folders -->
+    <div id="jqxpanelFolders" style="float:left;" >
+        <div id="jqxsortable" ></div>
+    </div>
+
+    <!-- Form Elements -->
+    <div id="jqxsortable"></div>
+
+
+</div>
+
+
+
+<!-- FORM HTML -->
+<!-- 
+method="post" action="list.php" 
+style="font-size: 13px; font-family: Verdana; width: 650px;"
+<input style="margin-top: 10px;" type="submit" value="Submit" id="sendButton" />
+-->
+<form class="form" id="formPost" target="form-iframe"  >
+{% csrf_token %}
+<div>
+    <!-- User Inputs -->    
+    <h2>User Inputs </h2>    
+    Μάθημα:<input id='jqxinputLesson' name='jqxinputLesson' /><br/>
+    Βαθμολογητής:<input id='jqxinputGrader' name='jqxinputGrader' /><br/>
+    Φάκελος:<input id='jqxinputFolder' name='jqxinputFolder' />
+</div>
+
+<div style="clear: both;"/>
+    <!-- User Buttons -->
+    <button id="jqxbuttonCheck">CHECK</button>
+    <button id="jqxbuttonDo">DO</button>
+
+    <!-- Submit button -->
+</form>
+
+
+
+
+
+
+h1>Isotope - filtering with search field</h1>
+
+<div class="big-demo go-wide" data-js-module="filtering-demo">
+
+
+<!-- isotope > searchbox-->
+<p><input type="text" class="quicksearch" placeholder="Search" /></p>
+
+  
+<!-- isotope > Filters -->
+<div class="filter-button-group button-group js-radio-button-group">
+    <button class="button is-checked" data-filter="*">show all</button>
+    <button class="button" data-filter=".metal">metal</button>
+    <button class="button" data-filter=".transition">transition</button>
+    <button class="button" data-filter=".alkali, .alkaline-earth">alkali &amp; alkaline-earth</button>
+    <button class="button" data-filter=":not(.transition)">not transition</button>
+    <button class="button" data-filter=".metal:not(.transition)">metal but not transition</button>
+    <button class="button" data-filter="numberGreaterThan50">number &gt; 50</button>
+    <button class="button" data-filter="ium">name ends with &#x2013;ium</button>
+</div>
+
+
+<!-- Jqxpanel > isotope -->
+<div id="jqxpanelIsotope">
+
+<!-- isotope > Data -->
+<div class="grid">
+  <div class="element-item transition metal " data-category="transition">
+    <h3 class="name">Mercury</h3>
+    <p class="symbol">Hg</p>
+    <p class="number">80</p>
+    <p class="weight">200.59</p>
+  </div>
+<!-- Jqxpanel > isotope -->
+</div>
+
+</div>
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+///////////////////////////
+// jqxpanelIsotope
+//////////////////////////                   
+$("#jqxpanelIsotope").jqxPanel({ width: 680, height: 350});    
+
+
+///////////////////////////
+// jqxgridLessons       //
+//////////////////////////                        
+// jqxgridLessons.RecordSet  
+var sourceLesson = {
+    datatype: "json",
+    datafields: [{name: "id"}, {name: "name"},{name: "folders"},{name: "status"},//{name: "codeGrad"},{name: "codeSpec"},
+    ],
+    url: '/jsonlesson/', 
+    id: 'id',
+}; //source
+// DataAdapter create 
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);   
+// jqxgridLesson.Widget
+$("#jqxgridLesson").jqxGrid({
+    source: dataAdapterLesson,
+    columns: [
+        { text: "id", datafield: "id", width: 40 },
+        { text: "Μάθημα", datafield: "name", width: 300 },
+        { text: "Κατάσταση", datafield: 'status', width: 80 },
+        { text: 'Φάκελοι', datafield: 'folders', width: 70 },
+        //{ text: "Κ.Βαθμ.", datafield: 'codeGrad', width: 80 },
+        //{ text: "Ειδικ.", datafield: 'codeSpec', width: 80 },
+        /**/
+    ], 
+    autoheight: true, 
+    //altrows: true,            
+    pageable: true, 
+    pagesize: 20, 
+    selectionmode: 'singlerow', // 'checkbox', 'singlerow', 'multiplerowsextended',
+    sortable: true,
+    theme: 'classic',
+    width: 490,    
+});
+$("#jqxgridLesson").jqxGrid('selectrow', -1);
+///////////////////////////
+// jqxgridGraders       //
+//////////////////////////                        
+// jqxgridGraders.RecordSet  
+var sourceGrader = {
+    datatype: "json",
+    //datafields: [{name: "id"}, {name: "LessonID_id"},{name: "TeacherID_id"},{name: "status"},//{name: "codeGrad"},{name: "codeSpec"},
+    //[{'status': 0, 'isCoordinator': False, u'id': 1, u'TeacherID_id': 13, 'isgraderC': False, u'LessonID_id': 30}]
+    //],
+    //url: '/jsongrader/', 
+    //id: 'id',
+}; //source
+// DataAdapter create 
+var dataAdapterGrader = new $.jqx.dataAdapter(sourceGrader);     
+// jqxgridGraders.Widget
+$("#jqxgridGrader").jqxGrid({
+    source: dataAdapterGrader,
+    columns: [
+        { text: "LessonID_id", datafield: "LessonID_id", width: 300 },
+        { text: 'TeacherID_id', datafield: 'TeacherID_id', width: 110 },
+        { text: "Κατάσταση", datafield: 'status', width: 80 },
+        //{ text: "Κ.Βαθμ.", datafield: 'codeGrad', width: 80 },
+        //{ text: "Ειδικ.", datafield: 'codeSpec', width: 80 },
+        /**/
+    ], 
+    autoheight: true, 
+    //altrows: true,            
+    //filterable: true,
+    pageable: true, 
+    selectionmode: 'singlerow', // 'checkbox', 'singlerow', 'multiplerowsextended',
+    sortable: true,
+    theme: 'classic',
+    width: 490,    
+});  //Grader grid
+$("#jqxgridGrader").jqxGrid('selectrow', -1);
+
+///////////////////////////
+// jqxpanelFolders
+//////////////////////////                   
+$("#jqxpanelFolders").jqxPanel({ width: 550, height: 350});    
+
+///////////////////////////
+// Folder > filter Divs 
+//////////////////////////                   
+$('#filter1').jqxInput({ width: '250px', height: '25px'});
+$('#filter1').keyup(function () {     
+    // match words start with '#filter.val', case-insensitive
+    var pattern = new RegExp('^' + this.value.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"), 'i');
+    // hide all h4's within div.media, then filter
+    $('div.media h4').hide().filter(function() {
+        // only return h4's which match our pattern
+        return !!$(this).text().match(pattern);
+    }).show(); // show h4's which matched the pattern
+
+    $('div#jqxsortable div.folder').hide().filter(function() {
+        // only return h4's which match our pattern
+        return !!$(this).text().match(pattern);
+    }).show(); // show h4's which matched the pattern
+
+});
+
+
+///////////////////////////
+// jqxsortable
+//////////////////////////                   
+$("#jqxsortable").jqxSortable();
+// auto-create divs
+
+var source2 = [ {'id':"F1", 'books':25, 'finished':0, 'status':0, 'type':'A'},{'id':"F2", 'books':25, 'finished':0, 'status':1, 'type':'A'},{'id':"F3", 'books':20, 'finished':0, 'status':2, 'type':'B'}, {'id':"F4", 'books':10, 'finished':0, 'status':0, 'type':'C'},{'id':"F5", 'books':25, 'finished':1, 'status':2, 'type':'B'},{'id':"F6", 'books':15, 'finished':0, 'status':0, 'type':'C'},];
+
+for (var i = 0; i < source2.length; i++) {
+    var id = source2[i].id;
+    var books = source2[i].books;
+    var finished = source2[i].finished;
+    var status = source2[i].status;
+    var type = source2[i].type;
+    $("#jqxsortable").append('<div id="' + id + '" class="folder">' + id + '<br/>(' + books + 'τετ.)</ div>');
+    //$("#jqxsortable").append('<div id="2"</ div>');
+    $('#'+id).addClass("folderFinished" + finished).addClass("folderStatus" + status).addClass("folderType" + type);
+    //console.log(source2[i]);    
+}
+
+/* OK
+var source = [
+   "F1","F2","F3","F4","F5","F6","F7","F8","F9","F10",
+   //"Greek frappé coffee","Iced Coffee",
+];
+for (var i = 0; i < source.length; i++) {
+    $('#jqxsortable').append('<div id="folder' + source[i] + '" class="foo">' + source[i] + '</ div>');
+} 
+*/
+
+///////////////////////////
+// selectable Divs (max 4 selectable)
+//////////////////////////                  
+$("#jqxsortable").selectable({
+   selecting: function(event, ui) { 
+     if ($(".ui-selected, .ui-selecting").length > 1) {
+       $(ui.selecting).removeClass("ui-selecting");
+     }
+   }, //.selecting 
+    selected: function(event, ui) {
+        // Form field > update 
+        $('#jqxinputFolder').jqxInput('val', $(ui.selected).attr('id')); 
+    } //.selected 
+   
+}); //.selectable
+
+/*
+    alert($(this).attr('data-userid'));
+*/
+
+$("#jqxsortable").click(function() {
+    alert( "Handler for .click() called." );
+});
+
+
+///////////////////////////
+// EVENTS - Connections 
+//////////////////////////
+// Events > jqxgridLesson (A) 
+//$("#jqxgridLesson").jqxGrid('selectrow', 0);
+// rowselect NOT rowclick here 
+$('#jqxgridLesson').on('rowselect', function (event) {
+    // Form field > update 
+    // var rowBoundIndex = args.rowindex;var rowData = event.args.row;
+    $('#jqxinputLesson').jqxInput('val', event.args.row.id); 
+    $('#jqxinputGrader').jqxInput('val', null); 
+    $('#jqxinputFolder').jqxInput('val', null); 
+    //alert (rowData.id);         // OK    
+});
+
+// Events > jqxgridLesson (A)
+$('#jqxgridLesson').on('rowselect', function (event) {        
+    // Graders > update 
+    var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    var sourceGraderOnLesson = { 
+        datatype: "json",
+        url: '/jsongrader/'+"?action=filter&LessonID="+ data.id, 
+        datafields: [{name: "id"}, {name: "LessonID_id"},{name: "TeacherID_id"},{name: "status"},],
+        //id: 'id',
+    }; //source
+    
+    // DataAdapter create 
+    var dataAdapterGraderOnLesson = new $.jqx.dataAdapter(sourceGraderOnLesson);
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGraderOnLesson });
+    //$("#jqxgridGrader").jqxGrid('updatebounddata');        
+    $('#jqxgridGrader').jqxGrid('unselectrow', 0);    // do NOT KNOW WHY but WORKS
+    
+    //return (true);
+});
+
+// Event > jqxgridGrader (B)
+$('#jqxgridGrader').on('rowselect', function (event) {
+    // Form field > update 
+    $('#jqxinputGrader').jqxInput('val', event.args.row.TeacherID_id); 
+    $('#jqxinputFolder').jqxInput('val', null); 
+});
+
+////////////////////////////
+// FORM 
+////////////////////////////
+
+////////////////////////////
+// jqxinput
+////////////////////////////
+$('#jqxinputLesson, #jqxinputGrader, #jqxinputFolder').jqxInput({ width: '250px', height: '25px'});
+//$('#jqxinputLesson').jqxInput({disabled: true }).val('');
+//$('#jqxinputLesson').jqxInput('val', 'New Value'); 
+
+// bind to 'change' event.
+/*   OK
+$('#jqxinputGrader, #jqxinputFolder').on('change', function (event) {
+    alert ("value changed");
+});
+*/
+////////////////////////////
+// jqxbutton
+////////////////////////////
+$("#jqxbuttonCheck, #jqxbuttonDo").jqxButton({ width: 230, height: 30 });
+
+// bind to 'click' event.
+$("#jqxbuttonCheck").click(function (event) {
+    $('#formPost').jqxValidator('validate');
+    event.preventDefault();
+    // cehck required values 
+    if (($('#jqxinputLesson').val() ==0) || ($('#jqxinputGrader').val() ==0)) {
+        console.log('jqxinputLesson | jqxinputGrader =>  Failed!'); 
+        //alert('jqxinputLesson | jqxinputGrader =>  Failed!'); 
+    }
+    // check xrewsi-paralavi
+    if ( $( ".ui-selected" ).is( ".folderStatus1" ) ) {
+        console.log('Paralavi!'); 
+    } 
+    else { 
+        console.log('Xrewsh!');
+    }
+});
+
+// bind to 'click' event.
+$("#jqxbuttonDo").click (function (event) {    
+    $.post("/ajaxformpost/", 
+        $('#formPost').helperSerializeAll(), // serialize() + disabled.input
+        //$("#formPost").serialize(),
+        function (response) {
+            //$("#success").html(response.data);
+            //console.log(response.data);
+            console.log(response);
+            //console.log("Success");
+        } 
+    );
+    event.preventDefault();
+    /*
+    */
+});//jqxbuttonCheck.click
+
+
+
+
+////////////////////////////
+// form > jqxValidator
+////////////////////////////
+$('#formPost').jqxValidator( { 
+    rules: [
+        { input: '#jqxinputLesson', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Lesson is required!',
+        },        
+        { input: '#jqxinputGrader', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Grader is required!',
+        },        
+        { input: '#jqxinputFolder', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Folder is required!',
+        },        
+    ] //rules 
+} );
+
+$('#formPost').jqxValidator({ onSuccess: function () { 
+        console.log("Success");
+        //alert('Success!'); 
+        } }); 
+$('#formPost').jqxValidator({ onError: function () { 
+        console.log("Failed!");
+        alert('Failed!'); 
+        } }); 
+
+//////////////////////////////////////////////
+// Isotope
+/////////////////////////////////////////////
+// init Isotope
+var $grid = $('.grid').isotope({
+  itemSelector: '.element-item',
+  layoutMode: 'fitRows',
+  masonry: {
+    columnWidth: 100
+  }, 
+});
+
+/////////////////////
+// Filtering - OK // Conflicts with Search 
+/////////////////////
+// filter items when filter link is clicked
+$('#filters a, button.button').click(function(){
+  var selector = $(this).attr('data-filter');
+  $grid.isotope({ filter: selector });
+  return false;
+});
+
+
+/////////////////////
+// SearchBox - OK
+/////////////////////
+
+// quick search regex
+var qsRegex;
+
+// use value of search field to filter
+var $quicksearch = $('.quicksearch').keyup( debounce( function() {
+  qsRegex = new RegExp( $quicksearch.val(), 'gi' );
+  $grid.isotope({
+      filter: function() {
+        return qsRegex ? $(this).text().match( qsRegex ) : true;
+        }, 
+  });//isotope
+}, 200 ) );
+
+// debounce so filtering doesn't happen every millisecond
+function debounce( fn, threshold ) {
+  var timeout;
+  return function debounced() {
+    if ( timeout ) {
+      clearTimeout( timeout );
+    }
+    function delayed() {
+      fn();
+      timeout = null;
+    }
+    timeout = setTimeout( delayed, threshold || 100 );
+  }
+}
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

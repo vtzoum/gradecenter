@@ -1,0 +1,11 @@
+METHODS 
+#A
+cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
+worksheet.write       (0, 0, 'Foo', cell_format)
+worksheet.write_string(1, 0, 'Bar', cell_format)
+
+#B
+cell_format = workbook.add_format()
+cell_format.set_bold()
+cell_format.set_font_color('red')
+

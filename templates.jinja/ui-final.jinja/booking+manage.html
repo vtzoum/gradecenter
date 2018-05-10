@@ -1,0 +1,856 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    BOOKING-JN
+{% endblock %}
+           
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- AJAXRQST MessageBox -->
+<div id="jsonMessages"></div>
+
+
+<!-- row -->
+<div class="row" style="margin-top:-20px;">
+
+    <div class="col-lg-6">
+        <input class="form-control" style="width:100%; " placeholder="Search" name="barcode-search" id="barcode-search" type="text" tabindex="1">
+    </div>
+    <!-- /.col -->
+
+    <div class="col-lg-5"  style="margin-left: -10px;">
+        <button id="jqxbuttonRefresh" type='button'  class='btn btn-info' tabindex=""><i class="fa fa-refresh left"></i>Ανανέωση</button>
+    </div>
+
+    <div class="col-lg-1" style="margin-left: 0px;">
+        {% if request.user is has_group("DBoperator") %} 
+            <button id="jqxbuttonDeleteLastBooking" type='button' class='btn btn-danger' style=''><i class="fa fa-check-square-o right"></i>ΑΝΑΙΡΕΣΗ</button>
+        {% endif %} 
+    </div>
+<!-- /.col -->
+
+</div>
+<!-- /.row -->
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+
+<div class="col-lg-6 no-margin-bottom">
+    
+    <div class="panel panel-primary fresh-color" style="margin: -15px -0px 10px -0px;">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-barcode fa-fw"></i> ΜΑΘΗΜΑ</h3>
+        </div>
+        <div class="panel-body" >
+        <!-- Lesson-->
+        <!--
+        <div id='jqxcomboboxLesson'></div>
+        -->
+        <div id="jqxgridLesson" tabindex="3"></div>
+        </div>
+    </div>
+
+
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-user fa-fw"></i> ΒΑΘΜΟΛΟΓΗΤΕΣ </h3>
+        </div>
+        <div class="panel-body"  >
+        <!-- Grader -->
+        <div id="jqxgridGrader" tabindex="4"></div>        
+        </div>
+    </div>
+
+</div>
+<!-- /.col -->
+
+
+<div class="col-lg-6 no-margin-bottom">
+
+    <div class="panel panel-primary fresh-color" >
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-exchange fa-fw"></i> ΧΡΕΩΣΕΙΣ </h3>
+        </div>
+        <div class="panel-body no-padding">
+        <!-- Bookings -->
+        <div id="jqxgridBooking" tabindex="6"></div>        
+        </div>
+    </div>
+               
+</div>
+<!-- /.col -->
+
+</div>
+<!-- /.row -->
+
+
+<!-- *****************************************-->
+<!-- Dialogue "DELETE LAST BOOKING MYALERT" -->
+<!-- *****************************************-->
+<div id="dialogDeleteLastBooking">
+  <div class="modal-content">
+    <!--  
+    -->
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Διαγραφή εγγραφής.</h4>
+    </div>
+    <div class="modal-body">
+        Θέλετε να κάνετε την διαγραφή της ΠΙΟ ΠΡΟΣΦΑΤΗΣ ΠΡΑΞΗΣ;
+    </div>
+    <div class="text-center modal-footer">        
+        <button id="buttonDialogDeleteLastBookingYes" class="btn btn-danger" >NAI</button> 
+        <button id="buttonDialogDeleteLastBookingNo" class="btn btn-primary" style="margin-left: 5px;" >OXI</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- *****************************************-->
+<!-- Dialogue "MYALERT" -->
+<!-- *****************************************-->
+<!-- Modal -->
+<div class="modal fade modal-danger" id="modalSuccess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div id="modalSuccess" style="modal display: none;" class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h5 class="modal-title" id="myModalLabel">Σφάλμα!</h5>
+            </div>
+            <div class="modal-body">
+                <!-- Message to User -->             
+                <h3 class="text-center"><span id="modalMyAlertContent"></span></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- *****************************************-->
+<!-- Dialogue "ΧΡΕΩΣΗ ΦΑΚΕΛΟΥ ΣΕ ΒΑΘΜΟΛΟΓΗΤΗ" -->
+<!-- *****************************************-->
+<div id="jqxwindowFolderRegister" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+  
+  <div>
+    <!-- modal-header -->
+    <!-- 
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> 
+        <h4 class="modal-title" id="myModalLabel">Βαθμολογητής:<span id='GraderInfo'></span></h4> 
+    </div>
+    -->
+    <!-- modal-body -->
+    <div class="modal-body" style="background:#fff;">       
+    <!--    
+    <h3>Πράξη:<span id='ActionInfo'></span></h3>    
+    <h3>Σταθμός:<span id='StationInfo'></span></h3>
+    <h3>Μάθημα:
+    <h3>Φάκελος:</h3>
+    <h3>Βαθμολογητής:</h3>
+    -->
+    <!-- Start Post Form -->
+    <form class="form-horizontal" id="formBookingPost" action="javascript:void(0);" is for action=none >
+    {% csrf_token %}    
+    <!-- HIDDENS -->
+    <input id='jqxinputStation' name='jqxinputStation' type="" value={{StationID}} />
+    <input id='jqxinputAction' type="" name='jqxinputAction' />
+    <input id='jqxinputGraderID' type="" name='jqxinputGraderID' />
+    <input id='jqxinputFolderID' type="" name='jqxinputFolderID' />
+    </form>
+    <!-- End Post Form -->    
+
+    <!-- row -->
+    <div class="row">    
+      <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12" >
+            <div class="card " style="margin:-30px 0px -30px 0px;">
+                <div class="card-body text-center">
+                    <div class="content text-center">
+                        <h2>
+                            <i class="icon fa fa-barcode"></i><span id='LessonInfo'></span><br/>
+                          <i class="icon fa fa-user"></i><span id='GraderInfo'></span>
+                        </h2>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+      </div>
+
+    </div>
+    <!-- ./row -->
+
+
+    <div class="row">
+
+    <!-- folder -->
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card green summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-book fa-4x"></i>
+                    <div class="content">
+                        <div class="title">
+                            <small><span id='FolderInfo'></span></small/>
+                        </div>
+                        <div class="sub-title">ΦΑΚEΛΟΣ-<span id='FolderLexType'></span></div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- books -->
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card green summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-file-text-o fa-4x"></i>
+                    <div class="content">
+                        <div class="title"><span id='BookInfo'></span></div>
+                        <div class="sub-title">ΤΕΤΡΑΔΙΑ</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- action -->
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card red summary-inline">
+                <div class="card-body">
+                    <!--<i class="icon fa fa-arrow-down fa-4x"></i>--> <!-- fa-inbox -->
+                    <div class="content">
+                        <div class="title">
+                            <small><span id='ActionInfo' class="small"></small></span>
+                        </div>
+                        <div class="sub-title">ΠΡΑΞΗ</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    </div>
+    <!-- ./row -->
+
+    <div class="row">
+        <!-- <div class="sub-title">Alert Message</div> -->
+        <div>
+            <div class="alert fresh-color alert-info fade in" role="alert">
+
+                <h4 id="oh-snap!-you-got-an-error!"> Ελέγξτε την ορθότητα των στοιχείων και κατόπιν προχωρήστε στην καταχώρηση!
+                    <a class="anchorjs-link" href="#oh-snap!-you-got-an-error!"><span class="anchorjs-icon"></span></a>
+                </h4>
+                <p></p>
+                <p class="text-center">
+                    <button id="jqxbuttonDo" type="button" class="btn btn-danger">Καταχώρηση</button>
+                    <button id="jqxbuttonCancel" type="button" class="btn btn-default">Ακύρωση</button>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- ./row -->
+
+    
+    <!--Ελέγξτε την ορθότητα των στοιχείων και κατόπιν προχωρήστε στην καταχώρηση!-->
+    </div>
+
+    <!-- modal-footer -->
+    <!--
+    <div class="modal-footer">
+     <button id="jqxbuttonCancel1" class="btn btn-primary">Άκυρο</button>
+     <button id="jqxbuttonDo1" class="btn btn-danger">Καταχώρηση</button>
+    </div>
+    -->
+
+  </div>
+
+</div>
+<!-- ./Dialog Modal -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+// Handle Ajax messages
+helperAjaxMessagesProcess();
+
+//Init station function
+// NO NEED 2017-JUNE
+//setStationData2();
+//setStationData();
+
+//Set focus to barcode-search
+$('#barcode-search').focus();
+
+/****************************
+    Grid Lesson
+****************************/
+//url:helperGetAjaxLinkForUser ("user.is_active}}", '/Lesson/crud/'), 
+var sourceLesson = {
+    url: '/lesson/crud/',
+    datatype: "json",    
+    datafields: [
+        {name: "id"}, 
+        {name: 'name', type: 'string' },
+        {name: 'category', type: 'string' },
+        {name: 'type', type: 'integer' },
+        //{name: 'lexType', value: 'type', values: { source: dataAdapterLessonType.records, value: 'type', name: 'lexType' } },
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    id: 'id',
+    sortcolumn: 'id', sortdirection: 'asc',     
+}; //source
+
+//DataAdapter create + 
+var dataAdapterLesson = new $.jqx.dataAdapter( sourceLesson, {
+    beforeLoadComplete: function (records) {
+        //records[0]['firstname'] = "Michael";
+    },
+    loadComplete: function () {
+        //alert (dataAdapterLesson.records.length);
+    }
+});
+
+/****************************
+// GRID jqxLessonGrid
+****************************/
+$("#jqxgridLesson").jqxGrid({
+    source: dataAdapterLesson,
+    columns: [ //columntype: 'textbox', 
+        { text: '', datafield: 'id', width: '0%', hidden: false }, // id true
+        { text: "Όνομα", datafield: 'name',  filtertype: 'input', },
+        { text: "Κατηγορία", datafield: 'category',  filtertype: 'input', width: '40%', },
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'20%', 
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+    ],     
+    autoheight: false, columnsresize: true, //editable: true, //editmode: 'selectedrow',
+    filterable: true, showfilterrow: false, 
+    //selectionmode: 'singlerow', //multiplecellsextended
+    //pageable: true, pagesize: 10, 
+    sortable: true, width: '100%', height:'210', theme:theme, 
+    //rowsheight: 30,    
+    showaggregates: true, 
+    showstatusbar:false,
+    columnsheight: 18, rowsheight: 18, 
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//Lesson grid
+
+/**********************
+// 
+***********************/
+var sourceLesson = {
+    datatype: "json",
+    datafields: [{name: "id"}, {name: "name"}, ],
+    url: '/lesson/crud/', 
+    sortcolumn: 'id', sortdirection: 'asc',
+}; //source
+
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+
+// GRID > EVENTS 
+$('#jqxgridLesson').on('rowselect', function (event) {
+ 
+  if (event.args) {
+    //var data = dataAdapterLesson.records[event.args.index];
+
+    var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+
+    // filter Grader
+    sourceGrader.url = '/grader/crud/'+"?action=filter&LessonID="+ data.id;    // SUPER 
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });                
+    
+    // filter Folder
+    //sourceFolder.url = '/folder/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+    //$("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder});    
+ 
+    sourceBooking.url = ''
+    $("#jqxgridBooking").jqxGrid({ source: dataAdapterBooking});    
+        
+    // Update related
+    $('#LessonInfo').html(data.name);
+
+    initGridInputHtml();
+    
+  };
+
+});
+
+
+/**********************
+// jqxGrid Grader
+***********************/
+var sourceGrader = {
+    //url: '/grader/crud/', 
+    url: '', 
+    datatype: "json",
+    id: 'id',
+    datafields: [
+        { name: "id" }, 
+        //{name: 'name', map: '_TeacherID_cache&gt;name'},
+        {name: 'name', map: '_TeacherID_cache>name', type: 'string' },
+        {name: 'surname', map: '_TeacherID_cache>surname', type: 'string' },
+        {name: 'codeSpec', map: '_TeacherID_cache>codeSpec', type: 'string' },
+        { name: "codeGrad", map: "_TeacherID_cache>codeGrad" }, 
+        {name: "isgraderC", type: 'string' },
+        {name: "currentFolder", },
+        {name: "currentFolderID", },
+        {name: 'type', type: 'integer' }, // number, 
+        //{name: 'lexType', value: 'type', values: { source: dataAdapterGraderType.records, value: 'type', name: 'lexType' } },
+    ],
+    sortcolumn: 'surname', sortdirection: 'asc',
+}; //source
+
+var dataAdapterGrader = new $.jqx.dataAdapter( sourceGrader );
+
+// GRID jqxGraderGrid
+// Render with use Bootstrap classses (www.w3schools.com/bootstrap/bootstrap_ref_css_helpers.asp)
+var CellRendererGrader= function (row, column, value, data) {
+    // return red if a number 
+    if (!isNaN(data.currentFolder)) {return "redClass";}
+};
+
+// Grid
+$("#jqxgridGrader").jqxGrid({
+    source: dataAdapterGrader,
+    columns: [ //columntype: 'textbox', editable : false, 
+        { text: "", datafield: "id", hidden: false,   width: '5%'},  // false id
+        { text: 'Επίθετο', datafield: 'surname', columntype: 'textbox', filtertype: 'input',},
+        { text: "Όνομα", datafield: "name", filtertype: 'input', width: '25%' },
+        { text: "Κωδ.", datafield: "codeGrad", filtertype: 'input', width: '15%' },
+        //{ text: "Ειδικ.", datafield: 'codeSpec', editable : false, width: '17%' },
+        { text: "Αναβ.", datafield: 'isgraderC', columntype: 'checkbox', width: '10%'},
+        { text: "Φάκελος.", datafield: 'currentFolder', cellclassname:CellRendererGrader, width: '10%'},        
+        //{ text: "Status.", datafield: 'status', width: 60 },
+    ],
+    //columnsresize: true, selectionmode: 'singlerow', width: '100%', height:'300', 
+    autoheight: false, columnsresize: true, editable: false, //editmode: 'selectedrow',
+    filterable: true, showfilterrow: true, 
+    pageable: true, pagesize: 10, sortable: true,
+    //selectionmode: 'singlerow',
+    width: '100%', height: 290, theme: theme,     
+    //altrows: true, 
+    columnsheight: 18, rowsheight: 18, 
+    showaggregates: true, 
+    toolbarheight:50,
+});//Grader grid
+//editable:true, editmode: 'selectedrow', 
+//altrows: true, autoheight: true, 
+//ready: function () {$("#jqxnotificationServer").html(notificationServerMessage).jqxNotification("open");},
+
+
+// jqxgridGrader > EVENT 
+//$('#jqxgridGrader').on('rowselect', function (event) {
+$('#jqxgridGrader').on('rowclick', function (event) {  // updates grid even on api call
+    
+    var rowdata = $('#jqxgridGrader').jqxGrid('getrowdata', event.args.rowindex);
+    //console.log(event.args.rowindex);
+
+    // Filter Booking
+    sourceBooking.url = '/booking/crud/'+"?action=filter&GraderID="+ rowdata.id;    // SUPER 
+    $("#jqxgridBooking").jqxGrid({ source: dataAdapterBooking });                
+    console.log('Grader.id='+rowdata.id)
+    
+    // clear
+    initBookingData();    
+});
+
+/**********************
+// jqxgridBooking
+***********************/
+// RecordSet  
+var sourceBooking = {
+    url: '', 
+    //url: '/booking/crud/', 
+    datatype: "json",
+    //async: false, // must inorder to simulate auto-select in search-input 
+    datafields: [ 
+        { name: "id" }, 
+        { name: "action" }, 
+        { name: "actionTime", type: 'date' }, 
+        //{ name: "actionDuration", type: 'date' }, 
+        { name: "station" }, 
+        { name: "wasTypeOf"}, 
+        { name: "FolderID_id" }, 
+        { name: "GraderID_id" }, 
+        { name: "no", map: "_FolderID_cache>no" }, 
+        { name: 'codeType', map: "_FolderID_cache>codeType" }, 
+        { name: 'lexType', value: 'wasTypeOf', values: { source: dataAdapterFolderType.records, value: 'wasTypeOf', name: 'lexType' } },
+        { name: 'lexAction', value: 'action', values: { source: dataAdapterBookingAction.records, value: 'action', name: 'lexAction' } },
+        { name: 'lexStation', value: 'station', values: { source: dataAdapterBookingStation.records, value: 'station', name: 'lexStation' } },
+    ],         
+    id: 'id',
+
+
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/booking/crud/', 
+            data: data,
+            //data: { action: 'update', id: rowdata.id, no: rowdata.no, books: rowdata.books, }, 
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                $("#jqxgridBooking").jqxGrid('updatebounddata');
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+    }, //delete
+
+
+    //sortcolumn: 'actionTime', //sortdirection: 'asc',     # not working
+}; //source
+
+
+// DataAdapter 
+var dataAdapterBooking = new $.jqx.dataAdapter(sourceBooking);
+
+//renderer 
+var cellclassnameWasTypeOf = function (row, column, value, data) {
+    switch (data.wasTypeOf) {
+        case 2:
+            //return "orangeClass";
+            return "blueClass";
+            break;
+        case 1:
+            return "greenClass";
+            break;
+        case 0:
+            return "redClass";
+            break;
+        default: 
+
+    } //switch
+};
+
+
+// jqxGrid
+$("#jqxgridBooking").jqxGrid({
+    source: dataAdapterBooking,
+    columns: [ 
+        { text: "id", datafield: "id", hidden: false,  width: '8%' },
+        { text: 'Ημ-νία', datafield: 'actionTime', columntype: 'datetimeinput', cellsformat: 'yyyy-MM-dd HH:mm:ss' , 
+         //{ text: 'Date', datafield: 'Date', width: 100, columntype: 'datetimeinput', width: 90, align: 'center', cellsalign: 'right', cellsformat: 'd', formatString: "dd/MM/yyyy",
+             createeditor: function (row, cellvalue, editor) {editor.jqxDateTimeInput({ showTimeButton: true, }); }, //createeditor
+        },
+
+        { text: "Σταθμός", datafield: 'station', displayfield: 'lexStation', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexStation', valueMember: 'station', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+        
+        { text: "Φακ.", datafield: 'no', width: '10%', 
+            aggregates: ['count'], 
+        },
+
+        { text: "Τύπος(Π)", datafield: 'wasTypeOf', displayfield: 'lexType', editable : false, cellclassname: cellclassnameWasTypeOf, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'10%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexType', valueMember: 'value', });
+            }, // createeditor
+        },        
+
+        { text: "Πράξη", datafield: 'action', displayfield: 'lexAction', editable : false,  
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexAction', valueMember: 'action', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },        
+    ], 
+    //altrows: true, autoheight: true, 
+    //selectionmode: 'singlerow', 
+    filterable: false, showfilterrow: false, sortable: false, 
+    //pageable: true, pagesize: 20,
+    width: '99.5%', height: 610, rowsheight: 19, theme: theme, 
+
+});  //Booking grid
+//$("#jqxgridBooking").jqxGrid('selectrow', -1);
+
+
+
+/**********************
+// DIALOGUE > jqxwindowFolderRegister
+***********************/
+function showModalMyAlert(msg){
+    // set msg
+    $("#modalMyAlertContent").html(msg);   
+    // Open Window
+    //$("#modalSuccess").jqxWindow('open');
+    $('#modalSuccess').modal('show');
+    //$("#jqxwindowFolderRegister").jqxWindow('focus');
+};
+
+
+/******************
+// User selection validation
+******************/
+function isValidUserSelection() {    
+    //return true;
+};
+
+
+/******************
+Action Logic 
+******************/
+//Action Data
+function initActionData(){    
+    //return true;
+};
+
+//rowdata = folder rowdata
+function setActionData(){
+    //return true;
+    
+};
+
+
+/******************
+//Booking Data
+******************/
+function initBookingData(){    
+    $('#jqxgridBooking').jqxGrid('clearselection');
+};
+
+function setBookingData(){    
+    $('#jqxgridBooking').jqxGrid('clearselection');
+};
+
+
+/******************
+//Grader Data
+******************/
+//initGraderData
+function initGraderData(){
+    $('#jqxgridGrader').jqxGrid('clearselection');
+};
+
+//setGraderData
+function setGraderData(){
+
+};
+
+/******************
+//Folder Data
+******************/
+function initFolderData(){    
+    return true;
+};
+
+// Folder Data
+function setFolderData(){          
+    return true;
+};
+
+
+/******************
+//Lesson Data
+******************/
+function initLessonData(){    
+    $('#LessonInfo').html('');
+};
+
+function setLessonData(){     
+  var selectedrowindex = $('#jqxgridLesson').jqxGrid('selectedrowindex'); 
+  if (selectedrowindex!=-1){
+    var rowdata = $('#jqxgridLesson').jqxGrid('getrowdata', selectedrowindex);
+    $('#LessonInfo').html(rowdata.name);
+  }
+};
+
+
+/******************
+//Grids 
+******************/
+function initGridInputHtml(){ 
+    initActionData();
+    initBookingData();
+    initFolderData();    
+    initGraderData();
+    //console.log($(this).attr('href'));
+    //console.log($(this).attr('name'));
+};
+
+
+// Initialize grids 
+function getGridInputHtml(){
+    
+    var folderRowdata, graderRowdata;
+    
+    folderRowdata = setFolderData();    
+    setActionData(folderRowdata);
+    graderRowdata = setGraderData();
+    setLessonData();
+    
+    setBookingData();
+    //console.log($(this).attr('href'));
+    //console.log($(this).attr('name'));
+};
+
+
+
+
+/**********************
+// UI / BUTTONS
+***********************/
+// BUTTON > refresh
+$("#jqxbuttonRefresh").jqxButton({ width: 80, height: 30 });
+// BUTTON/refresh/Events
+
+$("#jqxbuttonRefresh").click(function (event) {    
+  //var index = $('#jqxgridLesson').jqxGrid('getrowboundindex', 0);
+  // reselect the selectred row displayed in the Grid.
+  var selectedrowindex = $('#jqxgridLesson').jqxGrid('selectedrowindex'); 
+  selectedrowindex  = (selectedrowindex ==-1)? 0 : selectedrowindex;
+  $('#jqxgridLesson').jqxGrid('selectrow', selectedrowindex);
+});
+
+// BUTTONS
+//$("#jqxbuttonCheck").jqxButton({ width: 80, height: 30 });
+
+
+
+/**********************
+// DIALOGUE > jqxwindowFolderRegister
+***********************/
+
+// DIALOGUE > Input
+$('#jqxinputGraderID, #jqxinputFolderID').jqxInput({ width: 0.1, height: 0, disabled:true,});
+$('#jqxinputStation, #jqxinputAction').jqxInput({ width: 0.1, height: 0, disabled:true,});
+// To width einai gia to validation, miaw kai o validator does not validate hidden inputs
+
+
+
+/**********************
+// form > jqxValidator
+***********************/
+
+
+/******************************
+ Dialogue DELETE          
+******************************/                
+/**/
+// Button > 
+$("#jqxbuttonDeleteLastBooking").jqxButton({ width: 80, height: 30 });
+// Button > Events 
+$("#jqxbuttonDeleteLastBooking").click(function (event) {
+    // Gather Values
+    //$('#jqxinputStation').val($("#StationID").val());
+    /*
+    var datainformations = $('#jqxgridBooking').jqxGrid('getdatainformation');
+    var rowCount = datainformations.rowscount; 
+    alert (rowCount ); //+ rowscounts[0].id
+
+     var rowID = $('#jqxgrid').jqxGrid('getrowid', 0);
+     // get row Data by ID.
+     var index = $('#jqxgrid').jqxGrid('getrowboundindexbyid', rowID);
+     alert("Bound index is: " + index);
+    */
+
+
+    var rows = $('#jqxgridBooking').jqxGrid('getrows');
+    //alert (rows); //+ rowscounts[0].id
+    var rowCount = $("#jqxgridBooking").jqxGrid('getrows').length;
+    
+    if (rowCount >0) {
+        var lastRow = rowCount -1;         
+        var index = $('#jqxgridBooking').jqxGrid('getrowboundindexbyid', rows[lastRow].id);
+        $("#jqxgridBooking").jqxGrid('selectrow', index);
+        //alert ($("#jqxgridBooking").jqxGrid('getrows')[lastRow].id);
+        
+        $("#myModalLabel").html(rows[lastRow].id);    
+        console.log("id="+rows[lastRow].id);
+        // Open Window
+        $("#dialogDeleteLastBooking").jqxWindow('open');
+
+        $("#dialogDeleteLastBooking").jqxWindow('focus');
+    }
+});
+
+// Dialogue > dialogDeleteLastBooking
+//buttonDialogDeleteLastBooking
+$( '#dialogDeleteLastBooking' ).jqxWindow({ 
+    autoOpen: false, title: 'Διαγραφή εγγραφής!', isModal: true, 
+    //cancelButton: $('#buttonDialogDeleteGraderNo'), 
+    keyboardNavigation: true, keyboardCloseKey: 13,
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    //position: { x: parseInt($("#jqxgridBooking").offset().left)+200, y: parseInt($("#jqxgridBooking").offset().top) + -30,},    
+    width: 'auto', height: '300', theme: theme, 
+});        
+
+// Dialogue / Events
+$("#dialogDeleteLastBooking").on('close', function () {
+});
+
+//Dialogue / Buttons
+$('#buttonDialogDeleteLastBookingYes, #buttonDialogDeleteLastBookingNo').jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Dialogue / Buttons / Events / NO
+$('#buttonDialogDeleteLastBookingNo').click(function () {
+    $('#dialogDeleteLastBooking').jqxWindow('close');
+});
+
+
+// Dialogue / Buttons / Events / YES
+$('#buttonDialogDeleteLastBookingYes').click(function () {
+
+    var rows = $('#jqxgridBooking').jqxGrid('getrows');
+    //alert (rows); //+ rowscounts[0].id
+    var rowCount = $("#jqxgridBooking").jqxGrid('getrows').length;
+    
+    if (rowCount >0) {
+        var lastRow = rowCount -1;         
+        var index = $('#jqxgridBooking').jqxGrid('getrowboundindexbyid', rows[lastRow].id);
+        $("#jqxgridBooking").jqxGrid('selectrow', index);
+        //alert ($("#jqxgridBooking").jqxGrid('getrows')[lastRow].id);
+
+        // delete entry 
+        var id = rows[lastRow].id;
+        alert ("Must DELETE id:"+ id );
+        $('#jqxgridBooking').jqxGrid('deleterow', id);     
+
+        // Need to update VIEW for extra field correlations
+        //var commit = $("#jqxgridBooking").jqxGrid('deleterow', id);
+    }
+    // update grid 
+    //$('#jqxgridBooking').jqxGrid('deleterow', datarow.id);        
+    $('#dialogDeleteLastBooking').jqxWindow('close');
+});
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,94 @@
+Currently i am generating the reports in pdf format. But now i want to generate the reports in ms word or docx format.
+
+my api.py file
+
+def export_pdf(request,id):
+        report = Report.objects.get(id=id)                
+
+        options1 = ReportPropertyOption.objects.filter(report=report,is_active=True)   
+        locations = []  
+        out_string = ""    
+        map = None
+
+
+
+        for option in options1:  
+            option.property = get_property_name(option.property)        
+            option.exterior_images = ReportExteriorImages.objects.filter(report = option)  
+            option.interior_images = ReportInteriorImages.objects.filter(report = option)
+            option.floorplan_images = ReportFloorPlanImages.objects.filter(report = option)
+            option.fitouts =    ReportFitOut.objects.filter(propertyoption = option)   
+            if (option.gps_longitude):
+
+                locations.append("&markers=color:red|label:S|"+""+str(option.gps_longitude)+","+str(option.gps_latidtude)+"")
+        for loc in locations:
+            out_string+=loc
+
+        if locations:
+            map = "http://maps.google.com/maps/api/staticmap?center=Bangalore&zoom=12&size=512x512&maptype=roadmap"+out_string+"&sensor=true"              
+        #map = "http://maps.google.com/maps/api/staticmap?zoom=12&size=400x400&maptype=roadmap&sensor=false&center=\\"
+        html  = render_to_string('report/export.html', { 'pagesize' : 'A4', }, context_instance=RequestContext(request,{'options1':options1,'meta':report.meta,'map':map}))
+
+        result = StringIO.StringIO()       
+        pdf = pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), dest=result, link_callback=fetch_resources )        
+        #pdf = Docx(StringIO.StringIO(html.encode("UTF-8")), dest=result, link_callback=fetch_resources )
+        if not pdf.err:
+            return result
+        else:
+            return None
+
+I am getting all the data in result and then exporting that data to pdf. But now i want to export the data to the docx or MS word format. The same result i want to export to docx format. As i am getting the data in pdf format so i dont want to convert that exported pdf to docx. I want to export directly in docx. I tried using python-docx, but not able to figure out how to export out in docx format. Can anyone guide me how to this. Which modul i should use in django. Please help me
+python django python-docx
+shareimprove this question
+asked May 23 '14 at 5:10
+user3541454
+3418
+
+add a comment
+1 Answer
+active
+oldest
+votes
+up vote
+7
+down vote
+accepted
+
+Here is how I generate a docx file from within a Django view:
+
+from docx import *
+from docx.shared import Inches
+
+def TestDocument(request):
+
+    document = Document()
+    docx_title="TEST_DOCUMENT.docx"
+    # ---- Cover Letter ----
+    document.add_picture((r'%s/static/images/my-header.png' % (settings.PROJECT_PATH)), width=Inches(4))
+    document.add_paragraph()
+    document.add_paragraph("%s" % date.today().strftime('%B %d, %Y'))
+
+    document.add_paragraph('Dear Sir or Madam:')
+    document.add_paragraph('We are pleased to help you with your widgets.')
+    document.add_paragraph('Please feel free to contact me for any additional information.')
+    document.add_paragraph('I look forward to assisting you in this project.')
+
+    document.add_paragraph()
+    document.add_paragraph('Best regards,')
+    document.add_paragraph('Acme Specialist 1]')
+    document.add_page_break()
+
+    # Prepare document for download        
+    # -----------------------------
+    f = StringIO()
+    document.save(f)
+    length = f.tell()
+    f.seek(0)
+    response = HttpResponse(
+        f.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+    response['Content-Disposition'] = 'attachment; filename=' + docx_title
+    response['Content-Length'] = length
+    return response
+

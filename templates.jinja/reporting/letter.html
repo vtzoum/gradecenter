@@ -1,0 +1,469 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΕΚΤΥΠΩΣΕΙΣ ΓΡΑΜΜΑΤΕΙΑΣ
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<div class="page-title">
+    <span class="title">ΕΚΤΥΠΩΣΕΙΣ</span>
+</div>                        
+
+<div id="printLinks" class="row">
+
+    <div class="col-xs-2"> <!-- -->
+     <a id="printLetter" href="/reporting/pdf/letter/" class="btn btn-info" role="button">Letters</a>
+    </div>
+
+
+</div>
+<!-- ./row -->
+
+<!--
+<div class="row">
+    <div class="col-xs-12">
+    <div class="card">
+        <div class="card-body">
+          The MIT License (MIT)<br><br>
+
+          Copyright (c) [2015] [Flat Admin Bootstrap Templates]<br><br>
+
+          Permission is hereby granted, free of charge, to any person obtaining a copy
+          of this software and associated documentation files (the "Software"), to deal
+          in the Software without restriction, including without limitation the rights
+          to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+          copies of the Software, and to permit persons to whom the Software is
+          furnished to do so, subject to the following conditions:<br><br>
+        </div>
+    </div>
+    </div>
+
+</div>
+-->
+<!-- ./row -->
+
+
+<!-- Start Dialogue PRINT -->
+<div id="dialogPrint" >
+
+<div class="row">
+<div class="col-md-10 col-md-offset-1">
+
+<!-- Form -->
+<form class="form-horizontal" id="formPrint" role="form" action="javascript:void(0);" >
+{% csrf_token %}
+
+<fieldset>
+  <!-- Form Name -->
+  <legend>Επιλογές Εκτύπωσης</legend>
+
+  <!-- Text input-->
+  <div class="form-group" >
+    <label class="col-sm-3 control-label" for="textinput">Επιστολή</label>
+    <div class="col-sm-9">
+    <div id="jqxcomboboxLetterCode" class="form-control" placeholder="Επιστολή"></div>
+    </div>
+  </div>
+
+  <!-- Text input-->
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="textinput">Μάθημα</label>
+    <div class="col-sm-9">
+      <div id="jqxcomboboxLesson" class="form-control" placeholder="Μάθημα"></div>
+      <!-- <input type="text" placeholder="Address Line 2" class="form-control"> -->
+    </div>
+  </div>
+
+  <!-- Text input-->
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="textinput">Βαθμολογητές</label>
+    <div class="col-sm-9">
+    </div>
+  </div>
+  <!-- Text input-->
+  <div class="form-group">
+    <div class="col-sm-12">
+    <div id="jqxgridGrader" class="form-control" ></div>
+    <input id='jqxinputGraderArrayID' name='jqxinputGraderArrayID' type="hidden" class="form-control"/>
+    <!--<input type="text" placeholder="City" class="form-control">-->
+    </div>
+  </div>
+
+  <!-- Text input-->
+  <!--
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="textinput">State</label>
+    <div class="col-sm-4">
+      <input type="text" placeholder="State" class="form-control">
+    </div>
+
+    <label class="col-sm-2 control-label" for="textinput">Postcode</label>
+    <div class="col-sm-4">
+      <input type="text" placeholder="Post Code" class="form-control">
+    </div>
+  </div>
+  -->
+
+
+  <!-- Text input-->
+  <!--
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="textinput">Country</label>
+    <div class="col-sm-10">
+      <input type="text" placeholder="Country" class="form-control">
+    </div>
+  </div>
+  -->
+
+<!-- Options -->
+<div name="optionsCodeType">
+  
+  <div class="radio3 radio-check radio-inline">
+    <input id="radio0" name="codeType" value="0" checked="" type="radio">
+    <label for="radio0">
+      Φάκελοι 1ο/2ο ΧΕΡΙ
+    </label>
+  </div>
+
+  <div class="radio3 radio-check radio-inline">
+    <input id="radio1" name="codeType" value="1" type="radio">
+    <label for="radio1">
+      Φάκελοι ΑΝΑΒΑΘΜΟΛΟΓΗΣΗΣ
+    </label>
+  </div>
+  
+</div>
+<!-- ./Options -->
+
+<!-- printLink -->
+<input id='printLink' name='printLink' type="hidden"/>
+
+  <!-- Buttons -->
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="pull-right">
+        <button id="buttonCancel" class="btn btn-default" >Cancel</button>
+        <button id="buttonPrint" class="btn btn-primary" >OK</button> 
+      </div>
+    </div>
+  </div>
+
+</fieldset>
+</form>
+</div><!-- /.col-lg-12 -->
+</div><!-- /.row -->
+
+<!-- End Dialogue PRINT -->
+</div>
+
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">    
+
+$(document).ready(function () {
+
+///////////////////////////
+// jqxcomboboxLessons
+//////////////////////////                        
+var sourceLetterCode = {
+    //datatype: "json", url: '/lesson/crud/', 
+    datatype: "array", localdata: ArrayLetterCode,    
+    datafields: [{name: "id"}, {name: "code"}, ],    
+}; //source
+
+// DataAdapter
+var dataAdapterLetterCode = new $.jqx.dataAdapter(sourceLetterCode);
+
+//http://jsfiddle.net/jqwidgets/5SnVH/
+$("#jqxcomboboxLetterCode").jqxComboBox({
+    source: dataAdapterLetterCode, displayMember: "code", selectedIndex: 0, valueMember: "id", width: '100%',
+    placeHolder:"Επιλέξτε Επιστολή...",  theme: theme, 
+});
+$("#jqxcomboboxLetterCode").jqxComboBox('selectIndex', -1 );
+
+///////////////////////////
+// jqxcomboboxLessons
+//////////////////////////                        
+var sourceLesson = {
+    datatype: "json",
+    datafields: [{name: "id"}, {name: "name"}, ],
+    url: '/lesson/crud/', 
+}; //source
+
+// DataAdapter
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+
+//http://jsfiddle.net/jqwidgets/5SnVH/
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, displayMember: "name", selectedIndex: 0, valueMember: "id", width: '100%',
+    placeHolder:"Επιλέξτε Μάθημα...",  theme: theme, 
+});
+$("#jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
+
+//jqxcomboboxLesson > Events
+$('#jqxcomboboxLesson').on('select', function (event) {    
+    if (event.args) {
+        data = dataAdapterLesson.records[args.index];
+        sourceGrader.url = '/grader/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+        $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader});    
+        $("#jqxgridGrader").jqxGrid('updatebounddata');
+    }
+    var data = dataAdapterLesson.records[args.index];
+    //$("#jqxinputGraderNewLesson").val(data.id);   // Lesson.id
+    //console.log ('Lesspnid:' + data.id);
+});// combo.event
+
+////////////////////////////////
+// Grader data
+///////////////////////////////                        
+//var GraderArrayID = [];
+
+var sourceGrader = {
+    //url: '/grader/crud/', 
+    url: '', 
+    datafields: [
+        { name: "id" }, 
+        { name: 'isCoordinator', type: 'bool' }, 
+        { name: 'isgraderC', type: 'bool' }, 
+        { name: 'status', type: 'number' },
+        //TeacherID
+        { name: "name", map: "_TeacherID_cache>name" }, 
+        { name: "surname", map: "_TeacherID_cache>surname" }, 
+        { name: "codeGrad", map: "_TeacherID_cache>codeGrad" }, 
+        { name: "codeAfm", map: "_TeacherID_cache>codeAfm" }, 
+        { name: "codeSpec", map: "_TeacherID_cache>codeSpec" }, 
+    ],
+    datatype: "json",
+    id: 'id',
+    sortcolumn: 'surname',
+    sortdirection: 'asc',         
+}; //source
+
+//DataAdapter create + 
+var dataAdapterGrader = new $.jqx.dataAdapter( sourceGrader, {
+    loadComplete: function () {
+        //var length = dataAdapterGrader.records.length;
+        //var rec = dataAdapterGrader.records[0];
+        //alert (length + rec.name + rec.type + rec.lexType);    
+        // aggregates
+        //aggregateData = $("#jqxgridGrader").jqxGrid('getcolumnaggregateddata', 'type', ['count', 'min', 'max']);
+        //$("#jqxnotificationServer").html(response.msg).jqxNotification("open");
+        //$("#jqxnotificationServer").html('OK!').jqxNotification("open");
+        //console.log('adapter ok'); 
+    },  //loadComplete
+});
+
+
+///////////////////////////
+// GRID jqxGraderGrid
+//////////////////////////                        
+$("#jqxgridGrader").jqxGrid({
+    source: dataAdapterGrader,
+    columns: [ //columntype: 'textbox', 
+        { text: "id", datafield: "id", hidden: true,  editable : false, width: '5%'},
+        { text: 'Επώνυμο', datafield: 'surname', editable : false, columntype: 'textbox', filtertype: 'input', width: '35%'},
+        { text: "Όνομα", datafield: "name", editable : false, filtertype: 'input',width: '25%'},
+        { text: "Ειδικ.", datafield: 'codeSpec', editable : false, width: '20%'},
+        { text: "ΑΦΜ", datafield: 'codeAfm', editable : false, filtertype: 'input', width: '15%'},
+        //{ text: "Κ.Βαθμ.", datafield: 'codeGrad', editable : false, filtertype: 'input', width: '10%'},
+        //{ text: "Συντ.", datafield: 'isCoordinator', columntype: 'checkbox', width: '5%'},
+        //{ text: "ΑναΒαθ.", datafield: 'isgraderC', columntype: 'checkbox', width: '5%'},
+        //{ text: "Status.", datafield: 'status', width: 60 },
+        /*
+        */
+    ],
+    autoheight: false, columnsresize: true, height: '250px', 
+    //filterable: true, showfilterrow: true,
+    pageable: false, sortable: true, width: '100%', theme: theme, 
+    altrows: true,selectionmode: 'checkbox',
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//Grader grid
+
+
+
+
+////////////////////////////////
+// Buttons 
+////////////////////////////////
+//$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
+// Saves a.href in hidden input 
+$('#printLinks a').click(function (event) {
+    event.preventDefault();
+    $("#printLink").val($(this).attr('href'));    
+    $( '#dialogPrint').jqxWindow('open');
+});
+
+/////////////////////////
+//Dialogue ADD
+/////////////////////////                
+// Dialogue 
+$('#dialogPrint').jqxWindow({ 
+    autoOpen: false, title: 'Επιλογές Εκτύπωσης.', isModal: true, 
+    //keyboardNavigation: true, 
+    keyboardCloseKey: 13, showAnimationDuration: 600, //closeAnimationDuration: 200,
+    resizable: false, modalOpacity: 0.8, 
+    //position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
+    width: '600px', height: 'auto',
+});        
+
+// Dialogue > Event
+$("#dialogPrint").on('close', function () {
+    $("#jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
+    $("#jqxcomboboxLetterCode").jqxComboBox('selectIndex', -1 );
+    //$("[name=codeType]").val(["0"]);    //instead of $("#codeType").val(0);
+    $("#jqxinputGraderArrayID").val('');
+    $('#jqxgridGrader').jqxGrid('clearselection');
+    /*
+    if( $('#jqxgridTeacher').jqxGrid('getselectedrowindexes').length > 0 ) {
+        $('#jqxgridTeacher').jqxGrid('clearselection');
+    }
+    */
+
+});
+
+///////////////////
+// Dialogue > input
+
+///////////////////
+// Dialogue > Buttons
+// Button > No > Event
+$( '#buttonCancel' ).click(function () {
+    $( '#dialogPrint' ).jqxWindow('close');
+});
+
+// Button > Yes > Event
+$( '#buttonPrint' ).click(function (event) {
+    
+    var GraderArray = [];
+    var Lesson = $('#jqxcomboboxLesson').val();
+    GraderArray = helperJqxgridGetSelectedIds('#jqxgridGrader', 'id');
+    
+    $("#jqxinputGraderArrayID").val(GraderArray);
+    //alert('ABOuT TO POST <br/> Lesson:'+ Lesson + ' TeacherArray: ' + TeacherArray);    //OK
+    //var jsonArray = JSON.parse(TeacherArray); //FAIL
+    var stringifyArray = JSON.stringify(GraderArray);
+    var jsonStringifyArray = JSON.parse(JSON.stringify(GraderArray));
+    //alert('jsonStringifyArray :' + jsonStringifyArray );    //OK
+    /*
+    $.ajax({
+        method: 'POST',
+        url: '/grader/lesson/crud/',
+        data: {action:'add', 'jqxinputGraderNewLesson': Lesson, 'jqxinputGraderNewTeacherArray': stringifyArray},
+        dataType: 'json',
+        cache: false,
+        success: function (response, status, xhr) {
+            //$("#jqxnotificationServer").html('Grader Add success!').jqxNotification("open");
+            console.log(response);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+        }
+    }); //ajax
+    */
+    // Remove selections
+    //$("#jqxgridGrader").jqxGrid('updatebounddata');
+    
+    // Vaidate form data
+    $('#formPrint').jqxValidator('validate');
+    
+    //$( "#dialogAddGrader" ).jqxWindow('close');
+    
+});
+
+
+
+////////////////////////////
+// form > jqxValidator
+////////////////////////////
+$('#formPrint').jqxValidator( { 
+    rules: [
+
+        { input: '#jqxinputGraderArrayID', message: 'Δεν υπάρχουν επιλογές!', 
+        rule: function (input, commit) {
+            return true; 
+            var val = $('#jqxinputGraderArrayID').val();
+            if ( val == '' ) return false;
+            }
+        },
+        
+        { input: '#jqxcomboboxLesson', message: 'Επιλέξτε Μάθημα!', //rule: 'required',
+        rule: function (input, commit) {
+            var val = $('#jqxcomboboxLesson').val();
+            if ( ! isNaN(val) ) return true;
+            }        
+        },
+        
+        { input: '#jqxcomboboxLetterCode', message: 'Επιλέξτε τύπο επιστολής!', rule: 'required',
+        rule: function (input, commit) {
+            var val = $('#jqxcomboboxLetterCode').val();
+            if ( ! isNaN(val) ) return true;
+            }        
+        },
+        
+        /*   
+        { input: '#toNo', message: 'Nα είναι ακέραιος!', 
+        rule: function (input, commit) {
+            var toNo = $('#toNo').val();
+            if ( ($.isNumeric(toNo)) || (toNo == '') ) return true; else return false;
+            }
+        },
+    */
+        
+    ],  //rules 
+    onSuccess: function () { 
+        
+        //console.log ('Start on Success');
+        var url = $('#printLink').val();
+        var LessonID = $("#jqxcomboboxLesson").jqxComboBox('val');
+        var LetterCode = $("#jqxcomboboxLetterCode").jqxComboBox('val');
+        //GraderArray = helperJqxgridGetSelectedIds('#jqxgridGrader', 'id');
+        //alert('ABOuT TO POST <br/> Lesson:'+ Lesson + ' TeacherArray: ' + TeacherArray);    //OK
+        //var jsonArray = JSON.parse(TeacherArray); //FAIL
+        var stringifyArray = JSON.stringify($("#jqxinputGraderArrayID").val());
+        var jsonStringifyArray = JSON.parse(JSON.stringify($("#jqxinputGraderArrayID").val()));
+        //alert('jsonStringifyArray :' + jsonStringifyArray );    //OK
+
+        //var buttonClicked = clickedButton[0].id;    
+        //data: {'LessonID': LessonID, 'jqxinputGraderArrayID': stringifyArray},
+        //var foo = $.param( {'LessonID': LessonID, 'jqxinputGraderArrayID': stringifyArray} );
+        //var qstring  = $('#formPrint').serialize();
+        var qstring  = $.param( {'LetterCode': LetterCode, 'LessonID': LessonID, 'jqxinputGraderArrayID': stringifyArray} );
+        //qstring  = qstring  + (LessonID == '' ? '' : '&LessonID=' + LessonID );
+        console.log (qstring);
+        //alert (qstring);
+        window.location.href = url + '?' + qstring ;    
+        $( "#dialogPrint" ).jqxWindow('close');
+        
+
+        //console.log("Success");
+        //alert('Success!'); 
+    },//onSuccess
+    onError: function () { 
+        console.log("Failed!");
+        //alert('Failed!'); 
+    }, 
+} );
+
+
+/*
+    $('#formPost').on('validationSuccess', function (event) {
+         alert('You have filled the form correctly!')
+     });   
+
+*/
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

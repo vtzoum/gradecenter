@@ -1,0 +1,7 @@
+Django==1.9
+django-registration-redux
+xlsxwriter
+reportlab
+jinja2
+jinja2-django-tags
+

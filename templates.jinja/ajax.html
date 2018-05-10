@@ -1,0 +1,259 @@
+<html>
+  <head>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  
+  </head>
+
+  <body>
+
+
+    <h1>Hello {{ variable }}, welcome to my awesome site</h1>
+
+
+    <select name="sometext" size="5">
+      <option>text1</option>
+      <option>text2</option>
+      <option>text3</option>
+      <option>text4</option>
+      <option>text5</option>
+    </select>
+
+
+
+
+<button id="b1">Get External Content</button>
+<div id="div1"><h2>Let jQuery AJAX Change This Text</h2></div>
+
+
+<button id="b2">Get External DJANGO Content</button>
+<div id="div2"><h2>Let jQuery AJAX Change This Text</h2></div>
+
+
+
+</body>
+
+<!-- JS CSRFtoken -->
+<script>
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    };
+    var csrftoken = getCookie('csrftoken');
+</script>
+    
+<script>
+$(document).ready(function(){
+
+    
+
+
+/*
+    $("#b1").click(function(){
+        $.ajax({url: "demo_test.txt", success: function(result){
+            $("#div1").html(result);
+        }});
+    });
+*/
+    $("#b2").click(function(){
+        
+        var arrayData = [
+            { "id":"1", "name":"bob"}, 
+            { "id":"2", "name":"jonas"},
+          ];
+
+        //info = []; info[0] = 'hi';info[1] = 'hello'; var serialData = $.serialize(info);
+        
+        var dictData = {name: "John", postData:"foo", csrfmiddlewaretoken: csrftoken }; //alert (postData );
+        
+        //var data = ['a','b','c','d','e'];
+
+        //SERIALIZE
+        //var myData = $('#yourForm').serialize();
+        //[{name: inp1, value: 'val1'}, {name: inp2, value: 'val2'}] as is, or do I need to preprocess it somehow?
+
+
+        /* OK
+        $.get( "/ajax_data/", {name: "John", time: "2pm", postData:"foo"} )
+        .done(function( result ) {
+            alert( "GET Data Loaded: " + result );
+            //$("#div2").html(result);
+        });//get
+        */
+
+        var postData = new Array(); postData[0] = 'ga'; postData[1] = 'cd';
+        //var jsonData = JSON.stringify(postData, null, 2); //object to string 
+        //var your_object = JSON.parse(json_text); // JSON string to object
+        //jsonData = $.serialize(postData); //NO
+        jsonData  = JSON.stringify(postData); 
+        // data: "{'countries':['ga','cd']}",
+        //alert (jsonData);
+        /*
+        */
+
+var scheduleData = [];
+var data = { 
+   'user_id' : '12', 
+   'day_of_week' : 'Monday',
+    'when' : 'start',
+    'time' : '12 AM'
+ }
+scheduleData.push(data);
+var data = { 
+   'user_id' : '13', 
+   'day_of_week' : 'Tuesday',
+    'when' : 'end',
+    'time' : '12 AM'
+ }
+ scheduleData.push(data);
+//alert (scheduleData);
+
+
+
+        $.ajax({
+            type: "POST",
+            //type: "GET",
+            url: "/ajax_data/", 
+            //data: {'postData': arrayData}, //NO
+            //data: {'postData': dictData}, //NO
+            //data: {'postData': scheduleData}, //NO
+            //data: {"postData[]": ["Jon", "Susan"]}, 
+            data: "{'postData':['ga','cd']}", //NO
+            //data: jsonData, //NO
+            //data: dictData, //OK
+            //data:  {name: "John", postData:"foo", csrfmiddlewaretoken: csrftoken }, //OK
+            //dataType: 'JSON',
+            //contentType: 'application/json',
+            //traditional: false, 
+            //traditional: true, 
+            success: function(result){
+                //alert(result);
+                $("#div2").html(result);
+        }});//ajax
+
+        /*
+        $.ajax({
+            type: "POST",
+            //type: "GET",
+            url: "/ajax_data/", 
+            //data: { "postData[]": ["Jon", "Susan"] },
+            //data:  {name: "John", postData:"foo", csrfmiddlewaretoken: csrftoken }, //OK
+            //data: JSON.stringify(arrayData), //stringify is important
+            data: {'postData': arrayData},
+            dataType: 'JSON',
+            contentType: 'application/json',
+            success: function(result){
+                alert(result);
+                $("#div2").html(result);
+    
+        });
+        */
+
+  });//end bind
+
+});
+</script>
+
+
+
+
+  <script type="text/javascript">
+/*
+    var new_data = ['a','b','c','d','e'];
+
+    var postData = [
+        { "id":"1", "name":"bob"}
+      , { "id":"2", "name":"jonas"}
+      ];
+
+    $.get('/pythonPage/', {'data': new_data},function(data){});
+
+    $.ajax({
+      url: _saveDeviceUrl,
+      type: 'POST', 
+      contentType: 'application/json', 
+      dataType: 'json', 
+      //data: postData, 
+      data: JSON.stringify(postData), //stringify is important
+      success: _madeSave.bind(this)
+    //, processData: false //Doesn't help
+    });
+
+
+
+$(document).ready(function(){
+    $("button").click(function(){
+        $.ajax({
+            type: "get",
+            url: "http://127.0.0.1:8000/",
+            dataType: "json",
+            success: function(data){
+                alert(data[0]["title"]);
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+    });
+    });
+
+<script>
+    
+    
+<script type="text/javascript">
+  
+$.ajax({
+    url: '127.0.0.1:8000/hello',
+    type: 'get', // This is the default though, you don't actually need to always mention it
+    success: function(data) {
+        alert(data);
+    },
+    failure: function(data) { 
+        alert('Got an error dude');
+    }
+    }); 
+
+    var csrftoken = $("input[name=csrfmiddlewaretoken]").val();
+    $(document).on('submit', '#add_favorite_form',function(e){
+        e.preventDefault();
+        var itemId= $(e.target).data('itemid');  // jquery +1.4.3 or attr()
+        $.ajax({
+            type: "POST",
+            url: "/items/favorites/",
+            data: {
+                id: itemId,
+                csrfmiddlewaretoken: csrftoken
+            },
+            success: function(){
+                alert("Added favorite " + itemId);
+            }
+        });
+    });
+    var csrftoken = $("input[name=csrfmiddlewaretoken]").val();
+    $(document).on('submit', '.add_favorite_form',function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $form = $(this);
+        var url = $form.attr( "action" );
+        var thisId = $form.attr( "id" );
+        $.post(url, $form.serialize())
+            .done(function(data) {
+                alert("Added favorite " + thisId);
+            });
+    });
+*/
+</script>
+
+
+</html>

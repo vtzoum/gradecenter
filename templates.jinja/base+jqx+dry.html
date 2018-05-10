@@ -1,0 +1,115 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+      
+    <title id="Description">{% block title %}{% endblock %}</title>
+    
+    <!-- CSS> -->
+    <!-- css > jquery-ui -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <!-- css > bootstrap -->
+    <!-- conflict with grid+crud > edit
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+    -->
+    
+    <!-- css > isotope -->
+    <!--<link rel="stylesheet" href="{% static 'js-isotope/css/isotope-docs.css' %}" type="text/css" />-->
+    <link rel="stylesheet" href="{% static 'js-isotope/css/isotope-search.css' %}" type="text/css" />
+    <!-- css > jqxwidgets -->
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.base.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.classic.css' %}" type="text/css" />
+    <!-- css > jqxwidgets > bootstrap -->
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap-theme.min.css' %}" type="text/css" />    
+    <!-- tzoumak -->
+    <link rel="stylesheet" href="{% static 'css/tzoumak-helper.css' %}" type="text/css" />
+   
+    <!-- SCRIPTS -->
+    <!-- scripts > jqxwidgets > extras -->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/jquery-1.11.1.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/bootstrap.min.js' %}" ></script>
+    <!-- scripts > jqxwidgets -->    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcore.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbuttons.js' %}" ></script>    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbuttongroup.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxradiobutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxchart.core.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcalendar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcheckbox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcombobox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdata.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdatatable.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdatetimeinput.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdragdrop.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdraw.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdropdownlist.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockinglayout.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockpanel.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxexpander.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxfileupload.js' %}" ></script> 
+    <!-- jqxwidgets > jqxgrid -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.aggregates.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.columnsresize.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.columnsreorder.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.export.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.edit.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.filter.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.grouping.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.pager.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.reorder.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.selection.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.sort.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.storage.js' %}" ></script>
+    <!-- ...cont -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxinput.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxlistbox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxmaskedinput.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxmenu.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxnotification.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxnumberinput.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxpanel.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxprogressbar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxribbon.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxscrollbar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxslider.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxsplitter.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxsortable.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxswitchbutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtabs.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtree.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxvalidator.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxwindow.js' %}" ></script>
+    <!-- Layout.js loaded AFTER jqxlayout.js -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxlayout.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockinglayout.js' %}" ></script>
+    <!-- globalization (!)-->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/globalization/globalize.js' %}" ></script>
+    <!-- init/custom JS-->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/demos.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/demos/sampledata/generatedata.js' %}" ></script>
+    <!-- -->
+    <!-- scripts > tzoumak -->    
+    <script type="text/javascript" src="{% static 'js/tzoumak-csrf.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/tzoumak-helpers.js' %}" ></script>
+    <!-- scripts (at-the-end)-->
+    <!-- scripts (at-the-end) > jquery-ui (.selectable) -->
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <!-- scripts (at-the-end) > isotope -->
+    <script type="text/javascript" src="{% static 'js-isotope/js/isotope-docs.min.js' %}" ></script>
+
+  </head>
+
+  <body>
+    <!-- html code -->
+    {% block html %}{% endblock %}
+  </body>
+
+    <!-- js code -->
+    {% block js %}{% endblock %}
+
+</html>

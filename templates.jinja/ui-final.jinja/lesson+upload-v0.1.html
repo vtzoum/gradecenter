@@ -1,0 +1,192 @@
+﻿<title id='Description'>IMPORT</title>
+
+{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    Teacher DB IMport 
+{% endblock %}
+
+<!-- Start BLOCK HTML -->
+{% block html %}
+
+<!-- header -->
+<h3>ΕΙΣΑΓΩΓΗ ΚΑΘΗΓΗΤΩΝ ΑΠΟ CSV ΑΡΧΕΙΟ</h3>
+
+<!-- messages -->
+<div id="uploadTeacherMessages">
+Όνομα Αρχείου:<span id="fileName"></span></br>
+Αποτέλεσμα:<span id="uploadTeacherResponseSuccess"></span>
+</div>
+
+<!-- File upload  -->
+<h3>Επιλογή Αρχείου CSV</h3>    
+<div id="jqxFileUpload"></div>
+
+<!-- messages -->
+<div id="checkimportTeacherMessages">
+Server Response:<span id="checkimportTeacherResponse"></span>
+Αποτέλεσμα:<span id="checkimportTeacherResponseSuccess"></span>
+</div>
+
+<!-- Test Grid -->
+<div id="jqxgridTeacherCheckContainer">
+<h3>Στοιχεία</h3>
+<div id="jqxgridTeacherCheck"></div>
+</div>
+<!-- Form -->
+<!--
+<form class="form" id="form" target="form-iframe"  method="post" class="floatLeft">
+{% csrf_token %}
+<div>
+    <div id="listbox" name="list" ></div>
+    <div id="eventLog" style="margin-left: 20px; "></div>
+</div>
+
+<input style="margin-top: 10px;" type="submit" value="Submit" id="sendButton" />
+</form>
+-->
+
+<!-- Buttons -->
+<button id="jqxbuttonCheckImport">CHECK IMPORT</button>
+<button id="jqxbuttonDoImport">DO IMPORT</button>
+
+<!-- User Inputs -->
+<div style="visibility: hidden;" >
+<h2>User Inputs </h2>    
+Όνομα Aρχείου (CSV):<input id='jqxinputFileName'/><br/>
+Όνομα XXX:<input id='jqxinputIdxName'/><br/>
+1η Γραμμή:<input id='jqxinputFirstRow'/>
+</div>
+
+<!-- End BLOCK HTML -->
+{% endblock %}
+
+
+<!-- Start BLOCK JS -->
+{% block js %}
+<script type="text/javascript">
+
+$(document).ready(function () {
+// GLobals
+var gridData = [];
+
+$( '#jqxgridTeacherCheckContainer' ).hide(1000);
+
+///////////////////////////
+//jqxfileupload      
+//////////////////////////                        
+$('#jqxFileUpload').jqxFileUpload({
+    //uploadUrl: "/jsonfileuploadcsv/?action=upload",
+    uploadUrl: "/jsonfileupload/",
+    fileInputName: 'fileToUpload', 
+    accept: '*',
+    //accept: 'image/*',
+    width: 300,
+});
+//gets Server Response
+$('#jqxFileUpload').on('uploadEnd', function (event) {
+    //var args = event.args;
+    var fileName = event.args.file;
+    var serverResponse = event.args.response;
+    //console.log(fileName + '-' + serverResponse);
+
+    // Your code here.
+    var serverResponseJSON =  $.parseJSON(stripStringTags(serverResponse)); // remove <pre> tags > json objectify
+    $("#fileName").html(serverResponseJSON.filename);
+    $( '#uploadTeacherResponseSuccess' ).html('OK');
+    $("#jqxinputFileName").val(serverResponseJSON.filename);
+    console.log(serverResponseJSON.filename);    
+});
+
+
+////////////////////////////
+// INPUT
+////////////////////////////
+$("#jqxinputFileName").jqxInput({ width: '250px', height: '25px', disabled: false, });
+$("#jqxinputIdxName, #jqxinputFirstRow").jqxInput({ width: '250px', height: '25px', disabled: true, });
+//$('#jqxinputIdxName, #jqxinputFirstRow').on('change', function (event) {});
+
+///////////////////////////
+//jqxgridTeacherCheck
+//////////////////////////
+// Data
+var sourceTeacher = {
+    datatype: "json",
+    localdata: gridData, 
+    datafields: [
+        {name: "id"}, 
+        {name: 'name', type: 'string' },
+        {name: 'surname', type: 'string' },
+        {name: 'codeAfm', type: 'string' },
+        {name: 'codeGrad', type: 'string' },
+        {name: 'codeSpec', type: 'integer' },
+    ],
+};
+var dataAdapterTeacher = new $.jqx.dataAdapter(sourceTeacher);     
+
+// jqxgridTeacherCheck
+$("#jqxgridTeacherCheck").jqxGrid({
+    source: dataAdapterTeacher,
+    columns: [
+        { text: 'ΑΦΜ', datafield: 'codeAfm', width: '20%' },
+        { text: "Επίθετο", datafield: 'surname', columntype: 'textbox', width: '30%' },
+        { text: "Όνομα", datafield: 'name',  width: '20%' },
+        { text: "Κωδ.βαθμολογ.", datafield: 'codeGrad', width: '10%' },
+        { text: "Ειδικότητα", datafield: 'codeSpec', width:'20%' },
+    ], 
+    autoheight: false, height: 300, pageable: false, pagesize: 25, width: '100%', //theme: 'classic',
+});//grid
+
+// ΚΩΔΙΚΟΣ ΛΥΚΕΙΟΥ	ΟΝΟΜΑΣΙΑ ΛΥΚΕΙΟΥ	ΚΩΔΙΚΟΣ ΔΔΕ	ΟΝΟΜΑΣΙΑ ΔΔΕ
+// Event
+//$("#jqxgridTeacherCheck").jqxGrid('selectrow', 0);
+
+////////////////////////////
+// BUTTONS jqxbutton
+////////////////////////////
+
+// BUTTON
+$("#jqxbuttonCheckImport, #jqxbuttonDoImport").jqxButton({ width: 230, height: 30 });
+
+// BUTTON > Events 
+$("#jqxbuttonCheckImport, #jqxbuttonDoImport").click (function () {
+    var action = this.id.substring(9,20).toLowerCase();     // checkimport | doimport
+    $.ajax({
+        type: "POST",
+        url: "/jsonfilecsvimportteacher/",            
+        data: { 
+            action: action, 
+            jqxinputFileName : $("#jqxinputFileName").val(), 
+            jqxinputIdxName: 0, jqxinputFirstRow: 1, 
+        }, 
+        success: function (response, status, xhr) {
+            //console.log(response.data);
+            //$("#checkimportTeacherResponseSuccess").html(response.data);
+            $("#checkimportTeacherResponseSuccess").html(response.status);
+            // set grid data
+            $( '#jqxgridTeacherCheckContainer' ).show(100);
+            sourceTeacher.localdata = response.data;       
+            $("#jqxgridTeacherCheck").jqxGrid({ source: sourceTeacher });
+            $("#jqxgridTeacherCheck").jqxGrid('updatebounddata');
+        },             
+        error: function (jqXHR, textStatus, errorThrown) {
+            $( '#jqxgridTeacherCheckContainer' ).hide(100);
+            //$("#jqxgridTeacherCheck").jqxGrid({ visible: False });
+            console.log('error');
+        }
+    });//ajax
+
+});
+
+/*
+//$.post("/jsonuploadimportcsv/?action=checkimport", $("#form").serialize());
+//$.getJSON('/jsonfileuploadcsv/', function (data) {console.log(data);}
+*/
+
+});
+</script>
+
+<!-- End BLOCK JS -->
+{% endblock %}
+
+

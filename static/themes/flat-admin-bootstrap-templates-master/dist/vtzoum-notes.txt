@@ -1,0 +1,6 @@
+﻿The following CSS link is ot working on FIREFOX
+<link rel="stylesheet" type="text/css" href="../lib/css/font-awesome.min.css">
+
+Change this to the following:
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" media="all" rel="stylesheet" type="text/css">
+

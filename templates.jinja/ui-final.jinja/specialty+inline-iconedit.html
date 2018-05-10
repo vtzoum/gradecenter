@@ -1,0 +1,412 @@
+﻿<title id='Description'>The jqxGrid. </title>
+
+{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    The jqxGrid.
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+
+<!-- BarGauge -->
+<div id="jqxBarGauge"></div>
+
+<!-- aggregates -->
+<div>
+    <span id="avg"></span> 
+    <span id="count"></span > 
+    <span id="max"></span>
+    <span id="min"></span >
+    <span id="sum"></span >
+</div>
+
+<!-- Buttons btn-success btn-info btn-warning btn-danger btn-link  -->
+<!-- 
+<button id="buttonUpdateGridSpecialty"  type="button" class="btn btn-default">Update Grid</button>
+<button id="buttonAddSpecialty" type="button" class="btn btn-primary">Add Record</button>
+<input id="buttonUpdateGridSpecialty" value="Update Grid" class="btn btn-primary" />
+<input id="buttonAddSpecialty" value="Add Record" class="btn btn-primary" />
+-->        
+
+<div class="row">
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΕΙΔΙΚΟΤΗΤΕΣ </h3>
+        </div>
+        <div class="panel-body">
+        <!-- jqxGrid -->
+        <div id="jqxgridSpecialty"></div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- /.row -->
+
+
+<!-- Start Dialogue DELETE -->
+<div id="dialogDeleteSpecialty">
+<div>
+<h3>Θέλετε να κάνετε την διαγραφή της εγγραφής;</h3>
+<p><span></span></p>
+<button id="buttonDialogDeleteSpecialtyYes">NAI</button> 
+<button id="buttonDialogDeleteSpecialtyNo" style="margin-left: 5px;" >OXI</button>
+<!-- End Dialogue DELETE -->
+</div>
+</div>
+
+
+
+<!-- Start Dialogue NEW -->
+<div id="dialogAddSpecialty">
+<div style="overflow: hidden;">
+
+<!-- Start FORM ADD -->
+<!-- form action="javascript:void(0);" is for action=none -->
+<form class="form-horizontal" id="formAddSpecialty" >
+{% csrf_token %}
+
+  <div class="form-group">
+    <label class="control-label col-sm-3" for="code">Kωδικός:</label>
+    <div class="col-sm-9">
+      <input type="email" class="form-control" id="code" placeholder="Kωδικός">
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label class="control-label col-sm-3" for="name">Ονομασία:</label>
+    <div class="col-sm-9">
+      <input class="form-control" id="name" placeholder="Ονομασία">
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+      <button id="buttonDialogAddSpecialtyYes" class="btn btn-default" >Save</button> 
+      <button id="buttonDialogAddSpecialtyNo" class="btn" >Cancel</button></td>                    
+    </div>
+  </div>
+
+<!-- End FORM ADD -->
+</form>
+
+</div> 
+
+<!-- End Dialogue NEW -->
+</div>
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+var that = this;
+
+$(document).ready(function () {
+this.editrow = -1;
+
+// List Source SCHOOLTYPE @ HelpersJS
+var aggregateData = null;
+////////////////////////////////
+//Buttons
+///////////////////////////////                        
+//$('#buttonDialogAddSpecialtyYes, #buttonDialogAddSpecialtyNo').jqxButton({ theme: theme, height: 30, width: 80 });
+//$('#buttonUpdateGridSpecialty, #buttonAddSpecialty').jqxButton();
+////////////////////////////////
+// Specialty data
+///////////////////////////////                        
+var sourceSpecialty = {
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: 'code', type: 'string' },
+        {name: 'name', type: 'string' },
+    ],
+    url: '/specialty/crud/', 
+    id: 'id',
+    sortcolumn: 'name',
+    sortdirection: 'asc',     
+    // ADD
+    addrow: function (rowid, rowdata, position, commit) {
+        // synchronize with the server - send insert command
+        var data = "action=insert&amp;" + $.param(rowdata);
+        //var data = "insert=true&" + $.param(rowdata);
+        $.ajax({
+            method: 'POST', 
+            url: '/specialty/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        }); //ajax
+    }, //addrow
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/specialty/crud/', 
+            data: data,
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+    }, //delete
+    // UPDATE
+    updaterow: function (rowid, rowdata, commit) {
+    // synchronize with the server - send update command
+        var data = "action=update&amp;" + $.param(rowdata);
+        //var data = "update=true&amp;" + $.param(rowdata);
+        //alert ('Edit B4 .ajax');
+        $.ajax({
+            method: 'POST', 
+            url: '/specialty/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+    }, //updaterow
+}; //source
+
+//DataAdapter create + 
+//AGGREGATES +
+//BARGAUGE
+var dataAdapterSpecialty = new $.jqx.dataAdapter( sourceSpecialty, {
+    loadComplete: function () {
+        // aggregates
+    },  //loadComplete
+});
+
+///////////////////////////
+// GRID jqxSpecialtyGrid
+//////////////////////////                        
+$("#jqxgridSpecialty").jqxGrid({
+    source: dataAdapterSpecialty,
+    columns: [ //columntype: 'textbox', 
+        { text: 'id', datafield: 'id', visible: false },
+        { text: 'Kωδικός', datafield: 'code', filtertype: 'input', width: '15%' },
+        { text: "Όνομα", datafield: 'name',  filtertype: 'input', width: '70%' },
+        
+        { text: 'Edit', align: "center", editable: false, sortable: false, datafield: 'available', 
+            cellsrenderer: function (row, column, value) {
+                return helperGridInlineEditRenderer ('#jqxgridSpecialty', row, column, value);
+            } //cellrenderer
+        }, 
+        /*
+        { text: 'Edit', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "...";
+            }, 
+            buttonclick: function (row) {
+                $("#jqxgridSpecialty").jqxGrid('beginrowedit', row);
+            } // buttonclick
+        }, //edit 
+        */
+        { text: 'remove', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "X";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                $("#dialogDeleteSpecialty").jqxWindow('open');
+          } // buttonclick
+        }, //remove        
+    ],     
+    // disable enter or escape 
+    handlekeyboardnavigation: function (event) {
+        var key = event.charCode ? event.charCode : event.keyCode ? event.keyCode : 0;
+        if ( (key == 13) || (key == 27) )   { // enter or escape 
+            return true;
+        }
+    }, //handlekeyboardnavigation
+    editable: true, editmode: 'selectedrow', selectionmode: 'none', // 'singlerow', //multiplecellsextended
+    sortable: true, filterable: true, showfilterrow: true, 
+    columnsresize: true, pageable: false, sortable: true, width: '100%', height:'500', theme:theme, 
+    showaggregates: true, showstatusbar:true, showtoolbar:true, 
+    rendertoolbar: function (statusbar) {
+        // appends buttons to the status bar.
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        //var addButton = $("<button type='button' class='btn btn-default' style='float: right;'>Update Grid</button>");
+        var addButton = $("<div style='float: right; margin-left: 10px;'><span>Add</span></div>");
+        var reloadButton = $("<div style='float: right; margin-left: 10px;'><span>Reload</span></div>");
+        //<button type="button" class="btn btn-default">Update Grid</button>
+        //<button id="buttonAddSpecialty" type="button" class="btn btn-primary">Add Record</button>
+        
+        container.append(addButton);
+        container.append(reloadButton);
+        statusbar.append(container);
+        addButton.jqxButton({  width: 60, height: 18 });
+        reloadButton.jqxButton({  width: 65, height: 18 });
+        // add new row.
+        addButton.click(function (event) {
+            //var datarow = generatedata(1);
+            //$("#jqxgridSpecialty").jqxGrid('addrow', null, datarow[0]);
+            $( '#dialogAddSpecialty').jqxWindow('open');
+        });
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridSpecialty").jqxGrid({ source: dataAdapterSpecialty });
+        });
+    } //render toolbar
+
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//Specialty grid
+
+////////////////////////////////
+// Buttons 
+////////////////////////////////              
+//$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
+$( '#buttonAddSpecialty' ).click(function (event) {
+    $("#code, #name").val(''); 
+    //$("#jqxgridSpecialty").jqxGrid({disabled:true});
+    $( '#dialogAddSpecialty').jqxWindow('open');
+});
+$( '#buttonUpdateGridSpecialty' ).click(function (event) {
+    $("#jqxgridSpecialty").jqxGrid({ source: dataAdapterSpecialty });
+});
+
+/////////////////////////
+//Dialogue DELETE
+/////////////////////////                
+// Dialogue DELETE
+//buttonDialogDeleteSpecialtyYes
+$( '#dialogDeleteSpecialty' ).jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', isModal: true, 
+    //cancelButton: $('#buttonDialogDeleteSpecialtyNo'), 
+    keyboardNavigation: true, //keyboardCloseKey: 13,
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridSpecialty").offset().left) + 60, y: parseInt($("#jqxgridSpecialty").offset().top) + 60,}, 
+    width: 'auto', height: '200', theme: theme, 
+});        
+
+//Dialogue > Buttons
+$('#buttonDialogDeleteSpecialtyYes, #buttonDialogDeleteSpecialtyNo').jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Event > Dialogue
+$("#dialogDeleteSpecialty").on('close', function () {
+    //$("#jqxgridSpecialty").jqxGrid({ disabled: false });
+});
+// Event > Button > Yes
+$('#buttonDialogDeleteSpecialtyYes').click(function () {
+    var row = $('#jqxgridSpecialty').jqxGrid('getselectedrowindex');
+    var datarow = $('#jqxgridSpecialty').jqxGrid('getrowdata', row);
+    $('#jqxgridSpecialty').jqxGrid('deleterow', datarow.id);
+    //console.log('remove btn clicked id='+datarow.id);
+    $('#dialogDeleteSpecialty').jqxWindow('close');
+});
+// Event > Button > No
+$('#buttonDialogDeleteSpecialtyNo').click(function () {
+    $('#dialogDeleteSpecialty').jqxWindow('close');
+});
+
+
+/////////////////////////
+//Dialogue ADD
+/////////////////////////                
+// Dialogue 
+$('#dialogAddSpecialty').jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', isModal: true, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridSpecialty").offset().left) + 60, y: parseInt($("#jqxgridSpecialty").offset().top) + 60,}, 
+    width: 'auto', height: 'auto',
+});        
+
+//Dialogue > Input
+//$("#addWinRowButton").jqxButton({ theme: theme, width: 210, height: 40 });
+$("#code, #name").jqxInput();
+
+//Dialogue > Buttons
+$('#buttonDialogAddSpecialtyYes, #buttonDialogAddSpecialtyNo').jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Event > Dialogue
+$( '#dialogAddSpecialty' ).on('close', function () {
+    //$("#jqxgridSpecialty").jqxGrid({ disabled: false });
+});
+
+// Event > Button > Yes
+$( '#buttonDialogAddSpecialtyYes' ).click(function (event) {    
+    $('#formAddSpecialty').jqxValidator('validate');
+    event.preventDefault();
+});
+
+// Event > Button > No
+$( '#buttonDialogAddSpecialtyNo' ).click(function () {
+    $( '#dialogAddSpecialty' ).jqxWindow('close');
+});
+
+//code, #name, #ddeCode, #ddeName
+////////////////////////////
+//Form ADD > jqxValidator
+////////////////////////////
+$('#formAddSpecialty').jqxValidator( { 
+    rules: [
+        { input: '#code', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Code is required!',
+        },        
+        { input: '#name', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Name is required!',
+        },        
+    ],  //rules 
+
+    onSuccess: function (event) { 
+        //event.preventDefault();        
+        // set record values
+        var newrow = { name: $("#code").val(), name: $("#name").val(), };
+        $( "#jqxgridSpecialty" ).jqxGrid('addrow', null, newrow);
+        $( "#jqxgridSpecialty" ).jqxGrid('updatebounddata');
+        $( "#dialogAddSpecialty" ).jqxWindow('close');        
+        console.log("Success");
+        //alert('Success!'); 
+    },//onSuccess
+
+    onError: function () { 
+        console.log("Failed!");
+        //alert('Failed!'); 
+    },//onError
+
+}); 
+
+//$('#jqxValidator').on('validationError', function (event) { event.preventDefault(); }); 
+//$('#jqxValidator').on('validationSuccess', function (event) { event.preventDefault(); }); 
+
+
+/////////////////////////
+//BARGAUGE
+/////////////////////////
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+

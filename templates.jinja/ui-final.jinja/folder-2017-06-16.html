@@ -1,0 +1,732 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΦΑΚΕΛΟΙ-JN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- AJAXRQST MessageBox -->
+<div id="jsonMessages"></div>
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+
+<div class="col-lg-12 no-margin-bottom">
+    <div class="panel panel-primary fresh-color neg20-margin-bottom" style="border-bottom:0px">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑ</h3>
+        </div>
+        <div class="panel-body" >
+        <!-- Lesson-->
+        <div id='jqxcomboboxLesson'></div>        
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- /.row -->
+
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+<!-- /.col#1 -->
+<!-- .col#2 -->
+<div class="col-lg-12">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΦΑΚΕΛΟΙ </h3>
+        </div>
+        <div class="panel-body">
+        <!-- Folders -->
+        <div id="jqxgridFolder" class='table'></div>    
+        </div>
+    </div>
+</div>
+<!-- /.col#2 -->
+
+</div>
+<!-- /.row -->
+
+
+<!-- .row 
+<div class="row">
+<div class="col-lg-12">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΦΑΚΕΛΟΙ </h3>
+        </div>
+        <div class="panel-body">
+        <div id='jqxcomboboxLesson'></div><br/>
+        <div id="jqxgridFolder" ></div>        
+        </div>
+    </div>
+</div>
+
+</div>
+-->
+<!-- /.row -->
+
+
+<!-- Start Dialogue DELETE -->
+<div id="dialogDeleteFolder">
+<!-- content-->
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Διαγραφή εγγραφής.</h4>
+    </div>
+    <div class="modal-body">
+        Θέλετε να κάνετε την διαγραφή της εγγραφής;
+    </div>
+    <div class="modal-footer">        
+        <button id="buttonDialogDeleteFolderYes" class="btn btn-danger" >NAI</button> 
+        <button id="buttonDialogDeleteFolderNo" class="btn btn-primary" style="margin-left: 5px;" >OXI</button>
+    </div>
+</div>
+<!-- ./content-->
+</div>
+<!-- ./Dialogue DELETE -->
+
+{% if request.user is has_group("Admin") %} 
+    <!-- START menuItem Διαχείριση -->
+    <!-- tae care of AB folder change -->
+{% endif %} 
+
+
+<!-- Start Dialogue new -->
+<div id="dialogAddFolder" >
+
+<!-- content-->
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Νέος Φάκελος</h4>
+    </div>
+
+    <div class="modal-body">
+    <!-- Start FORM ADD -->
+    <!-- form action="javascript:void(0);" is for action=none -->
+    <form class="form-horizontal" id="formAddFolder" action="javascript:void(0);" >
+    {% csrf_token %}
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="no">ΑΑ:</label>
+        <div class="col-sm-3">
+          <input id="no" class="form-control" placeholder="Kωδικός">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="books">Τετράδια:</label>
+        <div class="col-sm-9">
+          <input id="books" class="form-control" placeholder="Όνομα">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="codeType">Τύπος:</label>
+        <div class="col-sm-6">
+            <div id="codeType" class="form-control" placeholder="Κωδ.ΔΔΕ"></div>
+        </div>
+      </div>
+      <!-- 
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="type">Τύπος:</label>
+        <div class="col-sm-6">
+            <div id="type" class="form-control" placeholder="Τύπος"></div>
+        </div>
+      </div>
+    -->
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <button id="buttonDialogAddFolderYes" class="btn btn-primary" >Save</button> 
+          <button id="buttonDialogAddFolderNo" class="btn btn-default" >Cancel</button>
+        </div>
+      </div>
+
+    <!-- End FORM ADD -->
+    </form>
+    </div>
+    <!-- ./body -->
+
+    <div class="modal-footer">        
+    </div>
+    <!-- ./footer-->
+
+  </div>
+</div>
+<!-- ./ Dialogue ADD -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+// Handle Ajax messages
+helperAjaxMessagesProcess();
+
+var globalFolderStatusGroupBy = {};        
+var globalSummaryData = {};
+
+/**********************
+// jqxcomboboxLessons
+***********************/
+//Lessons > RecordSet  
+var sourceLesson = {
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: "name"}, 
+        {name: 'category', type: 'string' },
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+    ],
+    url: '/lesson/crud/', 
+}; //source
+
+// DataAdapter
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson,
+    {
+        beforeLoadComplete: function (records) {
+            for (var i = 0; i < records.length-1; i++) {
+                records[i]['name'] = records[i]['name']+"-"+ records[i]['category'] +"-"+ records[i]['lexType'] ;
+                //var row = {};
+            }//for
+                return records;
+        }//beforeLoadComplete
+    }
+);
+//var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+
+//http://jsfiddle.net/jqwidgets/5SnVH/
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, 
+    valueMember: "id", displayMember: "name", 
+    selectedIndex: -1, //selectIndex:-1, 
+    placeHolder:"Επιλέξτε Μάθημα...",  
+    //itemHeight: 20, height: 30, 
+    width: '100%', theme:theme, 
+    renderer: function (index, label, value) {
+        //var datarecord = data[index];
+        var datarecord = dataAdapterLesson.records[index];    
+        //var row = "<b>"+label +"</b> " + datarecord.category + "[<u>" + datarecord.lexType + "</u>]" ;
+        var row = "<b>"+label +"</b> ";
+        return row;
+    }
+    /*
+    */
+});
+//$("#jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
+
+//*jqxcomboboxLesson > Events*/
+$('#jqxcomboboxLesson').on('select', function (event) {    
+    if (event.args) {
+        data = dataAdapterLesson.records[args.index];
+        sourceFolder.url = '/folder/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+        $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder});    
+        $("#jqxgridFolder").jqxGrid('updatebounddata');            
+    }
+    // related button
+    // related form input
+    
+    //var data = dataAdapterLesson.records[args.index];
+    //$('#jqxinputFolderNewLesson').val(data.id);   // Lesson.id
+    
+    //console.log ('Lesspnid:' + data.id);
+    //$("#jqxnotificationServer").html('Lesson selected!').jqxNotification("open");
+});// combo.event
+
+/*
+function getSummaries(){   
+if (dataAdapterFolder.records.length>0) {
+  var foo = dataAdapterFolder.getAggregatedData([
+            { name: 'no', aggregates: ['min', 'max'], formatStrings: ['n', 'n',] },
+            // { name: 'price', aggregates: ['avg', 'product', 'count'] }
+        ]);
+}   
+else { 
+    foo={'no':{'min':0, 'max':0 }};
+};
+  alert (foo.no);
+  console.log(foo);
+  return foo;
+
+};
+*/
+/**********************
+// Folder data
+***********************/
+var sourceFolder = {
+    url: '', 
+    //url: '/folder/crud/', 
+    id: 'id',
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: "no", type: 'number' }, 
+        {name: "books", type: 'number' }, 
+        {name: 'codeType', type: 'number' }, 
+        {name: 'codeStatus', type: 'number' },
+        {name: 'codeLocation', type: 'number' },
+        //{name: "typeChar"}, 
+        {name: 'lexType', value: 'codeType', values: { source: dataAdapterFolderType.records, value: 'codeType', name: 'lexType' } },
+        {name: 'lexStatus', value: 'codeStatus', values: { source: dataAdapterFolderStatus.records, value: 'codeStatus', name: 'lexStatus' } },
+        {name: 'lexLocation', value: 'codeLocation', values: { source: dataAdapterFolderLocation.records, value: 'codeLocation', name: 'lexLocation' } },
+
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    //sortcolumn: 'name',
+    //sortdirection: 'asc',    
+
+    // ADD
+    addrow: function (rowid, rowdata, position, commit) {
+        // synchronize with the server - send insert command
+        var data = "action=add&amp;" + $.param(rowdata);
+        //var data = "insert=true&" + $.param(rowdata);
+        $.ajax({
+            method: 'POST', 
+            url: '/folder/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                 $("#jqxgridFolder").jqxGrid('updatebounddata');
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        }); //ajax       
+    }, //addrow
+    
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/folder/crud/', 
+            data: data,
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                $("#jqxgridFolder").jqxGrid('updatebounddata');
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+    }, //delete
+    
+    // UPDATE
+    updaterow: function (rowid, rowdata, commit) {
+        //var data = "action=update&amp;" + $.param(rowdata);
+        //alert ($.param(rowdata));
+        $.ajax({
+            method: 'POST',             
+            //data: { action: 'update', data: $.param(rowdata) },
+            //data: data,
+            // MUST BE CHANGED 
+            //url: '/jsonfolder/',             
+            url: '/folder/crud/', 
+            data: { action: 'update', id: rowdata.id, no: rowdata.no, books: rowdata.books, 
+                    codeType: rowdata.codeType, codeLocation: rowdata.codeLocation, codeStatus: rowdata.codeStatus}, 
+            cache: false,
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                 $("#jqxgridFolder").jqxGrid('updatebounddata');
+               console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+        //$("#jqxgridFolder").jqxGrid('updatebounddata');
+    }, //updaterow
+
+    //$("#jqxnotificationServer").html('Update success!').jqxNotification("open");
+}; //source
+
+
+//DataAdapter create + 
+var dataAdapterFolder = new $.jqx.dataAdapter( sourceFolder, {        
+    //async: false, //autoBind: true, 
+    loadComplete: function () {
+        var records = dataAdapterFolder.records;
+        if (records.length>0) {
+            globalSummaryData = dataAdapterFolder.getAggregatedData([
+                    // { name: 'price', aggregates: ['avg', 'product', 'count'] }
+                    { name: 'no', aggregates: ['min', 'max'], formatStrings: ['n', 'n',] },
+            ]);
+        }
+        else { 
+            globalSummaryData={'no':{'min':0, 'max':0 }};    // null rec
+        };
+      //alert (foo.no);
+      console.log(globalSummaryData.no);
+      //return foo;
+        //console.log(dataAdapterFolder.records[0]);        
+        //alert ('summaryData:'+summaryData);     //OK
+    },  //loadComplete
+});
+
+/**********************
+// GRID jqxFolderGrid
+***********************/
+$("#jqxgridFolder").jqxGrid({
+    source: dataAdapterFolder,
+    columns: [ //columntype: 'textbox', 
+        { text: "id", datafield: "id", hidden: false,  editable : false, width: '5%'},
+        { text: "AA", datafield: 'no', editable : false, width: '5%' },
+        { text: "Τετράδια", datafield: 'books', filtertype: 'number', 
+            aggregates: ['sum'],         
+        },
+        //{ text: "Κατάσταση", datafield: 'status', width: '25%', },
+        
+        { text: "Τύπος", datafield: 'codeType', displayfield: 'lexType', editable : false, // TAKE CARE HERE for F(AB) true, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',        
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexType', valueMember: 'codeType', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+
+        { text: "Κατάσταση", datafield: 'codeStatus', displayfield: 'lexStatus', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',        
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderStatus, displayMember: 'lexStatus', valueMember: 'codeStatus', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+        //{ text: "Location.", datafield: 'codeLocation',  width:'20%', },
+        { text: "Θέση", datafield: 'codeLocation', displayfield: 'lexLocation', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',        
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderLocation, displayMember: 'lexLocation', valueMember: 'codeLocation', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+
+        //Edit
+        { text: 'Edit', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "...";
+            }, 
+            buttonclick: function (row) {
+                $("#jqxgridFolder").jqxGrid('beginrowedit', row);
+            } // buttonclick
+        }, //edit 
+        
+        // Delete
+        { text: 'Διαγραφή', editable: false, filterable: false, columntype: 'button', width: '5%', 
+            cellclassname: "redClass1",
+            cellsrenderer: function () {
+                return "X";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                $("#dialogDeleteFolder").jqxWindow('open');
+          } // buttonclick
+        }, //remove
+
+        // orig
+        /*
+        { text: 'Διαγραφή', editable: false, columntype: 'button', width: '5%', 
+            cellclassname: "redClass1",
+            cellsrenderer: function () {
+                return "X";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                //$("#dialogDeleteFolder").jqxWindow('open');
+                var rowindex = $('#jqxgridFolder').jqxGrid('getselectedrowindex');
+                var rowdata = $('#jqxgridFolder').jqxGrid('getrowdata', rowindex);
+                if ( (rowdata.type == 2) && ( rowdata.status == 0) )        // only delete idle > C-type folders
+                    $('#jqxgridFolder').jqxGrid('deleterow', rowdata.id);
+                //console.log('remove btn clicked id='+datarow.id);
+                             
+          } // buttonclick
+        }, //remove        
+        */
+    ],
+
+
+    //altrows: true, autoheight: true, 
+    editable: true, editmode: 'dblclick', selectionmode: 'singlerow', //multiplecellsextended
+    filterable: true,showfilterrow: true, 
+    pageable: true, pagesize: 10, 
+    sortable: true, 
+    width: '100%', height:'500', theme:theme, 
+    autoheight: false, columnsresize: true, //rowsheight: 30,    
+    showaggregates: true, 
+    showstatusbar:true, showtoolbar:true, rendertoolbar: function (statusbar) {
+        // appends buttons to the status bar.
+        // filtertype: 'checkbox', 'checkedlist', 'input', 'number', 'range'
+        // appends buttons to the status bar.
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        //var addButton = $("<button type='button' class='btn btn-default' style='float: right;'>Update Grid</button>");
+        //var addButton = $("<div style='float: right; margin-left: 10px;'><span>Add</span></div>");
+        //var reloadButton = $("<div style='float: right; margin-left: 10px;'><span>Reload</span></div>");
+
+        var addButton = $("<button type='button' class='btn btn-primary' style='float:right;'> Προσθήκη </button>");
+        //var addButton = $("<div style='float: right; margin-left: 10px;'><span> Προσθήκη </span></div>");
+        var reloadButton = $("<button type='button' class='btn btn-primary' style='float: right; margin-right: 10px;'> Ανανέωση </button>");
+
+        //<button type="button" class="btn btn-default">Update Grid</button>
+        //<button id="buttonAddFolder" type="button" class="btn btn-primary">Add Record</button>
+        
+        container.append(addButton);
+        container.append(reloadButton);
+        statusbar.append(container);
+        addButton.jqxButton();
+        reloadButton.jqxButton();
+        //addButton.jqxButton( {width: 60, height: 18} );
+        //reloadButton.jqxButton({  width: 65, height: 18 });
+        // add new row.
+        addButton.click(function (event) {
+                $("#dialogAddFolder").jqxWindow('open');
+            /*    
+            //$("#jqxgridFolder").jqxGrid('addrow', null, datarow[0]);
+            var rowscount = $("#jqxgridFolder").jqxGrid('getdatainformation').rowscount;
+            //var datarow = {"name": "A", "surname": "B", "codeAfm":"A0", "codeGrad":"G0", "codeSpec":"S0", };
+            var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex');
+            var LessonID = dataAdapterLesson.records[index].id;
+            // ALWAYS ADD C-type FOlder | 'no': 0 will be changed on server since it's an auto-field
+            //var datarow  = {'LessonID': LessonID, 'no': 0, 'books':25, 'type':1, };  
+            var datarow  = {'LessonID': LessonID, 'no':'', 'books':25, 'codeType':2, };  // F(ANA)
+            $("#jqxgridFolder").jqxGrid('addrow', null, datarow);
+            //console.log(rowscount);
+            //$('#jqxgrid').jqxGrid('ensurerowvisible', rowscount);
+            */
+                
+        });//add.button
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder });
+        });
+    } //render toolbar
+
+});//Folder grid
+
+/**********************
+//Dialogue DELETE
+***********************/
+// Dialogue DELETE
+//buttonDialogDeleteFolderYes
+$( '#dialogDeleteFolder' ).jqxWindow({ 
+    autoOpen: false, title: 'Διαγραφή Εγγραφής', 
+    isModal: true, modalOpacity:0.7, 
+    //cancelButton: $('#buttonDialogDeleteFolderNo'), 
+    keyboardNavigation: true, keyboardCloseKey: 13,
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    width: 'auto', height: 'auto', 
+});        
+
+//Dialogue > Buttons
+//$('#buttonDialogDeleteFolderYes, #buttonDialogDeleteFolderNo').jqxButton({ theme: theme, height: 30, width: 80 });
+$('#buttonDialogDeleteFolderYes, #buttonDialogDeletFolderNo').jqxButton({height: 30, width: 80 });
+// Dialogue > Event > CLOSE
+$("#dialogDeleteFolder").on('close', function () {
+    //$("#jqxgridFolder").jqxGrid({ disabled: false });
+});
+// Dialogue > Button YES > Event
+$('#buttonDialogDeleteFolderYes').click(function () {
+    var row = $('#jqxgridFolder').jqxGrid('getselectedrowindex');
+    var rowdata = $('#jqxgridFolder').jqxGrid('getrowdata', row);
+    /*
+    if ( (rowdata.type == 2) && ( rowdata.status == 0) )        // only delete idle > C-type folders
+        $('#jqxgridFolder').jqxGrid('deleterow', rowdata.id);
+    //console.log('remove btn clicked id='+datarow.id);
+    */
+    $('#jqxgridFolder').jqxGrid('deleterow', rowdata.id);
+    $('#dialogDeleteFolder').jqxWindow('close');
+});
+// Event > Button > No
+$('#buttonDialogDeleteFolderNo').click(function () {
+    $('#dialogDeleteFolder').jqxWindow('close');
+});
+
+/**********************
+//Dialogue NEW
+***********************/
+// Dialogue 
+$('#dialogAddFolder').jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', 
+    isModal: true, modalOpacity:0.7, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    resizable: false, 
+    //position: { x: parseInt($("#jqxgridFolder").offset().left) + 60, y: parseInt($("#jqxgridSchoolToGrade").offset().top) + 60,}, 
+    width: '400px', height: 'auto', theme:theme, 
+});        
+/*
+//Dialogue > jqxcombobox
+$("#codeType").jqxComboBox({
+    source: dataAdapterFolderType, 
+    displayMember: "lexType", valueMember: "codeType", 
+    selectedIndex: -1, placeHolder:"Επιλέξτε τύπο...",  
+});
+
+
+*/
+//Dialogue > jqxcombobox
+//$( '#ddeCode' ).jqxDropDownList({ 
+$("#codeType").jqxComboBox({
+    source: dataAdapterFolderType, 
+    displayMember: "lexType", valueMember: "codeType", 
+    selectedIndex: 2, placeHolder:"Επιλέξτε τύπο...",  
+});
+
+$('#jqxcomboboxLesson').on('select', function (event) {    
+    //var index = $('#jqxcomboboxLesson').jqxComboBox('selectedIndex');    
+    var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex');         
+    if (index==1) {
+        //$("#jqxcomboboxLesson").jqxComboBox({selectedIndex: 0 });     
+        $("#jqxcomboboxLesson").jqxComboBox('selectIndex', 0 ); 
+    }
+});// combo.event
+
+// DIALOGUE > EVENTS 
+//OPEN
+$( '#dialogAddFolder' ).on('open', function () {
+
+    //var foo =  getSummaries();
+    //alert (foo.no);
+    //var noMin = FolderAggregates.no.min;
+    //$("#no").val(eval(foo.no.max));
+    $("#no").val(parseInt(globalSummaryData.no.max)+1);
+    $("#no").jqxInput({disabled:true});
+    $("#books").jqxInput({value:25});
+    /*
+    $( '#codeType' ).jqxDropDownList({ source: ArrayFolderType, 
+         displayMember: "lexType", valueMember: "codeType", 
+         selectedIndex: 2, 
+    });
+    */
+    //$("#books").val(25);
+});
+//CLOSE
+$( '#dialogAddFolder' ).on('close', function () {
+    //$("#jqxgridFolder").jqxGrid({ disabled: false });
+});
+//Dialogue > Input
+//$("#addWinRowButton").jqxButton({ theme: theme, width: 210, height: 40 });
+//$("#no, #books, #ddeCode, #ddeName").jqxInput();
+//$("#no").jqxInput.val(maxNo);
+//$("#price").jqxNumberInput({ spinMode: 'simple', symbol: '$', width: 150, min: 0, height: 23, spinButtons: true });
+
+//Dialogue > Buttons
+//$('#buttonDialogAddFolderYes, #buttonDialogAddSchoolToGradeNo').jqxButton({ theme: theme, height: 30, width: 80 });
+$('#buttonDialogAddFolderYes, #buttonDialogAddFolderNo').jqxButton({ height: 30, width: 80 });
+
+// Event > Dialogue
+$( '#dialogAddFolder' ).on('close', function () {
+    //$("#jqxgridFolder").jqxGrid({ disabled: false });
+});
+
+// Event > Button > Yes
+$( '#buttonDialogAddFolderYes' ).click(function (event) {    
+    $('#formAddFolder').jqxValidator('validate');
+});
+
+// Event > Button > No
+$( '#buttonDialogAddFolderNo' ).click(function () {
+    $( '#dialogAddFolder' ).jqxWindow('close'); //'hide'
+});
+
+//code, #name, #ddeCode, #ddeName
+////////////////////////////
+//Form ADD > jqxValidator
+////////////////////////////
+var msgCode = 'Code is required';
+$('#formAddFolder').jqxValidator( { 
+        //hintType: 'label',
+        rules: [            
+
+        { input: '#no', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Κενός AA φακέλου!',
+        },
+
+        { input: '#books', 
+        action: 'valueChanged',    //'keyup', 
+        //rule: 'required',          //rule: 'length=4,12'  
+        rule: function (input, commit) {
+            var checkVal = $('#books').val();
+            var pass = true; 
+            if (!(checkVal >= 1 )) {
+                msgCode = 'Ανεπαρκές πλήθος τετραδίων!';
+                pass = false;
+            }
+            return pass;
+        }, //rule
+        message: msgCode,
+        }, 
+        
+        // NA DW PALI gia na to kanw uncomment
+        { input: '#codeType', 
+        message: 'Κενός τύπος φακέλου!',
+        rule: function () {
+            //var type = $('#type').jqxDropdown('value');
+            var index = $("#codeType").jqxDropDownList('getSelectedIndex'); 
+            var result = (index != -1);
+            return result;
+          }
+        },//'#codeType'
+
+        /*
+        { input: '#codeType', 
+        message = 'Μόνο Φ(A) ή Φ(ΑΝΑ)!';
+        rule: function (input, commit) {
+            var checkVal = $('#codeType').val();
+            var pass = true; 
+            if (checkVal == 1 ) {
+                //msgCode = 'Μόνο Φ(A) ή Φ(ΑΝΑ)!';
+                pass = false;
+            }
+            return pass;
+        }, //rule
+        //message: msgCode,
+        }, 
+        */
+    ],  //rules 
+
+    onSuccess: function (event) { 
+        //event.preventDefault();        
+        // set record values
+        var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex');
+        var LessonID = dataAdapterLesson.records[index].id;
+        //var newrow  = {'LessonID': LessonID, 'no':'', 'books':25, 'codeType':2, };  // F(ANA)
+        //var newrow = { code: $("#code").val(), name: $("#name").val(), ddeCode: $("#ddeCode").val(), ddeName: $("#ddeName").val(), type: $("#type").val(), };
+        var newrow  = {'LessonID': LessonID, 'no':$("#no").val(), 'books':$("#books").val(),'codeType':$("#codeType").val(), };  // F(ANA)        
+        $( "#jqxgridFolder" ).jqxGrid('addrow', null, newrow);
+        console.log(newrow); 
+        $( "#jqxgridFolder" ).jqxGrid('updatebounddata');
+        //$('#jqxgridFolder').jqxGrid('ensurerowvisible', rowscount);
+        $( "#dialogAddFolder" ).jqxWindow('close');        
+        //console.log(rowscount);
+        console.log("Success");
+        //alert('Success!'); 
+    },//onSuccess
+
+    onError: function () { 
+        console.log("Failed!");
+        //alert('Failed!'); 
+    },//onError
+
+}); 
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,760 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΣΧΟΛΕΙΑ ΥΠΟΔΟΧΗΣ-JN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- AJAXMessages Box -->
+<div id="jsonMessages"></div>
+
+<!-- Data -->
+<div class="row no-margin-bottom">
+
+<!-- <div class="row"> reduces margin -->
+<!--
+<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+    <a href="#">
+    <div class="card green summary-inline">
+        <div class="card-body">
+            <i class="icon fa fa-tags fa-4x"></i>
+            <div class="content">
+                <div class="title"><span id="count"></span></div>
+                <div class="sub-title">Σύνολο</div>
+            </div>
+            <div class="clear-both"></div>
+        </div>
+    </div>
+    </a>
+
+    <a href="#">
+    <div class="panel panel-info">
+      <div class="panel-heading">Γράφημα</div>
+      <div class="panel-body">            
+      
+      <!- START Charts <div id="chartBarGauge" style="width:100%;"></div> height: 100px ->
+        
+        <div id="chartPie" style="width:100%; height:300px;"></div>
+      </div>
+    </div>
+    </a>
+
+    <!- aggregates ->
+    <div>
+        <span id="avg"></span> 
+        <span id="max"></span>
+        <span id="min"></span >
+        <span id="sum"></span >
+    </div>
+
+</div>
+// LEFT side panel -->
+<!-- x/y.col  -->
+
+<div class="col-lg-12">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΣΧΟΛΕΙΑ ΥΠΟΔΟΧΗΣ </h3>
+        </div>
+        <div class="panel-body">
+        <!-- jqxGrid -->
+        <div id="jqxgridSchoolToGrade"></div>
+        </div>
+    </div>
+</div>
+<!-- x/y.col  -->
+
+</div>
+<!-- /.row -->
+
+
+<!-- Start Dialogue DELETE -->
+<div id="dialogDeleteSchoolToGrade">
+
+<!-- content-->
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Διαγραφή εγγραφής.</h4>
+    </div>
+    <div class="modal-body">
+        Θέλετε να κάνετε την διαγραφή της εγγραφής;
+    </div>
+    <div class="modal-footer">        
+        <button id="buttonDialogDeleteSchoolToGradeYes" class="btn btn-default" >NAI</button> 
+        <button id="buttonDialogDeleteSchoolToGradeNo" class="btn btn-primary" style="margin-left: 5px;" >OXI</button>
+    </div>
+</div>
+<!-- ./content-->
+
+<!-- End Dialogue DELETE -->
+</div>
+
+
+<!-- Start Dialogue new -->
+<div id="dialogAddSchoolToGrade" >
+
+<!-- content-->
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Προσθήκη Εγγραφής.</h4>
+    </div>
+
+    <div class="modal-body">
+    <!-- Start FORM ADD -->
+    <!-- form action="javascript:void(0);" is for action=none -->
+    <form class="form-horizontal" id="formAddSchoolToGrade" action="javascript:void(0);" >
+    {% csrf_token %}
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="code">Kωδικός:</label>
+        <div class="col-sm-3">
+          <input id="code" class="form-control" placeholder="Kωδικός">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="name">Όνομα:</label>
+        <div class="col-sm-9">
+          <input id="name" class="form-control" placeholder="Όνομα">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="ddeCode">Κωδ.ΔΔΕ:</label>
+        <div class="col-sm-6">
+            <div id="ddeCode" class="form-control" placeholder="Κωδ.ΔΔΕ"></div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="type">Τύπος:</label>
+        <div class="col-sm-6">
+            <div id="type" class="form-control" placeholder="Τύπος"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <button id="buttonDialogAddSchoolToGradeYes" class="btn btn-primary" >Save</button> 
+          <button id="buttonDialogAddSchoolToGradeNo" class="btn btn-default" >Cancel</button>
+        </div>
+      </div>
+
+    <!-- End FORM ADD -->
+    </form>
+    </div>
+    <!-- ./body -->
+
+    <div class="modal-footer">        
+    </div>
+    <!-- ./footer-->
+
+  </div>
+</div>
+<!-- ./ Dialogue ADD -->
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+// Handle Ajax messages
+helperAjaxMessagesProcess();
+
+/*
+$("#jsonMessages").fadeTo(3000, 500).slideUp(500, function(){
+    $("#jsonMessages").slideUp(500);
+});
+
+$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+    $("#success-alert").slideUp(500);
+});
+*/
+
+/*
+$('#messages').ajaxComplete(function(e, xhr, settings) {
+    alert ('FOO');
+    var contentType = xhr.getResponseHeader("Content-Type");
+
+    if (contentType == "application/javascript" || contentType == "application/json") {
+        var json = $.evalJSON(xhr.responseText);
+    alert ('BOO');
+
+        $.each(json.django_messages, function (i, item) {
+            addMessage(item.message, item.extra_tags);
+        });
+    }
+}).ajaxError(function(e, xhr, settings, exception) {
+    addMessage("There was an error processing your request, please try again.", "error");
+});
+*/
+
+var aggregateData = null;
+////////////////////////////////
+//Buttons
+///////////////////////////////                        
+//$('#buttonDialogAddSchoolToGradeYes, #buttonDialogAddSchoolToGradeNo').jqxButton({ theme: theme, height: 30, width: 80 });
+//$('#buttonUpdateGridSchoolToGrade, #buttonAddSchoolToGrade').jqxButton();
+////////////////////////////////
+// SchoolToGrade data
+///////////////////////////////                       
+//url:helperGetAjaxLinkForUser ("user.is_active}}", '/schooltograde/crud/'), 
+var sourceSchoolToGrade = {
+    url:'/schooltograde/crud/', 
+    //root:'data2', 
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: 'code', type: 'string' },
+        {name: 'name', type: 'string' },
+        {name: 'ddeCode', type: 'string' },
+        {name: 'ddeName', type: 'string' },
+        //{name: 'type'},
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    id: 'id',
+    sortcolumn: 'name',
+    sortdirection: 'asc',     
+    // ADD
+    addrow: function (rowid, rowdata, position, commit) {
+        // synchronize with the server - send insert command
+        var data = "action=add&amp;" + $.param(rowdata);
+        //var data = "insert=true&" + $.param(rowdata);
+        $.ajax({
+            method: 'POST', 
+            url: '/schooltograde/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        }); //ajax
+    }, //addrow
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/schooltograde/crud/', 
+            data: data,
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+    }, //delete
+    // UPDATE
+    updaterow: function (rowid, rowdata, commit) {
+    // synchronize with the server - send update command
+        var data = "action=update&amp;" + $.param(rowdata);
+        //var data = "update=true&amp;" + $.param(rowdata);
+        //alert ('Edit B4 .ajax');
+        $.ajax({
+            method: 'POST', 
+            url: '/schooltograde/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+    }, //updaterow
+}; //source
+
+//DataAdapter create + 
+//AGGREGATES +
+//BARGAUGE
+var dataAdapterSchoolToGrade = new $.jqx.dataAdapter( sourceSchoolToGrade, {
+    /*    
+    beforeLoadComplete: function (records) {
+            //records[0]['firstname'] = "Michael";
+            //console.log(dataAdapterSchoolToGrade.records);
+            //console.log(records.django_messages);
+            //console.log(records);
+            //return records;
+    },
+    */
+    loadComplete: function (records) {
+        
+    // GROUP RECORDS >> TO SEE
+        //var RR = dataAdapterSchoolToGrade.getGroupedRecords(['ddeCode', 'ddeName'], 'id', 'label', [{ name: 'CompanyName', map: 'label' }]);
+        var RR = dataAdapterSchoolToGrade.getGroupedRecords(['ddeCode', 'ddeName'], 'id', 'label', [{ name: 'name', map: 'label' }]);
+        //console.log(RR);
+
+        //console.log(dataAdapterSchoolToGrade.records);
+        
+        var length = records.length;
+        var rec = dataAdapterSchoolToGrade.records[0];
+        //alert (length + rec.name + rec.type + rec.lexType);    
+        console.log(records.django_messages);
+        //console.log(records.data2);
+
+        //Fetch AJAXmessages 
+        //helperAjaxMessagesProcess(response);
+        /*
+           $.each(records.django_messages, function (i, item) {
+            helperAddMessageDIV(item.message, item.extra_tags);
+        });
+        */
+        //$.each(json.django_messages, function (i, item) { addMessage(item.message, item.extra_tags)});
+
+        // aggregates
+        aggregateData = $("#jqxgridSchoolToGrade").jqxGrid('getcolumnaggregateddata', 'type', ['count', 'min', 'max']);
+        //alert (aggregateData.count);
+        //$( '#count' ).html('Count: '+ aggregateData.count);
+        $( '#count' ).html(aggregateData.count);
+        $( '#max' ).html('Max: '+ aggregateData.max);
+        $( '#min' ).html('Min: '+ aggregateData.min);
+        //alert (summaryData.count);
+
+        // Group values
+        //var groupdata = helperDataArrayGroupByAdapter ( dataAdapterSchoolToGrade );
+        var histO = {};
+        var histA = [];
+        var pcnt = (100/aggregateData.count);
+        for ( i=0; i < records.length; i++) {
+            //a = records[i].ddeCode;
+            a = records[i].ddeName;
+            if (a in histO) {
+                /*
+                var thing = {"gabba gabba": "hey", "5": 10};
+                thing["5"] = 20;
+                delete thing["gabba gabba"];
+                */
+                histO[a]['value'] += 1;
+                histO[a]['pcnt'] += pcnt;
+                //histO[a]['value']= ++;                
+            } 
+            else {
+                //var thing = {"gabba gabba": "hey", "5": 10};
+                histO[a] = {"label": a, "value": 1, 'pcnt': pcnt};
+                //histO[a] = {"label": a, "value": 1};
+            }
+        } //for
+        //console.log(histO);
+
+        //console.log(Object.keys(histO));
+
+        //console.log(Object.values(histO)); unsupported
+        var vals = Object.keys(histO).map(function(key) {
+            //console.log( histO[key]);
+            histA.push(histO[key]);
+            //return histO[key];
+        });
+        //console.log(JSON.stringify(histO));
+        //console.log(JSON.stringify(histA));
+
+         //hist = { 1=1, Δ/ΝΣΗ Δ.Ε. ΗΛΕΙΑΣ =27, Δ/ΝΣΗ Δ.Ε. ΠΕΙΡΑΙΑ =33 };
+        // hist = [ {'label': 'Internet Explorer', 'value': '50'} , {'label': 'Firefox', 'value': '50'}, ] ;
+        
+        // BarGauge
+        var settingsBarGauge = {
+            colorScheme: "scheme02", 
+            width: 200, height: 200,
+            //values: hist, max: 150, 
+            values: [102, 115, 130, 137], max: 150, 
+            tooltip: {
+                visible: true, 
+                formatFunction: function (value) {
+                    var realVal = parseInt(value);
+                    return ('Year: 2016<br/>Price Index:' + realVal);
+                }, //formatFunction
+            }, //tooltip
+        }; //settings
+
+        //jqxBarGauge
+        //$('#chartBarGauge').jqxBarGauge(settingsBarGauge); //jqxBarGauge
+
+
+        // PIE CHART 
+        var data=[];
+        data = [{ "label": "Valkim", "value": "37000.00" }, { "label": "Rocell", "value": "224999.98" }, 
+            { "label": "MTF", "value": "400212.64" }, { "label": "Recris", "value": "409999.81" }];
+        //data = [{1:1}, {'Δ/ΝΣΗ Δ.Ε. ΗΛΕΙΑΣ': 27}, {'Δ/ΝΣΗ Δ.Ε. ΠΕΙΡΑΙΑ':33 }];
+        //data = [ {'label': 'Internet Explorer', 'value': '50'} , {'label': 'Firefox', 'value': '50'}, ] ;
+
+
+        var source = {
+            datatype: "json",
+            datafields: [
+                { name: 'label', type: 'string' },
+                { name: 'value', type: 'number' },
+                { name: 'pcnt', type: 'number' }, 
+            ],
+            localdata: histA,
+            //localdata: data,
+        };
+        var dataAdapter = new $.jqx.dataAdapter(source);
+
+        // Pie
+        var settingsPie = {
+            title: "Desktop browsers share",
+            description: "(source: wikipedia.org)",
+            enableAnimations: true,
+            showLegend: false,
+            showBorderLine: true,
+            legendPosition: { left: 520, top: 140, width: 100, height: 100 },
+            padding: { left: 5, top: 5, right: 5, bottom: 5 },
+            titlePadding: { left: 0, top: 0, right: 0, bottom: 10 },
+            source: dataAdapter,
+            // Object { 1=1, Δ/ΝΣΗ Δ.Ε. ΗΛΕΙΑΣ=27, Δ/ΝΣΗ Δ.Ε. ΠΕΙΡΑΙΑ=33 }
+            // [ {id: 'Internet Explorer', val: 33.3} , {id: 'Firefox', val: 26.5}, {id: 'Chrome', val: 25.4}, {id: 'Safari', val: 7.0}, {id: 'Opera', val: 4.6}, {id: 'Other', val: 3.2} ] ;
+            // [ {Internet Explorer, 33.3} , {Firefox, 26.5}, {Chrome, 25.4}, {Safari, 7.0}, {Opera, 4.6}, {Other, 3.2} ] ;
+            //[{"label":"1","value":1},{"label":"Δ/ΝΣΗ Δ.Ε. ΗΛΕΙΑΣ","value":27},{"label":"Δ/ΝΣΗ Δ.Ε. ΠΕΙΡΑΙΑ","value":33}]            
+            colorScheme: 'scheme02',
+            seriesGroups: [
+                    { 
+                        type: 'pie', showLabels: true,
+                        series: [ { 
+                            //dataField: 'total', displayText: 'cliente', 
+                            dataField: 'value', displayText: 'label', 
+                            labelRadius: 70, initialAngle: 15,
+                            radius: 100, centerOffset: 0,
+                            formatSettings: { sufix: ' Σχολεία', decimalPlaces: 0 }
+                            //formatSettings: { sufix: '%', decimalPlaces: 1 }
+                        } ]
+                    }
+                ] // series groups}
+        };
+        // setup the chart
+        $('#chartPie').jqxChart(settingsPie);
+
+
+
+
+    },  //loadComplete
+});
+
+
+
+//alert (dataArraySchoolToGradeType[0].type +  '-' + dataArraySchoolToGradeType[0].lexType);
+//var foo = adapterSchoolToGradeType.records;
+//alert (foo[0].type +  '-' + foo[0].lexType);
+/*
+*/
+///////////////////////////
+// GRID jqxSchoolToGradeGrid
+//////////////////////////                        
+$("#jqxgridSchoolToGrade").jqxGrid({
+    source: dataAdapterSchoolToGrade,
+    columns: [ //columntype: 'textbox', 
+        { text: 'id', datafield: 'id', hidden: true },
+        { text: 'Kωδικός', datafield: 'code', filtertype: 'input', width: '10%', },
+        { text: "Όνομα", datafield: 'name',  filtertype: 'input',  }, //width: '30%',
+        { text: "Κωδ.ΔΔΕ", datafield: 'ddeCode', columntype: 'textbox', filtertype: 'input', width: '10%', },
+        { text: "ΔΔΕ", datafield: 'ddeName', filtertype: 'input', width: '20%', },
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'15%', 
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            aggregates: ['count'], 
+        },
+        /*
+        { text: 'Edit', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "...";
+            }, 
+            buttonclick: function (row) {
+                $("#jqxgridSchoolToGrade").jqxGrid('beginrowedit', row);
+            } // buttonclick
+        }, //edit 
+        */
+
+        { text: 'Διαγραφή', editable: false, filterable: false, columntype: 'button', width: '5%', 
+            cellclassname: "redClass1",
+            cellsrenderer: function () {
+                //return "<button style='height:30px;' type='button' class='btn btn-danger'> xxxx </button>";
+                return "X";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                $("#dialogDeleteSchoolToGrade").jqxWindow('open');
+                //var datarow = $('#jqxgridSchoolToGrade').jqxGrid('getrowdata', row);
+                //$('#jqxgridSchoolToGrade').jqxGrid('deleterow', datarow.id);
+                //console.log('remove btn clicked id='+datarow.id);
+          } // buttonclick
+        }, //remove
+
+        //return '<div style="text-align: center; margin-top: 7px;"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></div>'
+        
+    ],     
+    autoheight: false, columnsresize: true, editable: true, //editmode: 'selectedrow',
+    filterable: true,showfilterrow: true, selectionmode: 'singlerow', //multiplecellsextended
+    pageable: false, sortable: true, width: '100%', height:'500', theme:theme, 
+    //rowsheight: 30,    
+    showaggregates: true, 
+    showstatusbar:true, 
+    showtoolbar:true, rendertoolbar: function (statusbar) {
+        // appends buttons to the status bar.
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        var addButton = $("<button type='button' class='btn btn-primary' style='float:right;'> Προσθήκη </button>");
+        //var addButton = $("<div style='float: right; margin-left: 10px;'><span> Προσθήκη </span></div>");
+        var reloadButton = $("<button type='button' class='btn btn-primary' style='float: right; margin-right: 10px;'> Ανανέωση </button>");
+        //var reloadButton = $("<div style='float: right; margin-left: 10px;'><span>Ανανέωση</span></div>");
+        //<button id="buttonAddSchoolToGrade" type="button" class="btn btn-primary">Add Record</button>
+        
+        container.append(addButton);
+        container.append(reloadButton);
+        statusbar.append(container);
+        addButton.jqxButton();
+        //addButton.jqxButton( {width: 60, height: 18} );
+        reloadButton.jqxButton();
+        //reloadButton.jqxButton({  width: 65, height: 18 });
+        // add new row.
+        addButton.click(function (event) {
+            //var datarow = generatedata(1);
+            //$("#jqxgridSchoolToGrade").jqxGrid('addrow', null, datarow[0]);
+            $( '#dialogAddSchoolToGrade').jqxWindow('open');
+        });
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridSchoolToGrade").jqxGrid({ source: dataAdapterSchoolToGrade });
+        });
+    } //render toolbar
+
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//SchoolToGrade grid
+
+////////////////////////////////
+// Buttons 
+////////////////////////////////              
+//$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
+$( '#buttonAddSchoolToGrade' ).click(function (event) {
+    $("#code, #name, #ddeCode, #ddeName, #type").val(''); 
+    //$("#jqxgridSchoolToGrade").jqxGrid({disabled:true});
+    $( '#dialogAddSchoolToGrade').jqxWindow('open');
+});
+$( '#buttonUpdateGridSchoolToGrade' ).click(function (event) {
+    $("#jqxgridSchoolToGrade").jqxGrid({ source: dataAdapterSchoolToGrade });
+});
+
+/////////////////////////
+//Dialogue DELETE
+/////////////////////////                
+// Dialogue DELETE
+//buttonDialogDeleteSchoolToGradeYes
+$( '#dialogDeleteSchoolToGrade' ).jqxWindow({ 
+    autoOpen: false, title: 'Διαγραφή Εγγραφής', 
+    isModal: true, modalOpacity:0.7, 
+    //cancelButton: $('#buttonDialogDeleteSchoolToGradeNo'), 
+    keyboardNavigation: true, keyboardCloseKey: 13,
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    //position: { x: parseInt($("#jqxgridSchoolToGrade").offset().left) + 60, y: parseInt($("#jqxgridSchoolToGrade").offset().top) + 60,}, 
+    width: 'auto', height: 'auto', 
+});        
+
+//Dialogue > Buttons
+//$('#buttonDialogDeleteSchoolToGradeYes, #buttonDialogDeleteSchoolToGradeNo').jqxButton({ theme: theme, height: 30, width: 80 });
+$('#buttonDialogDeleteSchoolToGradeYes, #buttonDialogDeleteSchoolToGradeNo').jqxButton({height: 30, width: 80 });
+// Event > Dialogue
+$("#dialogDeleteSchoolToGrade").on('close', function () {
+    //$("#jqxgridSchoolToGrade").jqxGrid({ disabled: false });
+});
+// Event > Button > Yes
+$('#buttonDialogDeleteSchoolToGradeYes').click(function () {
+    var row = $('#jqxgridSchoolToGrade').jqxGrid('getselectedrowindex');
+    var datarow = $('#jqxgridSchoolToGrade').jqxGrid('getrowdata', row);
+    $('#jqxgridSchoolToGrade').jqxGrid('deleterow', datarow.id);
+    //console.log('remove btn clicked id='+datarow.id);
+    $('#dialogDeleteSchoolToGrade').jqxWindow('close');
+});
+// Event > Button > No
+$('#buttonDialogDeleteSchoolToGradeNo').click(function () {
+    $('#dialogDeleteSchoolToGrade').jqxWindow('close');
+});
+
+
+/////////////////////////
+//Dialogue ADD
+/////////////////////////                
+// Dialogue 
+$('#dialogAddSchoolToGrade').jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', 
+    isModal: true, modalOpacity:0.7, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    resizable: false, 
+    //position: { x: parseInt($("#jqxgridSchoolToGrade").offset().left) + 60, y: parseInt($("#jqxgridSchoolToGrade").offset().top) + 60,}, 
+    width: '400px', height: 'auto', theme:theme, 
+});        
+
+//Dialogue > jqxcombobox
+//$( '#ddeCode' ).jqxDropDownList({ 
+$("#ddeCode").jqxComboBox({
+    source: dataAdapterDDETable, 
+    displayMember: "name", valueMember: "id", 
+    selectedIndex: -1, placeHolder:"Επιλέξτε DDE...",  
+});
+
+//Dialogue > Input
+//$("#addWinRowButton").jqxButton({ theme: theme, width: 210, height: 40 });
+$("#code, #name, #ddeCode, #ddeName").jqxInput();
+//$("#code, #ddeCode").width(50); $("#name, #ddeName").width(150);
+$( '#type' ).jqxDropDownList({ source: ArraySchoolToGradeSchoolType, selectedIndex: 0, });
+//$("#price").jqxNumberInput({ spinMode: 'simple', symbol: '$', width: 150, min: 0, height: 23, spinButtons: true });
+
+
+//Dialogue > Buttons
+//$('#buttonDialogAddSchoolToGradeYes, #buttonDialogAddSchoolToGradeNo').jqxButton({ theme: theme, height: 30, width: 80 });
+$('#buttonDialogAddSchoolToGradeYes, #buttonDialogAddSchoolToGradeNo').jqxButton({ height: 30, width: 80 });
+
+// Event > Dialogue
+$( '#dialogAddSchoolToGrade' ).on('close', function () {
+    //$("#jqxgridSchoolToGrade").jqxGrid({ disabled: false });
+});
+
+// Event > Button > Yes
+$( '#buttonDialogAddSchoolToGradeYes' ).click(function (event) {
+    
+    $('#formAddSchoolToGrade').jqxValidator('validate');
+    //event.preventDefault();
+    /*    
+    // set record values
+    var newrow = { name: $("#code").val(), name: $("#name").val(), surname: $("#ddeCode").val(), codeAfm: $("#ddeName").val(), codeGrad: $("#type").val(), };
+    $( "#jqxgridSchoolToGrade" ).jqxGrid('addrow', null, newrow);
+    $( "#jqxgridSchoolToGrade" ).jqxGrid('updatebounddata');
+    $( "#dialogAddSchoolToGrade" ).jqxWindow('close');
+    */
+});
+
+// Event > Button > No
+$( '#buttonDialogAddSchoolToGradeNo' ).click(function () {
+    $( '#dialogAddSchoolToGrade' ).jqxWindow('close');
+    //$('#dialogAddSchoolToGrade').jqxWindow('hide');
+});
+
+//code, #name, #ddeCode, #ddeName
+////////////////////////////
+//Form ADD > jqxValidator
+////////////////////////////
+var msgCode = 'Code is required';
+$('#formAddSchoolToGrade').jqxValidator( { 
+        //hintType: 'label',
+        rules: [            
+        { input: '#code', 
+        action: 'valueChanged',    //'keyup', 
+        //rule: 'required',          //rule: 'length=4,12'  
+        rule: function (input, commit) {
+            var checkVal = $('#code').val();
+            var pass = true; 
+            //var result = date.getFullYear() >= 1900 && date.getFullYear() <= 2014;
+            if (checkVal == '') {
+                msgCode = 'Null!';
+                pass = false;
+            }
+            var data = dataAdapterSchoolToGrade.records;
+            for (var i=0; i < data.length; i++ ) {
+                if (checkVal == data[i].code) {
+                    msgCode = 'Duplicate!';
+                    pass = false;
+                    break;
+                }
+            } 
+            return pass;
+        }, //rule
+        message: msgCode,
+        }, 
+
+        { input: '#name', 
+        action: 'valueChanged',    //'keyup', 
+        rule: 'required',     //rule: 'length=4,12'  
+        message: 'Name is required!',
+        },        
+        
+        { input: '#ddeCode', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The ddeCode is required!',
+        },        
+        { input: '#type', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The type is required!',
+        },
+    ],  //rules 
+
+    onSuccess: function (event) { 
+        //event.preventDefault();        
+        // set record values
+        var newrow = { code: $("#code").val(), name: $("#name").val(), ddeCode: $("#ddeCode").val(), ddeName: $("#ddeName").val(), type: $("#type").val(), };
+        $( "#jqxgridSchoolToGrade" ).jqxGrid('addrow', null, newrow);
+        $( "#jqxgridSchoolToGrade" ).jqxGrid('updatebounddata');
+        $( "#dialogAddSchoolToGrade" ).jqxWindow('close');        
+        console.log("Success");
+        //alert('Success!'); 
+    },//onSuccess
+
+    onError: function () { 
+        console.log("Failed!");
+        //alert('Failed!'); 
+    },//onError
+
+}); 
+
+//$('#jqxValidator').on('validationError', function (event) { event.preventDefault(); }); 
+//$('#jqxValidator').on('validationSuccess', function (event) { event.preventDefault(); }); 
+
+
+/////////////////////////
+//BARGAUGE
+/////////////////////////
+
+/*
+/////////////////////////
+//CHARTS
+/////////////////////////
+// Define CHARTS
+//              (id,          value,color,     bgColor,   title,                      subtitle,               isHalf)
+generateBarGauge('bargauge1', [0], '#3AB54B', '#B0D2C8', 'Calories intake - 0/2200', '2200 calories pending', true);
+generateBarGauge('bargauge2', [0], '#B24848', '#C9A5A6', 'Calories burnt - 0/1000', '1000 calories pending', true);
+generateBarGauge('bargauge3', [0], '#D2AACE', '#DBCDDC', 'Exercises - 0/7', '7 sets pending');
+generateBarGauge('bargauge4', [0], '#978CC2', '#CBCBE0', 'Sets - 0/4', '10 sets pending');
+
+// UPDATE CHARTS (Grid) DataSource.onloaded 
+var dataAdapterGauges = new $.jqx.dataAdapter(sourceGauges, {
+    loadComplete: function (records) {
+        changesBarGauge('bargauge1', 'Calories intake - ' + records[0].now + '/' + records[0].total, (records[0].total - records[0].now) + ' calories pending', [records[0].now]);
+        changesBarGauge('bargauge2', 'Calories burnt - ' + records[1].now + '/' + records[1].total, (records[1].total - records[1].now) + ' calories pending', [records[1].now]);
+        changesBarGauge('bargauge3', 'Exercises - ' + records[2].now + '/' + records[2].total, (records[2].total - records[2].now) + ' exercises pending', [records[2].now]);
+        changesBarGauge('bargauge4', 'Sets - ' + records[3].now + '/' + records[3].total, (records[3].total - records[3].now) + ' sets pending', [records[3].now]);
+    } //loadComplete
+});
+
+// Bind Data
+dataAdapterGauges.dataBind();
+*/
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+
+
+

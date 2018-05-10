@@ -1,0 +1,1047 @@
+{# % load staticfiles % #}
+{# % load template_filters % #}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title id="Description">{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <!-- Fonts -->
+    <!--
+    Change to local  'ext/font-awesome.min.css' to remove outsource dependency
+    -->
+
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:300,400' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+
+    <!--
+    <link rel="stylesheet" type="text/css" href="{% static 'ext/css-lato.font' %}" >
+    <link rel="stylesheet" type="text/css" href="{% static 'ext/css-roboto+condensed.font' %}" >
+    -->    
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/bootstrap.min.css' %}">   
+    <!-- vtzoum change 
+    <link rel="stylesheet" type="text/css" href="../lib/css/font-awesome.min.css">    
+    -->    
+    <!--
+    Change to local  'ext/font-awesome.min.css' to remove outsource dependency
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" media="all" rel="stylesheet" type="text/css">
+    -->
+    <!-- Font-Awesome CSS -->
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/animate.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/bootstrap-switch.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/checkbox3.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/jquery.dataTables.min.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/dataTables.bootstrap.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/select2.min.css' %}">   
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/css/style.css' %}">   
+    <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/css/themes/flat-blue.css' %}">   
+    <!-- JQXWIDGET > Boostrap theme by theme builder -->
+    <!--
+    <link href="{% static 'css/jqxwidget-custom-bootstrap.css' %}" rel="stylesheet" media="screen">    
+    <link href="{% static 'css/jqxwidget-custom.css' %}" rel="stylesheet" media="screen">    
+    <link href="{% static 'css/jqxwidget-custom2.css' %}" rel="stylesheet" media="screen">    
+    <link href="{% static 'css/jqxwidget-custom-darkblue.css' %}" rel="stylesheet" media="screen">    
+    -->
+    <link href="{% static 'css/jqxwidget-custom-darkblue.css' %}" rel="stylesheet" media="screen">    
+    
+    <!-- css > jqxwidgets -->
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.base.css' %}" type="text/css" />    
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.bootstrap.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.arctic.css' %}" type="text/css" />
+    <!--
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.energyblue.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.light.css' %}" type="text/css" />    
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.metro.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.metrodark.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.office.css' %}" type="text/css" />
+    -->
+
+    <!-- css > jqxwidgets > bootstrap -->
+    <!--
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap-theme.min.css' %}" type="text/css" />    
+    -->
+    <!-- tzoumak -->
+    <link rel="stylesheet" href="{% static 'css/tzoumak-helper.css' %}" type="text/css" />     
+    
+    <!-- SCRIPTS -->
+    
+    <!-- SCRIPTS > SB-ADMIN -->
+    <!-- jQuery -->
+
+    <!-- Javascript Libs -->
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.min.js' %}"></script>
+    <!-- Confilict with Defaults bootstrap.js
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/bootstrap.min.js' %}"></script>
+    -->
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/Chart.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/bootstrap-switch.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.matchHeight-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/dataTables.bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/select2.full.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/ace.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/mode-html.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/js/ace/theme-github.js' %}"></script>
+
+    <!-- SCRIPTS > JQXWIDGETS -->
+    <!-- scripts > jqxwidgets > extras -->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/jquery-1.11.1.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/bootstrap.min.js' %}" ></script>
+    <!-- 
+    https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js 
+    https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js
+    -->    
+    <!-- scripts > jqxwidgets -->    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcore.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbargauge.js' %}" ></script>    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbuttons.js' %}" ></script>    
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxbuttongroup.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxradiobutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxchart.core.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcalendar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcheckbox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxcombobox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdata.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdate.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdatatable.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdatetimeinput.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdragdrop.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdraw.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdropdownbutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdropdownlist.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdocking.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockinglayout.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockpanel.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxeditor.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxexpander.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxfileupload.js' %}" ></script> 
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgauge.js' %}" ></script>
+    <!-- jqxwidgets  jqxgrid -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.aggregates.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.columnsresize.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.columnsreorder.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.export.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.edit.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.filter.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.grouping.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.pager.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.reorder.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.selection.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.sort.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxgrid.storage.js' %}" ></script>
+    <!-- ...cont -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxinput.js' %}" ></script>
+    <!-- 
+    script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxkanban.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxknob.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxloader.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxlistbox.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxmaskedinput.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxmenu.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxnotification.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxnumberinput.js' %}" ></script>
+    
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxpanel.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxprogressbar.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxresponse.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxribbon.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxscheduler.js' %}" ></script>
+    -->
+
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxser.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxser.api.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxscrollbar.js' %}" ></script>
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxslider.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxsplitter.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxsortable.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxswitchbutton.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtagcloud.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtree.js' %}" ></script>
+    -->
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxtabs.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxvalidator.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxwindow.js' %}" ></script>
+    <!-- Layout.js loaded AFTER jqxlayout.js -->
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxlayout.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/jqxdockinglayout.js' %}" ></script>
+    -->
+    <!-- globalization (!) -->
+    <!--
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/globalization/globalize.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'jqwidgets/jqwidgets/globalization/globalize.culture.de-DE.js' %}" ></script>
+    -->
+    <!-- scripts > tzoumak -->    
+    <script type="text/javascript" src="{% static 'js/tzoumak-csrf.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/tzoumak-helpers.js' %}" ></script>
+    
+    <!-- NA DW PLAI -->    
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/app.js' %}"></script>
+    <!--
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/app.js' %}"></script>
+    <script type="text/javascript" src="{% static 'themes/flat-admin-bootstrap-templates-master/dist/js/index.js' %}"></script>
+    -->
+
+    
+    <!--
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+
+    <link rel="stylesheet" href="{% static 'js-isotope/css/isotope-search.css' %}" type="text/css" />
+
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.base.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/jqwidgets/styles/jqx.classic.css' %}" type="text/css" />
+
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'jqwidgets/styles/bootstrap-theme.min.css' %}" type="text/css" />    
+    -->
+
+
+<style>
+
+</style>
+
+</head>
+
+<body class="flat-blue">
+<!-- CUSTOM TAGS & FILTERS -->
+
+{#JINJA2
+{% if request.user is has_group("Grammateia") %} 
+    <input id='StationID' name='ΓΡΑΜΜΑΤΕΙΑ' value='2' type="hidden"/>
+    {% set stationID=2 %}
+    
+{% elif request.user is has_group("Filaxi") %} 
+    <input id='StationID' name='ΦΥΛΑΞΗ' value='1' type="hidden"/>
+    {% set stationID=1 %}
+
+{% elif request.user is has_group("Apothiki") %} 
+    <input id='StationID' name='ΑΠΟΘΗΚΗ' value='0' type="hidden"/>
+    {% set stationID=0 %}
+
+{% else %} 
+    <input id='StationID' name='Error' value='-1' type="hidden"/>
+    {% set stationID=-1 %}
+{% endif %} 
+
+#}
+
+{#
+{% set Station = jinjaCheckGroup(request.user) %}
+<h1>s:{{Station}}</h1>
+<h1>0:{{Station[0]}}</h1>
+<h1>1:{{Station[1]}}</h1>
+
+{% set StationName=Station[0] %}
+{% set StationID= Station[1] %}
+<h1>name:{{StationName}}</h1>
+<h1>id:{{StationID}}</h1>
+#}
+
+{% set Station = jinjaCheckGroup(request.user) %}
+{% set StationName=Station[0] %}
+{% set StationID= Station[1] %}
+
+<div class="app-container">
+<div class="row content-container">
+
+<nav class="navbar navbar-inverse navbar-fixed-top navbar-top">
+<div class="container-fluid">
+
+<div class="navbar-header">
+
+    <button type="button" class="navbar-expand-toggle">
+        <i class="fa fa-bars icon"></i>
+    </button>
+    
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li class="active">Πίνακας Ελέγχου</li> <!-- Dashboard -->
+    </ol>
+
+    <button type="button" class="navbar-right-expand-toggle pull-right visible-xs">
+        <i class="fa fa-th icon"></i>
+    </button>
+</div>
+<!-- End navbar-header -->
+
+
+<ul class="nav navbar-nav navbar-right">
+    <button type="button" class="navbar-right-expand-toggle pull-right visible-xs">
+        <i class="fa fa-times icon"></i>
+    </button>
+    
+
+    <!-- dropdown Booking Station -->
+    {% block station %} {% endblock %}
+
+    <!--
+    <li class="dropdown danger">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <i class="fa fa-star-half-o"></i><span id="BookingStationName">Επιλέξτε</span></a>
+        
+        <ul class="dropdown-menu danger  animated fadeInDown">
+            
+            <li class="title">
+                Notification <span class="badge pull-right">4</span>
+            </li>
+            
+            <li>
+                <ul id="BookingStationLinks" class="list-group notifications">
+
+                    <li class="">
+                    </li>
+                    <a href="0" name="Αποθήκη">
+                        <li class="list-group-item">
+                            <span class="badge">1</span> <i class="fa fa-exclamation-circle icon"></i> Αποθήκη
+                        </li>
+                    </a>
+
+                    <a href="1" name="Φύλαξη">
+                        <li class="list-group-item">
+                            <span class="badge">1</span> <i class="fa fa-exclamation-circle icon"></i> Φύλαξη
+                        </li>
+                    </a>
+
+                    <a href="#">
+                        <li class="list-group-item">
+                            <span class="badge">1</span> <i class="fa fa-exclamation-circle icon"></i> new registration
+                        </li>
+                    </a>
+
+                    <a href="#">
+                        <li class="list-group-item">
+                            <span class="badge success">1</span> <i class="fa fa-check icon"></i> new orders
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li class="list-group-item">
+                            <span class="badge danger">2</span> <i class="fa fa-comments icon"></i> customers messages
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li class="list-group-item message">
+                            view all
+                        </li>
+                    </a>
+                </ul>
+            </li>
+        </ul>                            
+    </li>
+    -->
+
+    <!-- dropdown Notification -->
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-comments-o"></i></a>
+        <ul class="dropdown-menu animated fadeInDown">
+            <li class="title">
+                Notification <span class="badge pull-right">0</span>
+            </li>
+            <li class="message">
+                No new notification
+            </li>
+        </ul>
+    </li>
+    <!-- End dropdown -->
+
+
+
+<!-- dropdown profile -->
+{#
+{% if request.user is defined %}
+    value of variable: {{ request.user }}
+    request.user.is_authenticated: {{request.user.is_authenticated()}}
+{% else %}
+    variable is not defined
+{% endif %}
+#}
+
+{% if request.user.is_authenticated() %} 
+    <li class="dropdown profile">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> {{request.user.username}} <span class="caret"></span></a>
+        <ul class="dropdown-menu animated fadeInDown">
+            <li class="profile-img">
+                <link rel="stylesheet" type="text/css" href="{% static 'themes/flat-admin-bootstrap-templates-master/dist/lib/css/dataTables.bootstrap.css' %}">   
+
+            <img src="{% static 'themes/flat-admin-bootstrap-templates-master/img/profile/bk_resize.jpg' %}" class="profile-img" >
+            </li>
+            <li>
+                <div class="profile-info">
+                    <h4 class="username"> {{request.user.username}} </h4>
+                    <p>my@email.com</p>
+                    <div class="btn-group margin-bottom-2x" role="group">
+                        <a href="#"><i class="fa fa-fw fa-cog"></i> Profile</a>
+                        <a href="/logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                        <!--
+                        <button type="button" class="btn btn-default"><i class="fa fa-user"></i> Profile</button>
+                        <button type="button" class="btn btn-default"><i class="fa fa-sign-out"></i> Logout</button>
+                        -->
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </li>
+
+{% endif %} 
+
+
+
+    <!-- End dropdown profile -->
+
+</ul>
+<!-- End navbar-header -->
+
+<!-- End Booking station dropdown-->
+
+
+</div>
+</nav>
+<!-- COntainer.Fluid + End navbar-->
+
+
+<!-- START leftside folding menu -->
+<div class="side-menu sidebar-inverse">
+<nav class="navbar navbar-default" role="navigation">
+<div class="side-menu-container">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="/home">
+            <div class="icon fa fa-home"></div>
+            <!-- Βαθμολογικό Κέντρο -->
+            <div class="title"> ΒΚ043 </div> 
+        </a>
+        
+        <button type="button" class="navbar-expand-toggle pull-right visible-xs">
+            <i class="fa fa-times icon"></i>
+        </button>
+    </div>
+    
+    <ul class="nav navbar-nav">
+        {% if request.user is has_group("Grammateia") %} 
+        
+        <!-- START menuItem Dashboard -->
+        <li class="active">
+            <a href="/home">
+                <span class="icon fa fa-tachometer"></span><span class="title">Πίνακας Ελέγχου</span> <!-- Dashboard -->
+            </a>
+        </li>
+            
+        {% endif %} 
+
+
+        <!-- START menuItem login -->
+        {% if not request.user.is_authenticated() %} 
+        <li>
+            <a href="/login">
+                <span class="icon fa fa-key"></span><span class="title">Login</span>
+            </a>
+        </li>
+        {% endif %} 
+
+        <!-- START menuItem Upload CSV  -->
+        {% if request.user is has_group("Admin") %} 
+
+        <li class="panel panel-default dropdown">
+        <a data-toggle="collapse" href="#dropdown-uploadcsv">
+                <span class="icon fa fa-upload"></span><span class="title"> Εισαγωγή Δεδομένων CSV </span>
+            </a>                   <!-- fa-database-->
+            <!-- Dropdown level 1 -->
+            <div id="dropdown-uploadcsv" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/specialty/upload"><i class="fa fa-fw fa-file-excel-o"></i> Ειδικότητες(CSV)</a></li>
+                        <li><a href="/lesson/upload"><i class="fa fa-fw fa-file-excel-o"></i> Μαθήματα(CSV) </a></li>
+                        <li><a href="/schoolstograde/upload/"><i class="fa fa-fw fa-file-excel-o"></i> Σχολεία Υποδοχής(CSV) </a></li>
+                        <li><a href="/teacher/upload"><i class="fa fa-fw fa-file-excel-o"></i> Καθηγητές(CSV) </a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        {% endif %} 
+        <!-- START menuItem Διαχείριση -->
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") %} 
+
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-manager">
+                <span class="icon fa fa-table"></span><span class="title"> Διαχείριση Δεδομένων</span>
+            </a>
+            <!-- Dropdown level 1 -->
+            <div id="dropdown-manager" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/specialty/"><i class="fa fa-fw fa-tag"></i> Ειδικότητες </a></li>                                                            
+                        <li><a href="/lesson/"><i class="fa fa-fw fa-bars"></i>Μαθήματα</a></li>
+                        <li><a href="/schooltograde"><i class="fa fa-fw fa-building-o"></i> Σχολεία Υποδοχής </a></li>
+                        <li><a href="/teacher"><i class="fa fa-fw fa-group"></i> Καθηγητές </a></li>
+                        <li><a href="/grader/"><i class="fa fa-fw fa-users"></i> Βαθμολογητές </a></li>        
+                        <!--                        
+                        <li><a href="/grader/"><i class="fa fa-fw fa-users"></i> Βαθμολογητές </a></li>                    
+                        <li><a href="/teacher"><i class="fa fa-fw fa-group"></i> Καθηγητές </a></li>
+                        <li><a href="/specialty/"><i class="fa fa-fw fa-tag"></i> Ειδικότητες </a></li>                                                            
+                        <li><a href="/schooltograde"><i class="fa fa-fw fa-building-o"></i> Σχολεία Υποδοχής </a></li>
+                        -->
+        
+                    </ul>
+                </div>
+            </div>
+        </li>
+        
+        {% endif %} 
+
+        <!-- START menuItem Γραμματεία -->
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") %} 
+        
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-secretariat">
+                <span class="icon fa fa-slideshare"></span><span class="title"> Γραμματεία </span>
+            </a>                   <!-- fa-star-half-o fa-wrench-->
+            <!-- Dropdown level 1 -->
+            <div id="dropdown-secretariat" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        
+                        <li><a href="/lesson/manage"><i class="fa fa-fw fa-bars"></i> Παρακολούθηση Μαθημάτων</a></li>
+                        <li><a href="/acceptance/"><i class="fa fa-fw fa-archive"></i> Παρακολούθηση Παραλαβών</a></li>                        
+                        <li><a href="/folder/"><i class="fa fa-fw fa-book"></i> Παρακολούθηση Φακέλων</a></li>    
+                        <!--
+                        <li><a href="/schooltograde"><i class="fa fa-fw fa-building-o"></i> Σχολεία Υποδοχής </a></li>                        
+                        <li><a href="/lesson"><i class="fa fa-fw fa-bars"></i> Μαθήματα </a></li>                                                
+                        <li><a href="/acceptance/"><i class="fa fa-fw fa-archive"></i> Παραλαβές </a></li>                        
+                        <li><a href="/folder/"><i class="fa fa-fw fa-book"></i> Φάκελοι </a></li>
+                        -->
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        {% endif %} 
+
+        <!-- START menuItem Αποθήκη/Φύλαξη  -->
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or 
+            request.user is has_group("Filaxi") or request.user is has_group("Apothiki") %} 
+        <!--
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-warehouse">
+                <span class="icon fa fa-desktop"></span><span class="title"> Αποθήκη/Φύλαξη </span>
+            </a>
+
+            <div id="dropdown-warehouse" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/booking/"><i class="fa fa-fw fa-desktop"></i> Αποθήκη </a>
+                        </li>
+                        <li><a href="/booking/"><i class="fa fa-fw fa-desktop"></i> Φύλαξη </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        -->
+        {% endif %} 
+
+        <!-- START menuItem Αποθήκη -->
+        {% if request.user is has_group("Apothiki") %} 
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-warehouse0">
+                <span class="icon fa fa-desktop"></span><span class="title"> Αποθήκη </span>
+            </a>                   <!-- fa-desktop  -->
+            <div id="dropdown-warehouse0" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">                       
+                        <li><a href="/booking/?stationid=0"><i class="fa fa-fw fa-exchange"></i>Κινήσεις Αποθήκης</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        {% endif %}
+
+        <!-- START menuItem Φύλαξη  -->
+        {% if request.user is has_group("Filaxi") %}          
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-warehouse1">
+                <span class="icon fa fa-desktop"></span><span class="title"> Φύλαξη </span>
+            </a>                   <!-- fa-desktop  -->
+            <div id="dropdown-warehouse1" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">                        
+                        <!-- menuItem Φύλαξη -->
+                        <li><a href="/booking/?stationid=1"><i class="fa fa-fw fa-exchange"></i>Κινήσεις Φύλαξης</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        {% endif %} 
+
+
+        <!-- START menuItem EXTRAS -->
+        {% if request.user is has_group("Admin") %} 
+        
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-extras">
+                <span class="icon fa fa-eraser"></span><span class="title">Διορθώσεις</span>
+            </a>
+            
+            <div id="dropdown-extras" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/booking/manage/"> <i class="fa fa-fw fa-exchange"></i>Κινήσεις</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        {% endif %} 
+
+
+        <!-- START menuItem Αναφορές -->
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or request.user is has_group("Reports") %} 
+        
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-report">
+                <span class="icon fa fa-file"></span><span class="title"> Εκτυπώσεις </span>
+            </a>
+            <!-- Dropdown level 1 -->
+            <div id="dropdown-report" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/reporting/secretariat"> <i class="fa fa-fw fa-file-excel-o"></i>Παραλαβών</a></li>
+                        <li><a href="/reporting/secretariat"> <i class="fa fa-fw fa-file-excel-o"></i>Βαθμολόγησης</a></li>
+                          <li><a href="/reporting/schools/"> <i class="fa fa-fw fa-building-o"></i>Αποστολών</a></li>
+                          <li><a href="/reporting/schools/"> <i class="fa fa-fw fa-building-o"></i>Κλεισίματος</a></li>
+                        <!--
+                        <li><a href="/reporting/letter"> <i class="fa fa-fw fa-file-pdf-o"></i> Επιστολές(.pdf)</a></li>
+                        -->
+                        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") %} 
+                          <li><a href="/reporting/barcode"> <i class="fa fa-fw fa-barcode"></i>Μαθημάτων</a></li>
+                          <li><a href="/reporting/schools/"> <i class="fa fa-fw fa-building-o"></i>Σχολείων</a></li>
+                        {% endif %} 
+                        <!--
+                        <li><a href="/reporting/general"> <i class="fa fa-fw fa-file-excel-o"></i> Γενικές </a></li>
+                        <li><a href="/reporting/secretariat"> <i class="fa fa-fw fa-file-excel-o"></i> Γραματεία </a></li>
+                        <li><a href="/reporting/coordinators"> <i class="fa fa-fw fa-file-excel-o"></i> Συντονιστές </a></li>
+                        
+                        <li><a href="/reporting/home/pdf/"> <i class="fa fa-fw fa-file-pdf-o"></i> Αναφορές (PDF) </a></li>
+                        <li><a href="/reporting/home/xls/"> <i class="fa fa-fw fa-file-excel-o"></i> Αναφορές (XLSX) </a></li>
+                        -->
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        {% endif %} 
+
+
+        {#JINJA2#}
+
+        <!-- START menuItem UIkits-->
+        <!--
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-element">
+                <span class="icon fa fa-desktop"></span><span class="title">UI Kits</span>
+            </a>    
+
+            <div id="dropdown-element" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="ui-kits/theming.html">Theming</a>
+                        </li>
+                        <li><a href="ui-kits/grid.html">Grid</a>
+                        </li>
+                        <li><a href="ui-kits/button.html">Buttons</a>
+                        </li>
+                        <li><a href="ui-kits/card.html">Cards</a>
+                        </li>
+                        <li><a href="ui-kits/list.html">Lists</a>
+                        </li>
+                        <li><a href="ui-kits/modal.html">Modals</a>
+                        </li>
+                        <li><a href="ui-kits/alert.html">Alerts & Toasts</a>
+                        </li>
+                        <li><a href="ui-kits/panel.html">Panels</a>
+                        </li>
+                        <li><a href="ui-kits/loader.html">Loaders</a>
+                        </li>
+                        <li><a href="ui-kits/step.html">Tabs & Steps</a>
+                        </li>
+                        <li><a href="ui-kits/other.html">Other</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        -->
+        
+        <!-- START menuItem Table -->
+        <!--
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-table">
+                <span class="icon fa fa-table"></span><span class="title">Table</span>
+            </a>
+            
+            <div id="dropdown-table" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="table/table.html">Table</a>
+                        </li>
+                        <li><a href="table/datatable.html">Datatable</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        -->
+
+        <!-- START menuItem Form-->
+        <!--
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-form">
+                <span class="icon fa fa-file-text-o"></span><span class="title">Form</span>
+            </a>
+
+            <div id="dropdown-form" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="form/ui-kits.html">Form UI Kits</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        -->
+
+        <!-- Dropdown-->
+        <!--
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#component-example">
+                <span class="icon fa fa-cubes"></span><span class="title">Components</span>
+            </a>
+
+            <div id="component-example" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="components/pricing-table.html">Pricing Table</a>
+                        </li>
+                        <li><a href="components/chartjs.html">Chart.JS</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        -->
+
+        <!-- Dropdown-->
+        <!--
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-example">
+                <span class="icon fa fa-slack"></span><span class="title">Page Example</span>
+            </a>
+
+            <div id="dropdown-example" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="pages/login.html">Login</a>
+                        </li>
+                        <li><a href="pages/index.html">Landing Page</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        -->
+
+
+        <!-- Dropdown-->
+        <!--
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-icon">
+                <span class="icon fa fa-archive"></span><span class="title">Icons</span>
+            </a>
+
+            <div id="dropdown-icon" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="icons/glyphicons.html">Glyphicons</a>
+                        </li>
+                        <li><a href="icons/font-awesome.html">Font Awesomes</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        -->
+
+        <li>
+            <a href="/about">
+                <span class="icon fa fa-info"></span><span class="title">Πληροφορίες</span>
+            </a>
+        </li>
+    
+    </ul>
+    <!-- /.list -->
+
+</div>
+<!-- /.navbar-collapse -->
+</nav>
+</div>
+
+
+<!-- START Main Content -->
+<div class="container-fluid">
+<div class="side-body padding-top">
+
+
+<!-- Start NxROWS -->
+{% block html %}{% endblock %}
+<!-- End ROWS -->
+
+<!--
+<div class="row no-margin-bottom">
+    
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card red summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-inbox fa-4x"></i>
+                    <div class="content">
+                        <div class="title">50</div>
+                        <div class="sub-title">New Mails</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card yellow summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-comments fa-4x"></i>
+                    <div class="content">
+                        <div class="title">23</div>
+                        <div class="sub-title">New Message</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card green summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-tags fa-4x"></i>
+                    <div class="content">
+                        <div class="title">280</div>
+                        <div class="sub-title">Product View</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+        <a href="#">
+            <div class="card blue summary-inline">
+                <div class="card-body">
+                    <i class="icon fa fa-share-alt fa-4x"></i>
+                    <div class="content">
+                        <div class="title">16</div>
+                        <div class="sub-title">Share</div>
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+-->
+<!-- ./row -->
+
+<div class="row  no-margin-bottom">
+
+    <div class="col-sm-6 col-xs-12">
+        
+        <div class="row">
+            <!--
+            <div class="col-xs-12">
+                <div class="card primary">
+                    <div class="card-jumbotron no-padding">
+                        <canvas id="jumbotron-line-chart" class="chart no-padding"></canvas>
+                    </div>
+                    <div class="card-body half-padding">
+                        <h4 class="float-left no-margin font-weight-300">Profits</h4>
+                        <h2 class="float-right no-margin font-weight-300">$3200</h2>
+                        <div class="clear-both"></div>
+                    </div>
+                </div>
+            </div>
+            -->
+        </div>
+        <!-- ./row-->
+
+        <div class="row">
+            <!--
+            <div class="col-md-6 col-sm-12">
+                <div class="thumbnail no-margin-bottom">
+                    <img src="../img/thumbnails/picjumbo.com_IMG_4566.jpg" class="img-responsive">
+                    <div class="caption">
+                        <h3 id="thumbnail-label">Thumbnail label<a class="anchorjs-link" href="#thumbnail-label"><span class="anchorjs-icon"></span></a></h3>
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+                <div class="thumbnail no-margin-bottom">
+                    <img src="../img/thumbnails/picjumbo.com_IMG_3241.jpg" class="img-responsive">
+                    <div class="caption">
+                        <h3 id="thumbnail-label">Thumbnail label<a class="anchorjs-link" href="#thumbnail-label"><span class="anchorjs-icon"></span></a></h3>
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                        <p><a href="#" class="btn btn-success" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                    </div>
+                </div>
+            </div>
+            -->
+            
+        </div>
+        <!-- ./row-->
+    
+    </div>
+    
+    <div class="col-sm-6 col-xs-12">
+        <div class="row">
+        
+            <!--
+            <div class="col-md-6 col-sm-12">
+                <div class="card primary">
+                    <div class="card-jumbotron no-padding">
+                        <canvas id="jumbotron-bar-chart" class="chart no-padding"></canvas>
+                    </div>
+                    <div class="card-body half-padding">
+                        <h4 class="float-left no-margin font-weight-300">Orders</h4>
+                        <div class="clear-both"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+                <div class="card primary">
+                    <div class="card-jumbotron no-padding">
+                        <canvas id="jumbotron-line-2-chart" class="chart no-padding"></canvas>
+                    </div>
+                    <div class="card-body half-padding">
+                        <h4 class="float-left no-margin font-weight-300">Pages view</h4>
+                        <div class="clear-both"></div>
+                    </div>
+                </div>
+            </div>
+            -->
+
+        </div>
+        <!-- ./row -->
+        
+
+        <!--
+        <div class="card card-success">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="title"><i class="fa fa-comments-o"></i> Last Message</div>
+                </div>
+
+                <div class="clear-both"></div>
+            </div>
+            <div class="card-body no-padding">
+                <ul class="message-list">
+                    <a href="#">
+                        <li>
+                            <img src="../img/profile/profile-1.jpg" class="profile-img pull-left">
+                            <div class="message-block">
+                                <div><span class="username">Tui2Tone</span> <span class="message-datetime">12 min ago</span>
+                                </div>
+                                <div class="message">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.</div>
+                            </div>
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li>
+                            <img src="../img/profile/profile-1.jpg" class="profile-img pull-left">
+                            <div class="message-block">
+                                <div><span class="username">Tui2Tone</span> <span class="message-datetime">15 min ago</span>
+                                </div>
+                                <div class="message">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.</div>
+                            </div>
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li>
+                            <img src="../img/profile/profile-1.jpg" class="profile-img pull-left">
+                            <div class="message-block">
+                                <div><span class="username">Tui2Tone</span> <span class="message-datetime">2 hour ago</span>
+                                </div>
+                                <div class="message">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.</div>
+                            </div>
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li>
+                            <img src="../img/profile/profile-1.jpg" class="profile-img pull-left">
+                            <div class="message-block">
+                                <div><span class="username">Tui2Tone</span> <span class="message-datetime">1 day ago</span>
+                                </div>
+                                <div class="message">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.</div>
+                            </div>
+                        </li>
+                    </a>
+                    <a href="#" id="message-load-more">
+                        <li class="text-center load-more">
+                            <i class="fa fa-refresh"></i> load more..
+                        </li>
+                    </a>
+                </ul>
+            </div>
+        </div>
+        -->
+    </div>
+</div>
+<!-- ./row -->
+
+</div>
+</div>
+</div>
+<footer class="app-footer">
+<div class="wrapper">
+<span class="pull-right">2.1 <a href="#"><i class="fa fa-long-arrow-up"></i></a></span> © 2017 Δημιουργήθηκε με Εργαλεία Ελεύθερου Λοgισμικού!
+</div>
+</footer>
+<div>
+</body>
+
+<!-- js code -->
+{% block js %}{% endblock %}
+
+
+</html>
+

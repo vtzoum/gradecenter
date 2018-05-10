@@ -1,0 +1,47 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+      
+    <title id="Description">{% block title %}{% endblock %}</title>
+    
+    <!-- CSS> -->
+    <!-- bootstrap -->
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+    <!-- jquery-ui -->
+    <!-- 
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}" type="text/css" /> 
+    -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <!-- tzoumak -->
+    <link rel="stylesheet" href="{% static 'css/tzoumak-helper.css' %}" type="text/css" />
+
+
+    <!-- SCRIPTS -->
+    <!-- scripts > jquery 
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    --> 
+    <!-- jquery-jqxwidgets -->
+    <script type="text/javascript" src="{% static 'jqwidgets/scripts/jquery-1.11.1.min.js' %}" ></script>
+    <!-- jquery-ui-->
+    <!--
+    <script type="text/javascript" src="{% static 'js/jquery-ui.js' %}" ></script>
+    -->
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <!-- tzoumak -->
+    <script type="text/javascript" src="{% static 'js/tzoumak-csrf.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/tzoumak-helpers.js' %}" ></script>
+
+  </head>
+
+  <body>
+    <!-- html code -->
+    {% block html %}{% endblock %}
+  </body>
+
+    <!-- js code -->
+    {% block js %}{% endblock %}
+
+</html>

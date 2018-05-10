@@ -1,0 +1,102 @@
+3 decorator examples & other awesome things about Python
+
+A decorator is a function that takes another function and returns a newer, prettier version of that function.*
+
+Here are three examples of Python decorators for people who know how to use them, but forget how to write them. If you make it past the examples, there is further discussion of some of the awesome features of Python that are utilized in the code below.
+
+Also, these specific examples are for Django views, but you can generalize it to any function by pulling out the request argument.
+Basic decorator:
+
+from functools import wraps
+
+def my_decorator(view_func):
+    def _decorator(request, *args, **kwargs):
+        # maybe do something before the view_func call
+        response = view_func(request, *args, **kwargs)
+        # maybe do something after the view_func call
+        return response
+    return wraps(view_func)(_decorator)
+
+# how to use it...
+def foo(request): return HttpResponse('...')
+foo = my_decorator(foo)
+
+# or...
+@my_decorator
+def foo(request): return HttpResponse('...')
+
+(the wraps function is explained below)
+Parameterized decorator:
+
+This one allows you to pass arguments into the decorator for some additional customization. It needs to wrap everything in an additional function (creating a closure) in order to make this possible.
+
+from functools import wraps
+
+def my_decorator(extra_value=None):
+    def _my_decorator(view_func):
+        def _decorator(request, *args, **kwargs):
+            # maybe do something before the view_func call
+            # that uses `extra_value` and the `request` object
+            response = view_func(request, *args, **kwargs)
+            # maybe do something after the view_func call
+            return response
+        return wraps(view_func)(_decorator)
+    return _my_decorator
+
+# how to use it...
+def foo(request): return HttpResponse('...')
+foo = my_decorator('some-custom-value')(foo)
+
+# or...
+@my_decorator('some-custom-value')
+def foo(request): return HttpResponse('...')
+
+A class decorator:
+
+from functools import wraps
+
+class my_decorator(object):
+
+    def __init__(self, view_func):
+        self.view_func = view_func
+        wraps(view_func)(self)
+
+    def __call__(self, request, *args, **kwargs):
+        # maybe do something before the view_func call
+        response = self.view_func(request, *args, **kwargs)
+        # maybe do something after the view_func call
+        return response
+
+# how to use it...
+def foo(request): return HttpResponse('...')
+foo = my_decorator(foo)
+
+# or...
+@my_decorator
+def foo(request): return HttpResponse('...')
+
+
+Some awesome things about Python…
+Passing through positional and keyword arguments:
+
+(A) You usually want the decorated function to take the same arguments as the original function, and (B) Django views always start with a request, but they may have any number of additional arguments. Fortunately you can rely on *args and **kwargs to catch the extra positional arguments in a tuple and the extra keyword arguments in a dictionary. You can easily pass these through to the view function, and potentially read or modify them inside your decorator too.
+Callable objects:
+
+I can’t say I really use classes for decorators much at all, but it’s a fun example to show off that the __call__ function makes any instance of a class callable like a regular function.
+
+Wrap it up!
+
+The functools.wraps function is a nice little convenience function that makes the wrapper function (i.e., the return value from the decorator) look like the function it is wrapping. This involves copying/updating a bunch of the double underscore attributes—specifically __module__, __name__, __doc__, and __dict__. See more in the update_wrapper function in the functools source code.
+
+Also, if you’re an astute reader, you may have noticed that wraps is a decorator, and it is generally used inside other decorator functions. This is why my friend Harold likes to refer to it as an interior decorator.
+Partial Function Application:
+
+If you read through the source code for wraps in functools, then you saw that it uses the partial function. Partial is awesome—it’s sort of like currying. It lets you create a new function from an existing function with some of the arguments predefined. Here’s a relatively trivial example that makes a new min function by setting its “key” argument to be absolute value:
+
+from functools import partial
+min_abs_val = partial(min, key=abs)
+min_abs_val(-5, -1, 2) == -1
+
+You can see it in action in the functools source code, but if you’d prefer a convoluted explanation of how it’s used… you can see that the wraps function is a decorator that is cleverly using the partial function to return a partial function of the update_wrapper function, which now only needs the wrapper function argument, and that argument will be the function that is decorated inside of a decorator function that will eventually wrap other functions… INCEPTION
+
+Happy decorating!

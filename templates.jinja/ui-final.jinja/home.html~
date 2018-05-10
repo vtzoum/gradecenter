@@ -1,0 +1,77 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΒΚ043 ΑΙΤ/ΝΙΑΣ - ΑΡΧΙΚΗ 
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<div class="container-fluid app-content-a">
+  <div class="container">        
+
+    <div class="row">
+        <img src="{% static 'images/dide-ait-125x125.png' %}" class="img-responsive rounded mx-auto center-block"/>
+        <div class="col-md-12">
+            <h2 class="text-center app-content-header">ΕΦΑΡΜΟΓΗ ΔΙΑΧΕΙΡΙΣΗΣ 43oυ ΒΑΘΜΟΛΟΓΙΚΟΥ ΚΕΝTΡΟΥ ΑΙΤ/ΝΙΑΣ</h2>
+            <p class="text-center app-content-description">
+            </p>
+        </div>
+    </div>
+    <!--./row -->
+
+  <div class="row text-center">    
+
+      <div class="col-md-4 col-sm-6">
+        <span class="fa-stack fa-lg fa-5x">
+          <i class="fa fa-circle-thin fa-stack-2x"></i>
+          <i class="fa fa-user fa-stack-1x"></i>
+        </span>
+        <h2>ΒΑΘΜΟΛΟΓΗΤΕΣ</h2>
+        <p><!-- NO content --></p>        
+    </div>
+    
+    <div class="col-md-4 col-sm-6">
+        <span class="fa-stack fa-lg fa-5x">
+          <i class="fa fa-circle-thin fa-stack-2x"></i>
+          <i class="fa fa-book fa-stack-1x"></i>
+        </span>
+        <h2>ΓΡΑΠΤΑ</h2>
+        <p><!-- NO content --></p>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <span class="fa-stack fa-lg fa-5x">
+          <i class="fa fa-circle-thin fa-stack-2x"></i>
+          <i class="fa fa-exchange fa-stack-1x"></i>
+        </span>
+        <h2>ΚΙΝΗΣΕΙΣ</h2>
+        <p><!-- NO content --></p>
+    </div>
+
+  </div>
+  <!--./row -->
+  {% if request.user.is_authenticated() %}    
+    <p class="text-center"><a class="btn btn-primary btn-lg app-btn" href="/login" role="button">Είσοδος»</a></p>
+  {% endif %} 
+
+</div>
+</div>
+<!--./container -->
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">    
+
+$(document).ready(function () {
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

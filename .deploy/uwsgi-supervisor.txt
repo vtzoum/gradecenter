@@ -1,0 +1,15 @@
+[program:gradecenteruwsgi]
+#command=/python/gradecenter/bin/uwsgi --socket 127.0.0.1:27000 --listen 128 --chdir==/usr/share/nginx/html/gradecenter/ --pythonpath "/python/gradecenter/lib/python2.7/site-packages/:/www/gradecenter/" --module=gradecenter.wsgi --processes 6 --uid www-data --gid www-data --vacuum --master --harakiri=180 --max-requests=1000 --disable-logging --single-interpreter
+command=/python/gradecenter/bin/uwsgi --socket 127.0.0.1:27000 --listen 128 --chdir==/usr/share/nginx/html/gradecenter/ --pythonpath "/python/gradecenter/lib/python2.7/site-packages/:/www/gradecenter/" --module=gradecenter.wsgi --processes 6 --uid www-data --gid www-data --vacuum --master --harakiri=180 --max-requests=1000 --disable-logging --single-interpreter
+# Dont Deamonize "--daemonize=/www/logs/coffeehouse_uwsgi.log" as Supervisor expects full control
+user=www-data
+autostart=true
+autorestart=true
+#stdout_logfile=/www/logs/gradecenter_uwsgi.log
+stdout_logfile=/usr/share/nginx/html/logs/gradecenter_uwsgi.log
+redirect_stderr=true
+stopsignal=QUIT
+#directory=/www/
+directory=/usr/share/nginx/html/
+umask=022
+

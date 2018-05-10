@@ -1,0 +1,231 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΕΙΣΑΓΩΓΗ ΕΙΔΙΚΟΤΗΤΩΝ ΑΠΟ CSV ΑΡΧΕΙΟ
+{% endblock %}
+
+<!-- Start BLOCK HTML -->
+{% block html %}
+
+<!-- AJAXMessages Box -->
+<div id="jsonMessages"></div>
+
+<div class="row  no-margin-bottom">
+
+<!-- .col UPLOAD -->
+<div class="col-lg-7">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΕΙΣΑΓΩΓΗ ΕΙΔΙΚΟΤΗΤΩΝ ΑΠΟ CSV ΑΡΧΕΙΟ</h3>
+        </div>
+        <div class="panel-body">
+                
+        <!-- messages -->
+        <div id="uploadSpecialtyMessages" class="sub-title">
+        Όνομα Αρχείου:<span id="fileName" class="badge primary"></span></br>
+        Αποτέλεσμα:<span id="uploadSpecialtyResponseSuccess" class="badge info"></span>
+        </div>
+
+        <!-- File upload  -->
+        <h3>Επιλογή Αρχείου CSV</h3>    
+        <div id="jqxFileUpload"></div>
+    </div>
+    </div>
+
+    <!-- .row -->
+    <div class="row  no-margin-bottom">
+    <!-- CHECK UPLOADED -->
+    <div class="col-lg-12">
+        <div class="panel panel-primary fresh-color">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΕΛΕΓΧΟΣ ΣΤΟΙΧΕΙΩΝ ΑΠΟ ΤΟ ΑΡΧΕΙΟ</h3>
+            </div>
+            <div class="panel-body">
+            
+            <!-- Buttons -->
+            <button id="jqxbuttonCheckImport" class="btn btn-primary" >ΕΛΕΓΧΟΣ (CHECK)</button>
+            <button id="jqxbuttonDoImport" class="btn btn-danger" >ΕΙΣΑΓΩΓΗ (IMPORT)</button>
+
+            <!-- messages -->
+            <div id="checkimportSpecialtyMessages" class="sub-title">
+            <!--
+                Server Response:<span id="checkimportSpecialtyResponse" class="badge danger"></span>
+            -->
+            Αποτέλεσμα:<span id="checkimportSpecialtyResponseSuccess" class="badge danger"></span>
+            </div>
+        
+
+            <!-- TEST GRID -->
+            <div id="jqxgridSpecialtyCheckContainer">
+                <h3>Στοιχεία</h3>
+                <div id="jqxgridSpecialtyCheck"></div>
+            </div>
+            
+            <!-- User Inputs -->
+            <div style="visibility: hidden;" >
+            <h2>User Inputs </h2>    
+            Όνομα Aρχείου (CSV):<input id='jqxinputFileName'/><br/>
+            Όνομα XXX:<input id='jqxinputIdxName'/><br/>
+            1η Γραμμή:<input id='jqxinputFirstRow'/>
+            </div>
+        
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- /.row -->
+
+
+</div>
+<!-- /.col  -->
+
+
+<!-- .col IMG -->
+<div class="col-lg-5">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Δομή Αρχείου CSV </h3>
+        </div>
+        <div class="panel-body">
+        <!-- Demo CSV Image -->
+        <img src="{% static 'images/csv-specialties.csv - libreoffice calc_001.png' %}" width="100%"/>
+        </div>
+    </div>
+</div>
+<!-- x/y.col  -->
+
+</div>
+<!-- /.row -->
+
+
+
+<!-- End BLOCK HTML -->
+{% endblock %}
+
+
+
+<!-- Start BLOCK JS -->
+{% block js %}
+<script type="text/javascript">
+
+$(document).ready(function () {
+// GLobals
+var gridData = [];
+
+$( '#jqxgridSpecialtyCheckContainer' ).hide(1000);
+
+///////////////////////////
+//jqxfileupload      
+//////////////////////////                        
+$('#jqxFileUpload').jqxFileUpload({
+    //uploadUrl: "/jsonfileuploadcsv/?action=upload",
+    uploadUrl: "/jsonfileupload/",
+    fileInputName: 'fileToUpload', 
+    accept: '*',
+    //accept: 'image/*',
+    width: 300,
+});
+//gets Server Response
+$('#jqxFileUpload').on('uploadEnd', function (event) {
+    //var args = event.args;
+    var fileName = event.args.file;
+    var serverResponse = event.args.response;
+    //console.log(fileName + '-' + serverResponse);
+
+    // Your code here.
+    var serverResponseJSON =  $.parseJSON(stripStringTags(serverResponse)); // remove <pre> tags > json objectify
+    $("#fileName").html(serverResponseJSON.filename);
+    $( '#uploadSpecialtyResponseSuccess' ).html('OK');
+    $("#jqxinputFileName").val(serverResponseJSON.filename);
+    console.log(serverResponseJSON.filename);    
+});
+
+
+////////////////////////////
+// INPUT
+////////////////////////////
+$("#jqxinputFileName").jqxInput({ width: '250px', height: '25px', disabled: false, });
+$("#jqxinputIdxName, #jqxinputFirstRow").jqxInput({ width: '250px', height: '25px', disabled: true, });
+//$('#jqxinputIdxName, #jqxinputFirstRow').on('change', function (event) {});
+
+///////////////////////////
+//jqxgridSpecialtyCheck
+//////////////////////////
+// Data
+var sourceSpecialty = {
+    datatype: "json",
+    localdata: gridData, 
+    datafields: [
+        {name: "id"}, 
+        {name: 'code', type: 'string' },
+        {name: 'name', type: 'string' },
+        {name: 'status', type: 'string' },
+    ],
+};
+var dataAdapterSpecialty = new $.jqx.dataAdapter(sourceSpecialty);     
+
+// jqxgridSpecialtyCheck
+$("#jqxgridSpecialtyCheck").jqxGrid({
+    source: dataAdapterSpecialty,
+    columns: [
+        { text: 'Kωδικός', datafield: 'code', width: '25%' },
+        { text: "Όνομα", datafield: 'name',  width: '65%' },
+        { text: "Κατάσταση", datafield: 'status', width: '10%' },
+    ], 
+    autoheight: false, height: 300, pageable: false, pagesize: 25, sortable:true, width: '100%', //theme: 'classic',
+});//grid
+
+// ΚΩΔΙΚΟΣ ΛΥΚΕΙΟΥ	ΟΝΟΜΑΣΙΑ ΛΥΚΕΙΟΥ	ΚΩΔΙΚΟΣ ΔΔΕ	ΟΝΟΜΑΣΙΑ ΔΔΕ
+// Event
+//$("#jqxgridSpecialtyCheck").jqxGrid('selectrow', 0);
+
+////////////////////////////
+// BUTTONS jqxbutton
+////////////////////////////
+
+// BUTTON
+$("#jqxbuttonCheckImport, #jqxbuttonDoImport").jqxButton({ width: 230, height: 30 });
+
+// BUTTON > Events 
+$("#jqxbuttonCheckImport, #jqxbuttonDoImport").click (function () {
+    var action = this.id.substring(9,20).toLowerCase();     // checkimport | doimport
+    $.ajax({
+        type: "POST",
+        url: "/specialty/upload/import/",
+        data: { 
+            action: action, 
+            jqxinputFileName : $("#jqxinputFileName").val(), 
+            jqxinputIdxName: 0, jqxinputFirstRow: 1, 
+        }, 
+        success: function (response, status, xhr) {
+            //console.log(response.data);
+            //$("#checkimportSpecialtyResponseSuccess").html(response.data);
+            $("#checkimportSpecialtyResponseSuccess").html(response.status);
+            // set grid data
+            $( '#jqxgridSpecialtyCheckContainer' ).show(100);
+            sourceSpecialty.localdata = response.data;       
+            $("#jqxgridSpecialtyCheck").jqxGrid({ source: sourceSpecialty });
+            $("#jqxgridSpecialtyCheck").jqxGrid('updatebounddata');
+        },             
+        error: function (jqXHR, textStatus, errorThrown) {
+            $( '#jqxgridSpecialtyCheckContainer' ).hide(100);
+            //$("#jqxgridSpecialtyCheck").jqxGrid({ visible: False });
+            console.log('error');
+        }
+    });//ajax
+
+});
+
+/*
+//$.post("/jsonuploadimportcsv/?action=checkimport", $("#form").serialize());
+//$.getJSON('/jsonfileuploadcsv/', function (data) {console.log(data);}
+*/
+
+});
+</script>
+<!-- End BLOCK JS -->
+
+{% endblock %}
+
+
+

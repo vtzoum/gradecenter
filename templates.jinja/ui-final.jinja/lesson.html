@@ -1,0 +1,477 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΜΑΘΗΜΑTA-JN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- AJAXMessages Box -->
+<div id="jsonMessages"></div>
+
+<!-- Data -->
+<div class="row no-margin-bottom">
+
+<div class="col-lg-12">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑΤΑ </h3>
+        </div>
+        <div class="panel-body">
+        <!-- jqxGrid -->
+        <div id="jqxgridLesson"></div>
+        </div>
+    </div>
+</div>
+<!-- x/y.col  -->
+
+</div>
+<!-- /.row -->
+
+
+<!-- *****************************************-->
+<!--                Dialogue DELETE           -->
+<!-- *****************************************-->
+<div id="dialogDeleteLesson" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+
+<div class="modal-content">
+    <!--
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Διαγραφή εγγραφής.</h4>
+    </div>
+    -->
+    <div class="modal-body">
+        Θέλετε να κάνετε την διαγραφή της εγγραφής;
+    </div>
+    <div class="modal-footer">        
+        <button id="buttonDialogDeleteLessonYes" class="btn btn-danger" >NAI</button> 
+        <button id="buttonDialogDeleteLessonNo" class="btn btn-primary" style="margin-left: 5px;" >OXI</button>
+    </div>
+</div>
+<!-- ./content-->
+
+</div>
+<!-- End Dialogue DELETE -->
+
+
+<!-- *****************************************-->
+<!--                Dialogue NEW              -->
+<!-- *****************************************-->
+<div id="dialogAddLesson" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+
+<!-- content-->
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Προσθήκη Εγγραφής.</h4>
+    </div>
+
+    <div class="modal-body">
+    <!-- Start FORM ADD -->
+    <!-- form action="javascript:void(0);" is for action=none -->
+    <form class="form-horizontal" id="formAddLesson" action="javascript:void(0);" >
+    {% csrf_token %}
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="name">Όνομα:</label>
+        <div class="col-sm-9">
+          <input id="name" class="form-control" placeholder="Όνομα">
+        </div>
+      </div>
+            
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="type">Τύπος:</label>
+        <div class="col-sm-6">
+            <div id="type" class="form-control" placeholder="Τύπος"></div>
+        </div>
+      </div>
+
+    <!--BUTTONS-->
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <button id="buttonDialogAddLessonYes" class="btn btn-primary" >OK</button> 
+          <button id="buttonDialogAddLessonNo" class="btn btn-default" >Άκυρο</button>
+        </div>
+      </div>
+
+    <!--HIDDENS-->
+
+    </form>
+    </div>
+    <!-- ./body -->
+    <div class="modal-footer"></div>
+
+  </div>
+</div>
+<!-- ./ Dialogue ADD -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+// Handle Ajax messages
+helperAjaxMessagesProcess();
+
+/****************************
+    Lesson data
+****************************/
+//url:helperGetAjaxLinkForUser ("user.is_active}}", '/Lesson/crud/'), 
+var sourceLesson = {
+    url: '/lesson/crud/', 
+    datatype: "json",    
+    datafields: [
+        {name: "id"}, 
+        //{name: 'booksAB', type: 'integer' },
+        //{name: 'booksABFolders', type: 'integer' },
+        //{name: 'booksC', type: 'integer' },
+        //{name: 'booksCFolders', type: 'integer' },
+        {name: 'category', type: 'string' },
+        {name: 'name', type: 'string' },
+        //{name: 'status', type: 'integer' },
+        /* columnComboBox
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterLessonType.records, value: 'type', name: 'lexType' } },
+        */
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    id: 'id',
+    sortcolumn: 'name',
+    sortdirection: 'asc',     
+
+    // ADD
+    addrow: function (rowid, rowdata, position, commit) {
+        // synchronize with the server - send insert command
+        var data = "action=add&amp;" + $.param(rowdata);
+        //var data = "insert=true&" + $.param(rowdata);
+        $.ajax({
+            method: 'POST', 
+            url: '/lesson/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        }); //ajax
+        
+    //$("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
+    }, //addrow
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/lesson/crud/', 
+            data: data,
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+    }, //delete
+    // UPDATE
+    updaterow: function (rowid, rowdata, commit) {
+    // synchronize with the server - send update command
+        var data = "action=update&amp;" + $.param(rowdata);
+        //var data = "update=true&amp;" + $.param(rowdata);
+        //alert ('Edit B4 .ajax'+ data);
+        $.ajax({
+            method: 'POST', 
+            url: '/lesson/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+    }, //updaterow
+}; //source
+
+//DataAdapter create + 
+var dataAdapterLesson = new $.jqx.dataAdapter( sourceLesson, {
+    beforeLoadComplete: function (records) {
+        //records[0]['firstname'] = "Michael";
+    },
+    loadComplete: function () {
+        //alert (dataAdapterLesson.records.length);
+    
+    }
+});
+
+/****************************
+// GRID jqxLessonGrid
+****************************/
+$("#jqxgridLesson").jqxGrid({
+    source: dataAdapterLesson,
+    columns: [ //columntype: 'textbox', 
+        { text: 'id', datafield: 'id', width: '0%', hidden: true },
+        { text: "Όνομα", datafield: 'name',  filtertype: 'input', 
+            aggregates: ['count'],         
+        },
+        //{ text: 'Kωδικός', datafield: 'code', filtertype: 'input', width: '10%', },
+        //{ text: "Κωδ.ΔΔΕ", datafield: 'ddeCode', columntype: 'textbox', filtertype: 'input', width: '10%', },
+        //{ text: "Τύπος", datafield: 'type', filtertype: 'input', width: '30%', },
+        { text: "Κατηγορία", datafield: 'category',  filtertype: 'input', width: '20%', },
+
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'30%', 
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            
+        },
+
+        { text: 'Διαγραφή', editable: false, filterable: false, columntype: 'button', width: '5%', 
+            cellclassname: "redClass1",
+            cellsrenderer: function () {
+                //return "<button style='padding:100px;height:130px;' type='button' class='btn btn-danger'> xxxx </button>";
+                return "X";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                $("#dialogDeleteLesson").jqxWindow('open');
+          } // buttonclick
+        }, //remove        
+
+    ],       
+    
+    editable: true, editmode: 'dblclick', selectionmode: 'singlerow', //multiplecellsextended
+    filterable: true,showfilterrow: true, 
+    pageable: false, 
+    sortable: true, 
+    width: '100%', height:'500', theme:theme, 
+    autoheight: false, columnsresize: true, //rowsheight: 30,    
+    showaggregates: true, 
+    showstatusbar:true, showtoolbar:true, rendertoolbar: function (statusbar) {
+        // appends buttons to the status bar.
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        var addButton = $("<button type='button' class='btn btn-primary' style='float:right;'> Προσθήκη </button>");
+        var reloadButton = $("<button type='button' class='btn btn-primary' style='float: right; margin-right: 10px;'> Ανανέωση </button>");
+        container.append(addButton);
+        container.append(reloadButton);
+        statusbar.append(container);
+        addButton.jqxButton();
+        reloadButton.jqxButton();
+        // add new row.
+        addButton.click(function (event) {
+            $( '#dialogAddLesson').jqxWindow('open');
+        });
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
+        });
+    } //render toolbar
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//Lesson grid
+
+
+/****************************
+// Buttons 
+****************************/
+//$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
+$( '#buttonAddLesson' ).click(function (event) {
+    $( '#dialogAddLesson').jqxWindow('open');
+    //$("#jqxgridLesson").jqxGrid({disabled:true});
+});
+$( '#buttonUpdateGridLesson' ).click(function (event) {
+    $("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
+});
+
+/****************************
+//Dialogue DELETE
+****************************/
+//buttonDialogDeleteLessonYes
+$( '#dialogDeleteLesson' ).jqxWindow({ 
+    autoOpen: false, title: 'Διαγραφή Εγγραφής', 
+    isModal: true, modalOpacity:0.7, 
+    //cancelButton: $('#buttonDialogDeleteLessonNo'), 
+    keyboardNavigation: true, keyboardCloseKey: 13,
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    //position: { x: parseInt($("#jqxgridLesson").offset().left) + 60, y: parseInt($("#jqxgridLesson").offset().top) + 60,}, 
+    width: 'auto', height: 'auto', 
+});        
+
+//Dialogue > Buttons
+$('#buttonDialogDeleteLessonYes, #buttonDialogDeleteLessonNo').jqxButton({height: 30, width: 80 }); //theme: theme, 
+// Event > Dialogue
+$("#dialogDeleteLesson").on('close', function () {
+    //$("#jqxgridLesson").jqxGrid({ disabled: false });
+});
+// Event > Button > Yes
+$('#buttonDialogDeleteLessonYes').click(function () {
+    var row = $('#jqxgridLesson').jqxGrid('getselectedrowindex');
+    var datarow = $('#jqxgridLesson').jqxGrid('getrowdata', row);
+    $('#jqxgridLesson').jqxGrid('deleterow', datarow.id);
+    //console.log('remove btn clicked id='+datarow.id);
+    $('#dialogDeleteLesson').jqxWindow('close');
+});
+// Event > Button > No
+$('#buttonDialogDeleteLessonNo').click(function () {
+    $('#dialogDeleteLesson').jqxWindow('close');
+});
+
+
+/****************************
+ Dialogue ADD
+****************************/
+// Dialogue 
+$('#dialogAddLesson').jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', 
+    isModal: true, modalOpacity:0.7, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    resizable: false, 
+    //position: { x: parseInt($("#jqxgridLesson").offset().left) + 60, y: parseInt($("#jqxgridLesson").offset().top) + 60,}, 
+    width: '400px', height: 'auto', theme:theme, 
+});        
+
+// Dialogue > events
+$('#dialogAddLesson').on('open', function () {
+    $("#name").val(''); 
+    //$( '#type' ).jqxDropDownList({selectedIndex: 0, });
+});
+
+// Dialogue > events
+$('#dialogAddLesson').on('close', function () {
+    //
+});
+
+//Dialogue > inputs
+$("#name").jqxInput(); 
+$("#type").jqxDropDownList({ source: ArraySchoolToGradeSchoolType,  displayMember: "lexType", valueMember: "type", selectedIndex: 0, });
+/*
+$("#type").jqxComboBox({
+    source: ArraySchoolToGradeSchoolType, 
+    displayMember: "name", valueMember: "lexType", 
+    selectedIndex: -1, placeHolder:"Επιλέξτε XXX ...",  
+});
+*/
+
+//Dialogue > buttons
+$('#buttonDialogAddLessonYes, #buttonDialogAddLessonNo').jqxButton({ height: 30, width: 80 }); //theme: theme, 
+
+
+// Dialogue > buttons-yes > events
+$( '#buttonDialogAddLessonYes' ).click(function (event) {
+    $('#formAddLesson').jqxValidator('validate');
+});
+
+// Dialogue > buttons-no> events
+$( '#buttonDialogAddLessonNo' ).click(function () {
+    $('#dialogAddLesson').jqxWindow('close');     //'hide'
+});
+
+/****************************
+// Form ADD > jqxValidator
+****************************/
+var msgCode = 'Code is required';
+$('#formAddLesson').jqxValidator( { 
+        //hintType: 'label',
+        rules: [            
+        /*
+        { input: '#code', 
+        action: 'valueChanged',    //'keyup', 
+        //rule: 'required',          //rule: 'length=4,12'  
+        rule: function (input, commit) {
+            var checkVal = $('#code').val();
+            var pass = true; 
+            //var result = date.getFullYear() >= 1900 && date.getFullYear() <= 2014;
+            if (checkVal == '') {
+                msgCode = 'Null!';
+                pass = false;
+            }
+            var data = dataAdapterLesson.records;
+            for (var i=0; i < data.length; i++ ) {
+                if (checkVal == data[i].code) {
+                    msgCode = 'Duplicate!';
+                    pass = false;
+                    break;
+                }
+            } 
+            return pass;
+        }, //rule
+        message: msgCode,
+        }, 
+        */
+        { input: '#name', 
+        action: 'valueChanged',    //'keyup', 
+        rule: 'required',     //rule: 'length=4,12'  
+        message: 'Το όνομα είναι κενό!',
+        },        
+        
+        { input: '#type', 
+          message: 'O τύπος είναι κενός!',
+          //rule: 'required',
+          rule: function () {
+            //var type = $('#type').jqxDropdown('value');
+            var index = $("#type").jqxDropDownList('getSelectedIndex'); 
+            var result = (index != -1);
+            return result;
+          }
+        },
+        /*
+        { input: '#birthInput', message: 'Your birth date must be between 1/1/1900 and 1/1/2012.', action: 'valuechanged', 
+          rule: function () {
+            var date = $('#birthInput').jqxDateTimeInput('value');
+            var result = date.dateTime.getFullYear() >= 1900 && date.dateTime.getFullYear() <= 2012;
+            return result;
+          }
+        },
+        */
+
+    ],  //rules 
+
+    onSuccess: function (event) { 
+        //event.preventDefault();        
+        // set record values        
+        var type = $("#type").jqxDropDownList('getSelectedIndex');
+        //hack to avoid 'grid'.updatebound method
+        var lexType = $("#type").jqxDropDownList('getSelectedItem');        
+        var newrow = { name: $("#name").val(),  type: type, lexType: lexType.label, }; //type: $("#type").val(), 
+        $( "#jqxgridLesson" ).jqxGrid('addrow', null, newrow);
+        $( "#dialogAddLesson" ).jqxWindow('close');        
+        console.log("Success");
+        //alert('Success!'); 
+    },//onSuccess
+
+    onError: function () { 
+        console.log("Failed!");
+    },//onError
+}); 
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+
+
+
+
+

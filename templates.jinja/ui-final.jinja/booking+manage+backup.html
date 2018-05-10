@@ -1,0 +1,373 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    Exras-Booking-JN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- AJAXRQST MessageBox -->
+<div id="jsonMessages"></div>
+
+{% if request.user is has_group("Admin") %} 
+    <button id="jqxbuttonDeleteLastBooking" type='button' class='btn btn-danger' style='float: right;'>ΑΝΑΙΡΕΣΗ</button>
+{% endif %} 
+<!--
+-->
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+<div class="col-lg-12 no-margin-bottom">
+    <div class="panel panel-primary fresh-color neg20-margin-bottom" style="border-bottom:0px">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑ</h3>
+        </div>
+        <div class="panel-body" >
+        <!-- Lesson-->
+        <div id='jqxcomboboxLesson'></div>        
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- /.row -->
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+
+<!-- /.col#1 -->
+
+<!-- .col#2 -->
+<div class="col-lg-12">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΚΙΝΗΣΕΙΣ (ΕΠΙΛΟΓΗ ΠΡΟΣ ΔΙΑΓΡΑΦΗ)</h3>
+        </div>
+        <div class="panel-body">
+        <!-- Bookings -->
+        <div id="jqxgridBooking" class='table'></div>    
+        </div>
+    </div>
+</div>
+<!-- /.col#2 -->
+
+</div>
+<!-- /.row -->
+
+<!--***********************************************-->
+<!-- Dialogue DELETE -->
+<div id="dialogDeleteLastBooking">
+  <div class="modal-content">
+    <!--  
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Διαγραφή εγγραφής.</h4>
+    </div>
+    -->
+    <div class="modal-body">
+        Θέλετε να κάνετε την διαγραφή της ΠΙΟ ΠΡΟΣΦΑΤΗΣ ΠΡΑΞΗΣ;
+    </div>
+    <div class="modal-footer">        
+        <button id="buttonDialogDeleteLastBookingYes" class="btn btn-default" >NAI</button> 
+        <button id="buttonDialogDeleteLastBookingNo" class="btn btn-primary" style="margin-left: 5px;" >OXI</button>
+    </div>
+  </div>
+</div>
+<!-- ./Dialogue DELETE -->
+<!--***********************************************-->
+
+{% endblock %}
+<!-- End Block HTML -->
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+// Handle Ajax messages
+// Disable. must be changed to dlg update
+helperAjaxMessagesProcess();
+
+/**********************
+// jqxcomboboxLessons
+***********************/
+//Lessons > RecordSet  
+var sourceLesson = {
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: "name"}, 
+        {name: 'category', type: 'string' },
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+    ],
+    url: '/lesson/crud/', 
+}; //source
+
+// DataAdapter
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+
+//http://jsfiddle.net/jqwidgets/5SnVH/
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, 
+    valueMember: "id", displayMember: "name", 
+    selectedIndex: -1, //selectIndex:-1, 
+    placeHolder:"Επιλέξτε Μάθημα...",  
+    //itemHeight: 20, height: 30, 
+    width: '100%', theme:theme, 
+    renderer: function (index, label, value) {
+        //var datarecord = data[index];
+        var datarecord = dataAdapterLesson.records[index];    
+        var row = "<b>"+label +"</b> " + datarecord.category + "[<u>" + datarecord.lexType + "</u>]" ;
+        return row;
+    }
+});
+
+
+// jqxcomboboxLesson > Events
+$('#jqxcomboboxLesson').on('select', function (event) {    
+    if (event.args) {
+        var data = dataAdapterLesson.records[event.args.index];
+        sourceBooking.url = '/booking/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+        $("#jqxgridBooking").jqxGrid({ source: dataAdapterBooking });
+    }
+});// combo.event
+
+// LessonID, SchoolToGradeID, books, booksAbscent, booksZero, status, statusTime 
+/**********************
+-jqxgridBooking
+**********************/
+//recordSet  
+var sourceBooking = {
+    url: '', 
+    //url: '/booking/crud/', 
+    datatype: "json",
+    datafields: [ 
+        { name: "id" }, 
+        { name: "action" }, 
+        { name: "actionTime", type: 'date' }, 
+        { name: "station" }, 
+        { name: "FolderID" }, 
+        { name: "no", map: "_FolderID_cache>no" },                    // folder no
+        { name: "codeType", map: "_FolderID_cache>codeType" },        // folder no        
+        { name: "GraderID" }, 
+        { name: "name", map: "_GraderID_cache>status" },              // Grader
+        {name: 'lexType', value: 'codeType', values: { source: dataAdapterFolderType.records, value: 'codeType', name: 'lexType' } },
+        //{name: 'lexStatus', value: 'codeStatus', values: { source: dataAdapterFolderStatus.records, value: 'codeStatus', name: 'lexStatus' } },
+        //{name: 'lexLocation', value: 'codeLocation', values: { source: dataAdapterFolderLocation.records, value: 'codeLocation', name: 'lexLocation' } },        
+        {name: 'lexAction', value: 'action', values: { source: dataAdapterBookingAction.records, value: 'action', name: 'lexAction' } },
+        {name: 'lexStation', value: 'station', values: { source: dataAdapterBookingStation.records, value: 'station', name: 'lexStation' } },
+    ],         
+    id: 'id', 
+    //sortcolumn: 'actionTime', //sortdirection: 'asc',     # not working <F5>
+
+    
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/booking/crud/', 
+            data: data,
+            //data: { action: 'update', id: rowdata.id, no: rowdata.no, books: rowdata.books, }, 
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                $("#jqxgridBooking").jqxGrid('updatebounddata');
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+    }, //delete
+
+}; //source
+
+//DataAdapter
+var dataAdapterBooking = new $.jqx.dataAdapter(sourceBooking, {    
+    /*
+    loadComplete: function () {
+        var records = dataAdapterBooking.records;        
+        //console.log (records.count);
+        console.log( records );
+    },  //loadComplete
+    */
+
+
+});
+
+
+// jqxGrid
+$("#jqxgridBooking").jqxGrid({
+    source: dataAdapterBooking,
+    columns: [ 
+        { text: "id", datafield: "id", hidden: false,  width: '5%' },
+
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'15%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexType', valueMember: 'value', });
+            }, // createeditor
+            aggregates: ['count'], 
+        },        
+
+        { text: "Φακ.", datafield: 'no', width: '10%' },
+        
+        { text: "Σταθμός", datafield: 'station', displayfield: 'lexStation', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexStation', valueMember: 'station', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+        
+        { text: "Πράξη", datafield: 'action', displayfield: 'lexAction', editable : false,  
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexAction', valueMember: 'action', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+
+        { text: 'Ημ-νία', datafield: 'actionTime', columntype: 'datetimeinput', cellsformat: 'yyyy-MM-dd HH:mm:ss' , 
+         //{ text: 'Date', datafield: 'Date', width: 100, columntype: 'datetimeinput', width: 90, align: 'center', cellsalign: 'right', cellsformat: 'd', formatString: "dd/MM/yyyy",
+             createeditor: function (row, cellvalue, editor) {editor.jqxDateTimeInput({ showTimeButton: true, }); }, //createeditor
+        },
+
+        { text: "Όνομα", datafield: 'name', width: '10%' },
+    ], 
+    //altrows: true, autoheight: true, 
+    filterable: true, showfilterrow: true, 
+    height: 500, pageable: true, pagesize: 20, selectionmode: 'singlerow', sortable: true, 
+    width: '99.5%', theme: theme, 
+    rowsheight: 22,    
+
+});  //Booking grid
+//$("#jqxgridBooking").jqxGrid('selectrow', -1);
+
+
+
+/**********************
+// Tab Buttons > Check/Folders/Bookings
+***********************/
+// Dialogue > buttons
+
+/**********************
+// Dialogue > jqxwindowFolderRegister
+***********************/
+
+
+
+
+
+/******************************
+ Dialogue DELETE          
+******************************/                
+/**/
+// Button > 
+$("#jqxbuttonDeleteLastBooking").jqxButton({ width: 80, height: 30 });
+// Button > Events 
+$("#jqxbuttonDeleteLastBooking").click(function (event) {
+    // Gather Values
+    //$('#jqxinputStation').val($("#StationID").val());
+    /*
+    var datainformations = $('#jqxgridBooking').jqxGrid('getdatainformation');
+    var rowCount = datainformations.rowscount; 
+    alert (rowCount ); //+ rowscounts[0].id
+
+     var rowID = $('#jqxgrid').jqxGrid('getrowid', 0);
+     // get row Data by ID.
+     var index = $('#jqxgrid').jqxGrid('getrowboundindexbyid', rowID);
+     alert("Bound index is: " + index);
+    */
+
+
+    var rows = $('#jqxgridBooking').jqxGrid('getrows');
+    //alert (rows); //+ rowscounts[0].id
+    var rowCount = $("#jqxgridBooking").jqxGrid('getrows').length;
+    
+    if (rowCount >0) {
+        var lastRow = rowCount -1;         
+        var index = $('#jqxgridBooking').jqxGrid('getrowboundindexbyid', rows[lastRow].id);
+        $("#jqxgridBooking").jqxGrid('selectrow', index);
+        //alert ($("#jqxgridBooking").jqxGrid('getrows')[lastRow].id);
+        
+        // Open Window
+        $("#dialogDeleteLastBooking").jqxWindow('open');
+        $("#dialogDeleteLastBooking").jqxWindow('focus');
+    }
+});
+
+// Dialogue > dialogDeleteLastBooking
+//buttonDialogDeleteLastBooking
+$( '#dialogDeleteLastBooking' ).jqxWindow({ 
+    autoOpen: false, title: 'Διαγραφή εγγραφής!', isModal: true, 
+    //cancelButton: $('#buttonDialogDeleteGraderNo'), 
+    keyboardNavigation: true, keyboardCloseKey: 13,
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridBooking").offset().left)+200, y: parseInt($("#jqxgridBooking").offset().top) + -30,},    
+    width: 'auto', height: '300', theme: theme, 
+});        
+
+// Dialogue / Events
+$("#dialogDeleteLastBooking").on('close', function () {
+});
+
+//Dialogue / Buttons
+$('#buttonDialogDeleteLastBookingYes, #buttonDialogDeleteLastBookingNo').jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Dialogue / Buttons / Events / NO
+$('#buttonDialogDeleteLastBookingNo').click(function () {
+    $('#dialogDeleteLastBooking').jqxWindow('close');
+});
+
+
+// Dialogue / Buttons / Events / YES
+$('#buttonDialogDeleteLastBookingYes').click(function () {
+
+    var rows = $('#jqxgridBooking').jqxGrid('getrows');
+    //alert (rows); //+ rowscounts[0].id
+    var rowCount = $("#jqxgridBooking").jqxGrid('getrows').length;
+    
+    if (rowCount >0) {
+        var lastRow = rowCount -1;         
+        var index = $('#jqxgridBooking').jqxGrid('getrowboundindexbyid', rows[lastRow].id);
+        $("#jqxgridBooking").jqxGrid('selectrow', index);
+        //alert ($("#jqxgridBooking").jqxGrid('getrows')[lastRow].id);
+
+        // delete entry 
+        var id = rows[lastRow].id;
+        //alert ("Must DELETE id:"+ id );
+        $('#jqxgridBooking').jqxGrid('deleterow', id);     
+
+        // Need to update VIEW for extra field correlations
+        //var commit = $("#jqxgridBooking").jqxGrid('deleterow', id);
+    }
+    // update grid 
+    //$('#jqxgridBooking').jqxGrid('deleterow', datarow.id);        
+    $('#dialogDeleteLastBooking').jqxWindow('close');
+});
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+        //alert ($("#jqxgridBooking").jqxGrid('getrows')[lastRow].id);
+        //var selectedrowindex = $("#jqxgridBooking").jqxGrid('getselectedrowindex');
+        //var row = $('#jqxgridBooking').jqxGrid('getselectedrowindex');
+        //var datarow = $('#jqxgridBooking').jqxGrid('getrowdata', row);
+        //alert('row='+row+' datarow.id='+datarow.id);    
+        //$('#jqxgridBooking').jqxGrid('deleterow', datarow.id);
+        //$("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });
+        //$("#jqxgridGrader").jqxGrid("updatebounddata");
+     
+

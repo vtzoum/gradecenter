@@ -1,0 +1,417 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΦΑΚΕΛΟΙ-JN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+
+<div class="row">
+<!-- 
+<div class="col-lg-4">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΠΑΡΟΥΣΙΑΣΗ </h3>
+        </div>
+        <div class="panel-body">
+        <!- chart -> 
+        <div class="flot-chart">
+            <div id='chartContainer' style="width: 100%; height: 500px;"></div>
+        </div>
+        </div>
+    </div>
+</div>
+-->
+
+<!-- Lessons -->
+<!-- 
+<div class="col-lg-4">
+<div class="panel panel-green">
+    <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i> Pie Chart Example with Tooltips</h3>
+    </div>
+    <div class="panel-body">
+        <div class="flot-chart">
+            <div class="flot-chart-content" id="flot-pie-chart"></div>
+        </div>
+        <div class="text-right">
+            <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+</div>
+-->
+
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΦΑΚΕΛΟΙ </h3>
+        </div>
+        <div class="panel-body">
+        <!-- Lessons -->
+        <div id='jqxcomboboxLesson'></div><br/>
+        <!-- Folders -->
+        <div id="jqxgridFolder" ></div>        
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- /.row -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+var globalFolderStatusGroupBy = {};        
+///////////////////////////
+// jqxcomboboxLessons
+//////////////////////////                        
+// jqxgridLessons.RecordSet  
+var sourceLesson = {
+    url: '/lesson/crud/', 
+    datafields: [{name: "id"}, {name: "name"}, ],
+    datatype: "json",
+}; //source
+// DataAdapter 
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+// Combobox (http://jsfiddle.net/jqwidgets/5SnVH/)
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, displayMember: "name", height: 45, selectedIndex: 0, valueMember: "id", width: '100%',
+});
+//Style
+$("#jqxcomboboxLesson").find('input').css('font-size', '22px').css('margin-top', '0px');
+
+/////////////////////////////
+// jqxcomboboxLesson > Events
+$('#jqxcomboboxLesson').on('select', function (event) {    
+    if (event.args) {
+        data = dataAdapterLesson.records[args.index];
+        sourceFolder.url = '/folder/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
+        $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder});    
+        $("#jqxgridFolder").jqxGrid('updatebounddata');
+    }
+    // related button
+    // related form input
+    
+    var data = dataAdapterLesson.records[args.index];
+    //$('#jqxinputFolderNewLesson').val(data.id);   // Lesson.id
+    
+    //console.log ('Lesspnid:' + data.id);
+    //$("#jqxnotificationServer").html('Lesson selected!').jqxNotification("open");
+});// combo.event
+
+
+////////////////////////////////
+// Folder data
+///////////////////////////////                        
+var sourceFolder = {
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: "no", type: 'number' }, 
+        {name: "books", type: 'number' }, 
+        {name: "codeType", type: 'number' }, 
+        {name: 'codeStatus', type: 'number' },
+        {name: 'codeLocation', type: 'number' },
+        //{name: "typeChar"}, 
+        {name: 'lexType', value: 'codeType', values: { source: dataAdapterFolderType.records, value: 'codeType', name: 'lexType' } },
+        {name: 'lexStatus', value: 'codeStatus', values: { source: dataAdapterFolderStatus.records, value: 'codeStatus', name: 'lexStatus' } },
+        {name: 'lexLocation', value: 'codeLocation', values: { source: dataAdapterFolderLocation.records, value: 'codeLocation', name: 'lexLocation' } },
+
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    //url: '/folder/lesson/crud/', 
+    url: '/folder/crud/', 
+    id: 'id',
+    //sortcolumn: 'name',
+    //sortdirection: 'asc',     
+    // ADD
+    addrow: function (rowid, rowdata, position, commit) {
+        // synchronize with the server - send insert command
+        var data = "action=add&amp;" + $.param(rowdata);
+        //var data = "insert=true&" + $.param(rowdata);
+        $.ajax({
+            method: 'POST', 
+            url: '/folder/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        }); //ajax
+        $("#jqxgridFolder").jqxGrid('updatebounddata');
+    }, //addrow
+    
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/folder/crud/', 
+            data: data,
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+        $("#jqxgridFolder").jqxGrid('updatebounddata');
+    }, //delete
+    
+    // UPDATE
+    updaterow: function (rowid, rowdata, commit) {
+        //var data = "action=update&amp;" + $.param(rowdata);
+        //alert ($.param(rowdata));
+        $.ajax({
+            method: 'POST',             
+            //data: { action: 'update', data: $.param(rowdata) },
+            //data: data,
+            // MUST BE CHANGED 
+            //url: '/jsonfolder/',             
+            url: '/folder/crud/', 
+            data: { action: 'update', id: rowdata.id, no: rowdata.no, books: rowdata.books, 
+                    codeType: rowdata.codeType, codeLocation: rowdata.codeLocation, codeStatus: rowdata.codeStatus}, 
+            cache: false,
+            dataType: 'json',
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+        $("#jqxgridFolder").jqxGrid('updatebounddata');
+    }, //updaterow
+    //$("#jqxnotificationServer").html('Update success!').jqxNotification("open");
+}; //source
+
+
+//DataAdapter create + 
+var dataAdapterFolder = new $.jqx.dataAdapter( sourceFolder, {
+    loadComplete: function () {
+        //var records = dataAdapter.records;        
+        //aggregateDataType = $("#jqxgridFolder").jqxGrid('getcolumnaggregateddata', 'lexType', ['count', 'min', 'max']);
+        //aggregateDataStatus = $("#jqxgridFolder").jqxGrid('getcolumnaggregateddata', 'status', ['count', ]);
+
+        //alert (aggregateData.count);
+        //$( '#count' ).html('Count: '+ aggregateData.count);
+        //$( '#max' ).html('Max: '+ aggregateData.max);
+        //$( '#min' ).html('Min: '+ aggregateData.min);
+        //alert (summaryData.count);        
+        /*
+        globalFolderStatusGroupBy = {};
+        var records = dataAdapterFolder.records;
+        for ( i=0; i < records.length; i++) {
+            a = records[i].lexStatus;
+            if (a in globalFolderStatusGroupBy) globalFolderStatusGroupBy[a] ++; else globalFolderStatusGroupBy[a] = 1; 
+        } //for
+        console.log( globalFolderStatusGroupBy );
+
+        //var chart = $('#chartContainer').jqxChart('getInstance');
+        // Use own code settings to set data - "$.getJSON("admin_php.php"..."
+        //chart.source = globalFolderStatusGroupBy;
+        //chart.update(); // or $('#chartContainer').jqxChart('refresh');
+        */
+        
+        //$("#jqxnotificationServer").html(response.msg).jqxNotification("open");
+        //$("#jqxgridFolder").jqxGrid('updatebounddata');
+        //console.log('adapter ok'); 
+    },  //loadComplete
+});
+
+///////////////////////////
+// GRID jqxFolderGrid
+//////////////////////////                        
+$("#jqxgridFolder").jqxGrid({
+    source: dataAdapterFolder,
+    columns: [ //columntype: 'textbox', 
+        { text: "id", datafield: "id", hidden: false,  editable : false, width: '5%'},
+        { text: "AA", datafield: 'no', width: '5%' },
+        { text: "Τετράδια", datafield: 'books', filtertype: 'number', },
+        //{ text: "Τύπος", datafield: 'type', width: '25%', },
+        //{ text: "Κατάσταση", datafield: 'status', width: '25%', },
+
+        { text: "Τύπος", datafield: 'codeType', displayfield: 'lexType', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',        
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderType, displayMember: 'lexType', valueMember: 'codeType', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+
+        { text: "Κατάσταση", datafield: 'codeStatus', displayfield: 'lexStatus', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',        
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderStatus, displayMember: 'lexStatus', valueMember: 'codeStatus', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+        //{ text: "Location.", datafield: 'codeLocation',  width:'20%', },
+        { text: "Θέση", datafield: 'codeLocation', displayfield: 'lexLocation', editable : false, 
+            filtertype: 'checkedlist', columntype: 'dropdownlist', width:'20%',        
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterFolderLocation, displayMember: 'lexLocation', valueMember: 'codeLocation', });
+            }, // createeditor
+            //aggregates: ['count'], 
+        },
+
+        { text: 'Edit', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "...";
+            }, 
+            buttonclick: function (row) {
+                $("#jqxgridFolder").jqxGrid('beginrowedit', row);
+            } // buttonclick
+        }, //edit 
+        { text: 'remove', editable: false, columntype: 'button', width: '5%', 
+            cellclassname: "redClass1",
+            cellsrenderer: function () {
+                return "X";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                //$("#dialogDeleteFolder").jqxWindow('open');
+                var rowindex = $('#jqxgridFolder').jqxGrid('getselectedrowindex');
+                var rowdata = $('#jqxgridFolder').jqxGrid('getrowdata', rowindex);
+                if ( (rowdata.type == 2) && ( rowdata.status == 0) )        // only delete idle > C-type folders
+                    $('#jqxgridFolder').jqxGrid('deleterow', rowdata.id);
+                //console.log('remove btn clicked id='+datarow.id);
+                             
+          } // buttonclick
+        }, //remove        
+    ],
+    autoheight: false, columnsresize: true, editable: true, //editmode: 'selectedrow',
+    pageable: false, sortable: true, showaggregates: true, 
+    width: '100%', height:'500', 
+    filterable: true, showfilterrow: true, 
+    selectionmode: 'singlerow', //'singlerow', //multiplecellsextended, 'singlecell',
+    // filtertype: 'checkbox', 'checkedlist', 'input', 'number', 'range'
+    showstatusbar:true, showtoolbar:true, rendertoolbar: function (statusbar) {
+        // appends buttons to the status bar.
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        //var addButton = $("<button type='button' class='btn btn-default' style='float: right;'>Update Grid</button>");
+        var addButton = $("<div style='float: right; margin-left: 10px;'><span>Add</span></div>");
+        var reloadButton = $("<div style='float: right; margin-left: 10px;'><span>Reload</span></div>");
+        //<button type="button" class="btn btn-default">Update Grid</button>
+        //<button id="buttonAddFolder" type="button" class="btn btn-primary">Add Record</button>
+        
+        container.append(addButton);
+        container.append(reloadButton);
+        statusbar.append(container);
+        addButton.jqxButton({  width: 60, height: 18 });
+        reloadButton.jqxButton({  width: 65, height: 18 });
+        // add new row.
+        addButton.click(function (event) {
+            //$("#jqxgridFolder").jqxGrid('addrow', null, datarow[0]);
+            var rowscount = $("#jqxgridFolder").jqxGrid('getdatainformation').rowscount;
+            //var datarow = {"name": "A", "surname": "B", "codeAfm":"A0", "codeGrad":"G0", "codeSpec":"S0", };
+
+            var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex');
+            var LessonID = dataAdapterLesson.records[index].id;
+            // ALWAYS ADD C-type FOlder | 'no': 0 will be changed on server since it's an auto-field
+            //var datarow  = {'LessonID': LessonID, 'no': 0, 'books':25, 'type':1, };  
+            var datarow  = {'LessonID': LessonID, 'no':'', 'books':25, 'codeType':1, };  
+            $("#jqxgridFolder").jqxGrid('addrow', null, datarow);
+            //console.log(rowscount);
+            //$('#jqxgrid').jqxGrid('ensurerowvisible', rowscount);
+        });//add.button
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder });
+        });
+    } //render toolbar
+
+});//Folder grid
+
+
+
+///////////////////////////
+// CHART
+//////////////////////////                        
+//$( '#count' ).html('Count: '+ aggregateData.count);
+var bigPieTobe = [
+    {category:"A", percent: 20}, 
+    {category:"B", percent: 30}, 
+    {category:"C", percent: 40}, 
+    {category:"Unknown", percent: 10}
+];
+
+// prepare chart data as an array
+var source = {
+    datatype: "csv",
+    datafields: [
+        { name: 'Browser' },
+        { name: 'Share' }
+    ],
+    url: '/static/jqwidgets/demos/sampledata/desktop_browsers_share_dec2011.txt',
+    // [ {id: 'Internet Explorer', val: 33.3} , {id: 'Firefox', val: 26.5}, {id: 'Chrome', val: 25.4}, {id: 'Safari', val: 7.0}, {id: 'Opera', val: 4.6}, {id: 'Other', val: 3.2} ] ;
+    // [ {Internet Explorer, 33.3} , {Firefox, 26.5}, {Chrome, 25.4}, {Safari, 7.0}, {Opera, 4.6}, {Other, 3.2} ] ;
+};
+var dataAdapter = new $.jqx.dataAdapter(source, { 
+    async: false, autoBind: true, 
+    loadError: function (xhr, status, error) { 
+        alert('Error loading "' + source.url + '" : ' + error); 
+    }, //loadError
+});
+/*
+*/
+
+
+/*
+*/
+// prepare jqxChart settings
+var settings = {
+    //source: dataAdapterFolder,
+    //source: bigPieTobe, 
+    source: dataAdapter,
+    seriesGroups: [ 
+    { 
+        type: 'pie', showLabels: true,
+        series: [ { 
+            dataField: 'Share', displayText: 'Browser', 
+            labelRadius: 100, initialAngle: 15,
+            radius: 150, centerOffset: 0,
+            formatSettings: { sufix: '%', decimalPlaces: 1 }
+        } ], //series
+    },
+    ], // series groups}
+    title: "Desktop browsers share",
+    description: "(source: wikipedia.org)",
+    enableAnimations: true,
+    showLegend: false,
+    showBorderLine: true,
+    legendPosition: { left: 520, top: 140, width: 100, height: 100 },
+    padding: { left: 5, top: 5, right: 5, bottom: 5 },
+    titlePadding: { left: 0, top: 0, right: 0, bottom: 10 },
+    colorScheme: 'scheme02',
+};
+// setup the chart
+$('#chartContainer').jqxChart(settings);
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,380 @@
+﻿<title id='Description'>UI SB-ADMIN</title>
+
+{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    UI SB-ADMIN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}    
+
+    <div class="row">
+        <!-- Lessons jqxCombobox-->
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑ </h3>
+                </div>
+                <div class="panel-body">
+                <div id='jqxcomboboxLesson'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+
+    <div class="row">        
+        
+    <!-- FoldersAB     -->
+        <div class="col-lg-7">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i>ΦΑΚΕΛΟΙ ΧΡΕΩΣΗΣ</h3>
+                </div>
+                <div class="panel-body">
+                <div id="jqxgridFolder" ></div>
+                </div>
+            </div>
+        </div>
+
+    <!-- FoldersC -->
+    <div id="jqxgridFolder" ></div>
+        <div class="col-lg-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i>ΦΑΚΕΛΟΙ ΑΝΑΒΑΘΜΟΛΟΓΗΣΗΣ</h3>
+                </div>
+                <div class="panel-body">
+                <div id="jqxgridFolderC" ></div>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    <!-- /.row -->
+
+
+<!-- FORM HTML -->
+
+<div style="visibility:hidden;">
+<form class="form" id="formPost" target="form-iframe">
+{% csrf_token %}
+<div>
+    <!-- User Inputs -->    
+    <h2>User Inputs </h2>    
+    Μάθημα:<input id='jqxinputLesson' name='jqxinputLesson' /><br/>
+    Βαθμολογητής:<input id='jqxinputFolder' name='jqxinputFolder' /><br/>
+    Φάκελος:<input id='jqxinputFolder' name='jqxinputFolder' />
+</div>
+
+    <!-- User Buttons -->
+    <button id="jqxbuttonCheck">CHECK</button>
+    <button id="jqxbuttonDo">DO</button>
+
+    <!-- Submit button -->
+</form>
+</div>
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Start Block JS -->
+{% block js %}
+<script type="text/javascript">
+    
+$(document).ready(function () {
+
+///////////////////////////
+// jqxnotificationServer
+//////////////////////////                        
+var notificationServerMessage = "Probable Error";
+// jqxnotificationServer
+$("#jqxnotificationServer").jqxNotification({
+    autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, 
+    appendContainer: "#jqxnotificationServerContent",
+    //appendContainer: "#content",
+    position: "top-right", 
+    template: "info", width: '98%', opacity: 0.9,
+});
+
+//$("#jqxNotification").jqxNotification({ width: "100%", appendContainer: "#container", opacity: 0.9, autoClose: true, template: "info" });
+
+
+///////////////////////////
+// sourceLesson 
+//////////////////////////                        
+// jqxgridLessons.RecordSet  
+var sourceLesson = {
+    url: '/jsonlesson/', 
+    datatype: "json",
+    datafields: [{name: "id"}, {name: "name"}, {name: "folders"}, {name: "status"}, ],
+    id: 'id',
+}; //source
+// DataAdapter create 
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);   
+
+///////////////////////////
+// jqxcomboboxLessons
+//////////////////////////                        
+// Create jqxcomboboxLessons
+//http://jsfiddle.net/jqwidgets/5SnVH/
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, displayMember: "name", height: 45, selectedIndex: 0, valueMember: "id", theme:'bootstrap', width: '100%',
+});
+//Style
+$("#jqxcomboboxLesson").find('input').css('font-size', '18px').css('margin-top', '0px');
+// Events (1)
+$('#jqxcomboboxLesson').on('select', function (event) 
+{    
+    if (event.args) {
+    data = dataAdapterLesson.records[args.index];
+    sourceFolder.url = '/jsonfolder/';
+    sourceFolder.data = {action: 'filter', LessonID: data.id};    
+    //$("#jqxgridGrader").jqxGrid({ source: dataAdapterLesson});
+    $("#jqxgridFolder").jqxGrid('updatebounddata');        
+    $("#jqxgridFolderC").jqxGrid('updatebounddata');        
+        
+    //alert('Selected');
+    }//if
+
+    // related button
+    //$("#jqxbuttonGraderNew").jqxButton({ disabled: false, });
+    // related form input
+    //var data = dataAdapterLesson.records[args.index];
+    //var data = $('#jqxgridLesson').jqxGrid('getrowdata', event.args.rowindex);
+    //$("#jqxinputGraderNewLesson").val(data.id);   // Lesson.id
+    //console.log ('Lesspnid:' + data.id);
+    
+    
+    // Form field > update 
+    // var rowBoundIndex = args.rowindex;var rowData = event.args.row;
+    $('#jqxinputLesson').jqxInput('val', data.id); 
+    $('#jqxinputFolder').jqxInput('val', null); 
+    //alert (rowData.id);         // OK    
+    
+    //$("#jqxnotificationServer").html('Lesson selected!').jqxNotification("open");
+
+    //$("#jqxnotificationServerContent").html('container!');
+    $("#content").html('lesson changed!');
+    $("#jqxnotificationServer").jqxNotification("open");
+
+});// combo.event
+
+
+///////////////////////////
+// jqxgridFolders       //
+//////////////////////////                        
+// jqxgridFolders.RecordSet  
+var sourceFolder = {
+    datatype: "json",
+    url: '/jsonfolder/', 
+    datafields: [{name: "id"}, {name: "no"}, {name: "books"}, {name: "type"}, {name: "typeChar"}, {name: "status"}, ],
+
+    updaterow: function (rowid, rowdata, commit) {
+        $.ajax({
+            method: 'POST', 
+            url: '/jsonfolder/', 
+            //data: { action: 'update', data: $.param(rowdata) },
+            // MUST BE CHANGED 
+            data: { action: 'update', id: rowdata.id, no: rowdata.no, books: rowdata.books, type: rowdata.type , typeChar: rowdata.typeChar , status: rowdata.status }, 
+            //dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                //$("#jqxnotificationServer").html('Update success!').jqxNotification("open");
+                //$("#jqxgridGrader").jqxGrid('updatebounddata');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+    }, //updaterow
+
+}; //source
+
+// DataAdapter create 
+var dataAdapterFolder = new $.jqx.dataAdapter(sourceFolder);     
+
+// jqxgridFolders.filter > type AB
+var colTypeFilterValAB = function () {
+    var filtergroup = new $.jqx.filter();
+    var filter_or_operator = 1;
+    var filtervalue = '0';
+    var filtercondition = 'equal';
+    var filter1 = filtergroup.createfilter('numericfilter', filtervalue, filtercondition);
+    var filtervalue2 = '1';
+    var filtercondition2 = 'equal';    
+    var filter2 = filtergroup.createfilter('numericfilter', filtervalue2, filtercondition2);
+    filtergroup.addfilter(filter_or_operator, filter1);
+    filtergroup.addfilter(filter_or_operator, filter2);
+    return filtergroup;
+};
+// jqxgridFolders
+$("#jqxgridFolder").jqxGrid({
+    source: dataAdapterFolder,
+    columns: [
+        { text: "id", datafield: "id", width: '15%' },
+        { text: "Κωδικός", datafield: 'no', filtertype: 'number', width: '20%' },
+        { text: "Τετράδια", datafield: 'books', width: '25%'},
+        { text: "Τύπος", datafield: 'type', width: '20%',  
+            filter: colTypeFilterValAB(),
+        },
+        //{ text: "ΤύποςChar", datafield: 'typeChar', filtertype: 'checkedlist', visible:'false', width: '20%'},
+        { text: "Κατάσταση", datafield: 'status', width: '20%'},
+    ], 
+    editable:false, editmode: 'selectedrow', height: 300, pageable: true, pagesize: 10, sortable: true, theme:'bootstrap', width: '100%',
+    filterable: true, showfilterrow: true,    
+    // filtertype: 'checkbox', 'checkedlist', 'input', 'number', 'range'
+    selectionmode: 'multiplecellsextended',
+    //selectionmode: 'singlerow', 
+
+});  //Folder grid
+//$("#jqxgridFolder").jqxGrid('selectrow', -1);
+
+///////////////////////////
+// jqxgridFoldersC
+//////////////////////////                       
+var colTypeFilterValC = function () {
+    var filtergroup = new $.jqx.filter();
+    var filter_or_operator = 1;
+    var filtervalue = '2';
+    var filtercondition = 'equal';
+    var filter1 = filtergroup.createfilter('numericfilter', filtervalue, filtercondition);
+    filtergroup.addfilter(filter_or_operator, filter1);
+    return filtergroup;
+};
+// jqxgridFolders.Widget
+$("#jqxgridFolderC").jqxGrid({
+    source: dataAdapterFolder,
+    columns: [
+        { text: "id", datafield: "id", width: '15%' },
+        { text: "Κωδικός", datafield: 'no', filtertype: 'number', width: '20%' },
+        { text: "Τετράδια", datafield: 'books', width: '25%' },
+        { text: "Τύπος", datafield: 'type', width: '20%', 
+            filter: colTypeFilterValC(),
+        },
+        //{ text: "ΤύποςChar", datafield: 'typeChar', filtertype: 'checkedlist', visible:'false', width: 80,},
+        { text: "Κατάσταση", datafield: 'status', width: '20%' },
+    ], 
+    editable:true, editmode: 'selectedrow', height: 300, pageable: true, pagesize: 10, sortable: true, theme:'bootstrap', width: '100%',
+    filterable: true, showfilterrow: true,    
+    // filtertype: 'checkbox', 'checkedlist', 'input', 'number', 'range'
+    selectionmode: 'multiplecellsextended',
+    //selectionmode: 'singlerow', 
+
+});  //Folder grid
+//$("#jqxgridFolder").jqxGrid('selectrow', -1);
+
+///////////////////////////
+// EVENTS - Connections 
+//////////////////////////
+
+// Event > jqxgridFolder (B)
+$('#jqxgridFolder').on('rowselect', function (event) {
+    // Form field > update 
+    $('#jqxinputFolder').jqxInput('val', event.args.row.TeacherID_id); 
+    $('#jqxinputFolder').jqxInput('val', null); 
+});
+
+////////////////////////////
+// FORM 
+////////////////////////////
+
+////////////////////////////
+// jqxinput
+////////////////////////////
+$('#jqxinputLesson, #jqxinputFolder, #jqxinputFolder').jqxInput({ width: '250px', height: '25px'});
+//$('#jqxinputLesson').jqxInput({disabled: true }).val('');
+//$('#jqxinputLesson').jqxInput('val', 'New Value'); 
+
+// bind to 'change' event.
+/*   OK
+$('#jqxinputFolder, #jqxinputFolder').on('change', function (event) {
+    alert ("value changed");
+});
+*/
+////////////////////////////
+// jqxbutton
+////////////////////////////
+$("#jqxbuttonCheck, #jqxbuttonDo").jqxButton({ width: 230, height: 30 });
+
+// bind to 'click' event.
+$("#jqxbuttonCheck").click(function (event) {
+    $('#formPost').jqxValidator('validate');
+    event.preventDefault();
+    // cehck required values 
+    if (($('#jqxinputLesson').val() ==0) || ($('#jqxinputFolder').val() ==0)) {
+        console.log('jqxinputLesson | jqxinputFolder =>  Failed!'); 
+        //alert('jqxinputLesson | jqxinputFolder =>  Failed!'); 
+    }
+    // check xrewsi-paralavi
+    if ( $( ".ui-selected" ).is( ".folderStatus1" ) ) {
+        console.log('Paralavi!'); 
+    } 
+    else { 
+        console.log('Xrewsh!');
+    }
+});
+
+// bind to 'click' event.
+$("#jqxbuttonDo").click (function (event) {    
+    $.post("/ajaxformpost/", 
+        $('#formPost').helperSerializeAll(), // serialize() + disabled.input
+        //$("#formPost").serialize(),
+        function (response) {
+            //$("#success").html(response.data);
+            //console.log(response.data);
+            console.log(response);
+            //console.log("Success");
+        } 
+    );
+    event.preventDefault();
+    /*
+    */
+});//jqxbuttonCheck.click
+
+
+
+
+////////////////////////////
+// form > jqxValidator
+////////////////////////////
+$('#formPost').jqxValidator( { 
+    rules: [
+        { input: '#jqxinputLesson', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Lesson is required!',
+        },        
+        { input: '#jqxinputFolder', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Folder is required!',
+        },        
+        { input: '#jqxinputFolder', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Folder is required!',
+        },        
+    ] //rules 
+} );
+
+$('#formPost').jqxValidator({ onSuccess: function () { 
+        console.log("Success");
+        //alert('Success!'); 
+        } }); 
+$('#formPost').jqxValidator({ onError: function () { 
+        console.log("Failed!");
+        alert('Failed!'); 
+        } }); 
+
+}); //doc.ready
+</script>
+
+<!-- End Block JS -->
+{% endblock %}
+
+

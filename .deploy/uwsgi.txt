@@ -1,0 +1,7 @@
+uwsgi --socket 127.0.0.1:27000 --listen 128 --chdir=/www/STORE/coffeehouse/ --pythonpath "/python/djangorecipes/lib/python2.7/site-packages/:/www/STORE/" --module=coffeehouse.wsgi --processes 6 --uid www-data --gid www-data --vacuum --master --harakiri=180 --max-requests=1000 --disable-logging --single-interpreter
+
+
+uwsgi --socket 127.0.0.1:27000 --listen 128 --chdir=/usr/share/nginx/html/gradecenter/ --pythonpath "/usr/local/lib/python2.7/dist-packages/:/usr/share/nginx/html/gradecenter/" --module=bk043.wsgi --processes 6 --uid www-data --gid www-data --vacuum --master --harakiri=180 --max-requests=1000  --single-interpreter --daemonize=/www/logs/bk043_uwsgi.log
+
+
+

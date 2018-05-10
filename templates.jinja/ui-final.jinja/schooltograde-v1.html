@@ -1,0 +1,521 @@
+﻿<title id='Description'>The jqxGrid. </title>
+
+{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    The jqxGrid.
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+
+<!-- BarGauge -->
+<div id="jqxBarGauge"></div>
+
+<!-- aggregates -->
+<div>
+    <span id="avg"></span> 
+    <span id="count"></span > 
+    <span id="max"></span>
+    <span id="min"></span >
+    <span id="sum"></span >
+</div>
+
+<!-- Buttons btn-success btn-info btn-warning btn-danger btn-link  -->
+<!-- 
+<button id="buttonUpdateGridSchoolToGrade"  type="button" class="btn btn-default">Update Grid</button>
+<button id="buttonAddSchoolToGrade" type="button" class="btn btn-primary">Add Record</button>
+<input id="buttonUpdateGridSchoolToGrade" value="Update Grid" class="btn btn-primary" />
+<input id="buttonAddSchoolToGrade" value="Add Record" class="btn btn-primary" />
+-->        
+
+<div class="row">
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΣΧΟΛΕΙΑ ΥΠΟΔΟΧΗΣ </h3>
+        </div>
+        <div class="panel-body">
+        <!-- jqxGrid -->
+        <div id="jqxgridSchoolToGrade"></div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- /.row -->
+
+
+<!-- Start Dialogue DELETE -->
+<div id="dialogDeleteSchoolToGrade">
+<div>
+<h3>Θέλετε να κάνετε την διαγραφή της εγγραφής;</h3>
+<p><span></span></p>
+<button id="buttonDialogDeleteSchoolToGradeYes">NAI</button> 
+<button id="buttonDialogDeleteSchoolToGradeNo" style="margin-left: 5px;" >OXI</button>
+<!-- End Dialogue DELETE -->
+</div>
+</div>
+
+
+
+<!-- Start Dialogue NEW -->
+<div id="dialogAddSchoolToGrade">
+<div style="overflow: hidden;">
+
+<!-- Start FORM ADD -->
+<!-- form action="javascript:void(0);" is for action=none -->
+<form class="form-horizontal" id="formAddSchoolToGrade" >
+{% csrf_token %}
+
+  <div class="form-group">
+    <label class="control-label col-sm-3" for="code">Kωδικός:</label>
+    <div class="col-sm-9">
+      <input type="email" class="form-control" id="code" placeholder="Enter email">
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label class="control-label col-sm-3" for="name">Όνομα:</label>
+    <div class="col-sm-9">
+      <input class="form-control" id="name" placeholder="Όνομα">
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label class="control-label col-sm-3" for="ddeCode">Κωδ.ΔΔΕ:</label>
+    <div class="col-sm-9">
+      <input class="form-control" id="ddeCode" placeholder="Κωδ.ΔΔΕ">
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label class="control-label col-sm-3" for="ddeName">ΔΔΕ:</label>
+    <div class="col-sm-9">
+      <input class="form-control" id="ddeName" placeholder="ΔΔΕ">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-3" for="type">Τύπος:</label>
+    <div class="col-sm-9">
+        <div id="type" class="form-control"></div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+      <button type="submit" class="btn btn-default">Submit</button>
+      <button id="buttonDialogAddSchoolToGradeYes" class="btn btn-default" >Save</button> 
+      <button id="buttonDialogAddSchoolToGradeNo" class="btn" >Cancel</button></td>                    
+    </div>
+  </div>
+
+<!-- End FORM ADD -->
+</form>
+
+</div> 
+
+<!-- End Dialogue NEW -->
+</div>
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">
+$(document).ready(function () {
+
+// List Source SCHOOLTYPE @ HelpersJS
+var aggregateData = null;
+////////////////////////////////
+//Buttons
+///////////////////////////////                        
+//$('#buttonDialogAddSchoolToGradeYes, #buttonDialogAddSchoolToGradeNo').jqxButton({ theme: theme, height: 30, width: 80 });
+//$('#buttonUpdateGridSchoolToGrade, #buttonAddSchoolToGrade').jqxButton();
+////////////////////////////////
+// SchoolToGrade data
+///////////////////////////////                        
+var sourceSchoolToGrade = {
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: 'code', type: 'string' },
+        {name: 'name', type: 'string' },
+        {name: 'ddeCode', type: 'string' },
+        {name: 'ddeName', type: 'string' },
+        //{name: 'type'},
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+    ],
+    //{ type: 'bool' },{ type: 'date'},{ type: 'number' }, { type: 'string' },
+    url: '/schooltograde/crud/', 
+    id: 'id',
+    sortcolumn: 'name',
+    sortdirection: 'asc',     
+    // ADD
+    addrow: function (rowid, rowdata, position, commit) {
+        // synchronize with the server - send insert command
+        var data = "action=insert&amp;" + $.param(rowdata);
+        //var data = "insert=true&" + $.param(rowdata);
+        $.ajax({
+            method: 'POST', 
+            url: '/schooltograde/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        }); //ajax
+    }, //addrow
+    // DELETE
+    deleterow: function (rowid, commit) {
+        // synchronize with the server - send delete command
+        var data = "action=delete&amp;" + $.param({ id: rowid });
+        //var data = "delete=true&" + $.param({ EmployeeID: rowid });
+        $.ajax({
+            method: 'POST', 
+            url: '/schooltograde/crud/', 
+            data: data,
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//ajax
+    }, //delete
+    // UPDATE
+    updaterow: function (rowid, rowdata, commit) {
+    // synchronize with the server - send update command
+        var data = "action=update&amp;" + $.param(rowdata);
+        //var data = "update=true&amp;" + $.param(rowdata);
+        //alert ('Edit B4 .ajax');
+        $.ajax({
+            method: 'POST', 
+            url: '/schooltograde/crud/', 
+            data: data,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                commit(true);// update command is executed.
+                console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                commit(false);
+            }
+        });//.ajax
+    }, //updaterow
+}; //source
+
+//DataAdapter create + 
+//AGGREGATES +
+//BARGAUGE
+var dataAdapterSchoolToGrade = new $.jqx.dataAdapter( sourceSchoolToGrade, {
+    loadComplete: function () {
+        var length = dataAdapterSchoolToGrade.records.length;
+        var rec = dataAdapterSchoolToGrade.records[0];
+        //alert (length + rec.name + rec.type + rec.lexType);    
+        
+        // aggregates
+        aggregateData = $("#jqxgridSchoolToGrade").jqxGrid('getcolumnaggregateddata', 'type', ['count', 'min', 'max']);
+        //alert (aggregateData.count);
+        //$( '#count' ).html('Count: '+ aggregateData.count);
+        //$( '#max' ).html('Max: '+ aggregateData.max);
+        //$( '#min' ).html('Min: '+ aggregateData.min);
+        //alert (summaryData.count);
+            
+        //jqxBarGauge
+        /*
+        $('#jqxBarGauge').jqxBarGauge({colorScheme: "scheme02", width: 200, height: 200,
+            values: [aggregateData.count], max: 150, 
+            //values: [102, 115, 130, 137], max: 150, 
+            tooltip: {
+                visible: true, 
+                formatFunction: function (value) {
+                    var realVal = parseInt(value);
+                    return ('Year: 2016<br/>Price Index:' + realVal);
+                }, //formatFunction
+            }, //tooltip
+        }); //jqxBarGauge
+        */ 
+    },  //loadComplete
+});
+
+
+
+//alert (dataArraySchoolToGradeType[0].type +  '-' + dataArraySchoolToGradeType[0].lexType);
+//var foo = adapterSchoolToGradeType.records;
+//alert (foo[0].type +  '-' + foo[0].lexType);
+/*
+*/
+///////////////////////////
+// GRID jqxSchoolToGradeGrid
+//////////////////////////                        
+$("#jqxgridSchoolToGrade").jqxGrid({
+    source: dataAdapterSchoolToGrade,
+    columns: [ //columntype: 'textbox', 
+        { text: 'id', datafield: 'id', visible: false },
+        { text: 'Kωδικός', datafield: 'code', filtertype: 'input', width: '10%' },
+        { text: "Όνομα", datafield: 'name',  filtertype: 'input', width: '30%' },
+        { text: "Κωδ.ΔΔΕ", datafield: 'ddeCode', columntype: 'textbox', filtertype: 'input', width: '10%' },
+        { text: "ΔΔΕ", datafield: 'ddeName', filtertype: 'input', width: '20%' },
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'15%',
+            createeditor: function (row, value, editor) {
+                editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
+            }, // createeditor
+            aggregates: ['count'], 
+        },
+        { text: 'Edit', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "...";
+            }, 
+            buttonclick: function (row) {
+                $("#jqxgridSchoolToGrade").jqxGrid('beginrowedit', row);
+            } // buttonclick
+        }, //edit 
+        { text: 'remove', editable: false, columntype: 'button', width: '5%', 
+            cellsrenderer: function () {
+                return "X";
+            }, // cellsrenderer
+            buttonclick: function (row) {
+                $("#dialogDeleteSchoolToGrade").jqxWindow('open');
+                //var datarow = $('#jqxgridSchoolToGrade').jqxGrid('getrowdata', row);
+                //$('#jqxgridSchoolToGrade').jqxGrid('deleterow', datarow.id);
+                //console.log('remove btn clicked id='+datarow.id);
+          } // buttonclick
+        }, //remove
+
+        //return '<div style="text-align: center; margin-top: 7px;"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></div>'
+        
+    ],     
+    autoheight: false, columnsresize: true, editable: true, //editmode: 'selectedrow',
+    filterable: true,showfilterrow: true, selectionmode: 'singlerow', //multiplecellsextended
+    pageable: false, sortable: true, width: '100%', height:'500', 
+    showaggregates: true, 
+    showstatusbar:true, 
+    showtoolbar:true, rendertoolbar: function (statusbar) {
+        // appends buttons to the status bar.
+        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        //var addButton = $("<button type='button' class='btn btn-default' style='float: right;'>Update Grid</button>");
+        var addButton = $("<div style='float: right; margin-left: 10px;'><span>Add</span></div>");
+        var reloadButton = $("<div style='float: right; margin-left: 10px;'><span>Reload</span></div>");
+        //<button type="button" class="btn btn-default">Update Grid</button>
+        //<button id="buttonAddSchoolToGrade" type="button" class="btn btn-primary">Add Record</button>
+        
+        container.append(addButton);
+        container.append(reloadButton);
+        statusbar.append(container);
+        addButton.jqxButton({  width: 60, height: 18 });
+        reloadButton.jqxButton({  width: 65, height: 18 });
+        // add new row.
+        addButton.click(function (event) {
+            //var datarow = generatedata(1);
+            //$("#jqxgridSchoolToGrade").jqxGrid('addrow', null, datarow[0]);
+            $( '#dialogAddSchoolToGrade').jqxWindow('open');
+        });
+        // reload grid data.
+        reloadButton.click(function (event) {
+            $("#jqxgridSchoolToGrade").jqxGrid({ source: dataAdapterSchoolToGrade });
+        });
+    } //render toolbar
+
+    //selectionmode: 'multiplerowsextended', 'singlecell',
+});//SchoolToGrade grid
+
+////////////////////////////////
+// Buttons 
+////////////////////////////////              
+//$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
+$( '#buttonAddSchoolToGrade' ).click(function (event) {
+    $("#code, #name, #ddeCode, #ddeName, #type").val(''); 
+    //$("#jqxgridSchoolToGrade").jqxGrid({disabled:true});
+    $( '#dialogAddSchoolToGrade').jqxWindow('open');
+});
+$( '#buttonUpdateGridSchoolToGrade' ).click(function (event) {
+    $("#jqxgridSchoolToGrade").jqxGrid({ source: dataAdapterSchoolToGrade });
+});
+
+/////////////////////////
+//Dialogue DELETE
+/////////////////////////                
+var theme = 'bootstrap';
+// Dialogue DELETE
+//buttonDialogDeleteSchoolToGradeYes
+$( '#dialogDeleteSchoolToGrade' ).jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', isModal: true, 
+    //cancelButton: $('#buttonDialogDeleteSchoolToGradeNo'), 
+    keyboardNavigation: true, keyboardCloseKey: 13,
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridSchoolToGrade").offset().left) + 60, y: parseInt($("#jqxgridSchoolToGrade").offset().top) + 60,}, 
+    width: 'auto', height: '200', theme: theme, 
+});        
+
+//Dialogue > Buttons
+$('#buttonDialogDeleteSchoolToGradeYes, #buttonDialogDeleteSchoolToGradeNo').jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Event > Dialogue
+$("#dialogDeleteSchoolToGrade").on('close', function () {
+    //$("#jqxgridSchoolToGrade").jqxGrid({ disabled: false });
+});
+// Event > Button > Yes
+$('#buttonDialogDeleteSchoolToGradeYes').click(function () {
+    var row = $('#jqxgridSchoolToGrade').jqxGrid('getselectedrowindex');
+    var datarow = $('#jqxgridSchoolToGrade').jqxGrid('getrowdata', row);
+    $('#jqxgridSchoolToGrade').jqxGrid('deleterow', datarow.id);
+    //console.log('remove btn clicked id='+datarow.id);
+    $('#dialogDeleteSchoolToGrade').jqxWindow('close');
+});
+// Event > Button > No
+$('#buttonDialogDeleteSchoolToGradeNo').click(function () {
+    $('#dialogDeleteSchoolToGrade').jqxWindow('close');
+});
+
+
+/////////////////////////
+//Dialogue ADD
+/////////////////////////                
+// Dialogue 
+$('#dialogAddSchoolToGrade').jqxWindow({ 
+    autoOpen: false, title: 'Νέα Εγγραφή', isModal: true, 
+    keyboardNavigation: true, //keyboardCloseKey: 13, 
+    showAnimationDuration: 600, closeAnimationDuration: 200,
+    //resizable: false, modalOpacity: 0.5, 
+    position: { x: parseInt($("#jqxgridSchoolToGrade").offset().left) + 60, y: parseInt($("#jqxgridSchoolToGrade").offset().top) + 60,}, 
+    width: 'auto', height: 'auto',
+});        
+
+//Dialogue > Input
+//$("#addWinRowButton").jqxButton({ theme: theme, width: 210, height: 40 });
+$("#code, #name, #ddeCode, #ddeName").jqxInput();
+//$("#code, #ddeCode").width(50); $("#name, #ddeName").width(150);
+$( '#type' ).jqxDropDownList({ source: ArraySchoolToGradeSchoolType, selectedIndex: 1, });
+
+//$("#price").jqxNumberInput({ spinMode: 'simple', symbol: '$', width: 150, min: 0, height: 23, spinButtons: true });
+
+//Dialogue > Buttons
+$('#buttonDialogAddSchoolToGradeYes, #buttonDialogAddSchoolToGradeNo').jqxButton({ theme: theme, height: 30, width: 80 });
+
+// Event > Dialogue
+$( '#dialogAddSchoolToGrade' ).on('close', function () {
+    //$("#jqxgridSchoolToGrade").jqxGrid({ disabled: false });
+});
+
+// Event > Button > Yes
+$( '#buttonDialogAddSchoolToGradeYes' ).click(function (event) {
+    
+    $('#formAddSchoolToGrade').jqxValidator('validate');
+    event.preventDefault();
+    /*    
+    // set record values
+    var newrow = { name: $("#code").val(), name: $("#name").val(), surname: $("#ddeCode").val(), codeAfm: $("#ddeName").val(), codeGrad: $("#type").val(), };
+    $( "#jqxgridSchoolToGrade" ).jqxGrid('addrow', null, newrow);
+    $( "#jqxgridSchoolToGrade" ).jqxGrid('updatebounddata');
+    $( "#dialogAddSchoolToGrade" ).jqxWindow('close');
+    */
+});
+
+// Event > Button > No
+$( '#buttonDialogAddSchoolToGradeNo' ).click(function () {
+    $( '#dialogAddSchoolToGrade' ).jqxWindow('close');
+});
+
+//code, #name, #ddeCode, #ddeName
+////////////////////////////
+//Form ADD > jqxValidator
+////////////////////////////
+$('#formAddSchoolToGrade').jqxValidator( { 
+    rules: [
+        { input: '#code', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Code is required!',
+        },        
+        { input: '#name', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'Name is required!',
+        },        
+        /*
+        { input: '#ddeCode', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Folder is required!',
+        },        
+        { input: '#ddeName', 
+        rule: 'required',     //rule: 'length=4,12'  
+        //action: 'keyup', 
+        message: 'The Folder is required!',
+        },
+        */
+    ],  //rules 
+
+    onSuccess: function (event) { 
+        //event.preventDefault();        
+        // set record values
+        var newrow = { name: $("#code").val(), name: $("#name").val(), surname: $("#ddeCode").val(), codeAfm: $("#ddeName").val(), codeGrad: $("#type").val(), };
+        $( "#jqxgridSchoolToGrade" ).jqxGrid('addrow', null, newrow);
+        $( "#jqxgridSchoolToGrade" ).jqxGrid('updatebounddata');
+        $( "#dialogAddSchoolToGrade" ).jqxWindow('close');        
+        console.log("Success");
+        //alert('Success!'); 
+    },//onSuccess
+
+    onError: function () { 
+        console.log("Failed!");
+        //alert('Failed!'); 
+    },//onError
+
+}); 
+
+//$('#jqxValidator').on('validationError', function (event) { event.preventDefault(); }); 
+//$('#jqxValidator').on('validationSuccess', function (event) { event.preventDefault(); }); 
+
+
+/////////////////////////
+//BARGAUGE
+/////////////////////////
+
+/*
+/////////////////////////
+//CHARTS
+/////////////////////////
+// Define CHARTS
+//              (id,          value,color,     bgColor,   title,                      subtitle,               isHalf)
+generateBarGauge('bargauge1', [0], '#3AB54B', '#B0D2C8', 'Calories intake - 0/2200', '2200 calories pending', true);
+generateBarGauge('bargauge2', [0], '#B24848', '#C9A5A6', 'Calories burnt - 0/1000', '1000 calories pending', true);
+generateBarGauge('bargauge3', [0], '#D2AACE', '#DBCDDC', 'Exercises - 0/7', '7 sets pending');
+generateBarGauge('bargauge4', [0], '#978CC2', '#CBCBE0', 'Sets - 0/4', '10 sets pending');
+
+// UPDATE CHARTS (Grid) DataSource.onloaded 
+var dataAdapterGauges = new $.jqx.dataAdapter(sourceGauges, {
+    loadComplete: function (records) {
+        changesBarGauge('bargauge1', 'Calories intake - ' + records[0].now + '/' + records[0].total, (records[0].total - records[0].now) + ' calories pending', [records[0].now]);
+        changesBarGauge('bargauge2', 'Calories burnt - ' + records[1].now + '/' + records[1].total, (records[1].total - records[1].now) + ' calories pending', [records[1].now]);
+        changesBarGauge('bargauge3', 'Exercises - ' + records[2].now + '/' + records[2].total, (records[2].total - records[2].now) + ' exercises pending', [records[2].now]);
+        changesBarGauge('bargauge4', 'Sets - ' + records[3].now + '/' + records[3].total, (records[3].total - records[3].now) + ' sets pending', [records[3].now]);
+    } //loadComplete
+});
+
+// Bind Data
+dataAdapterGauges.dataBind();
+*/
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+
+
