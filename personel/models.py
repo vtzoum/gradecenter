@@ -7,6 +7,15 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth.models import User
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from datetime import datetime    
+from django.db import models
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.contrib import messages
+from django.contrib.auth.models import User
 
 from django.db import DatabaseError, IntegrityError, transaction
 
@@ -954,4 +963,31 @@ def RelatedBookingInfo(GraderID=None):
     #print dictData
     return dictData
 """
+
+
+
+from django.db import DatabaseError, IntegrityError, transaction
+
+#from helpScripts import helperMessageLog
+# Create your models here.
+
+#Date: 2017-May 
+""" """
+def helperMessageLog(request, msg='Null log', tag='info'):
+    """
+    Handles 3to1 statements for ajax messages & logging
+    """
+    if tag=='error':
+        messages.error(request, msg, tag, fail_silently=True)
+    elif tag=='info':
+        messages.info(request, msg, tag, fail_silently=True)
+    elif tag=='success':
+        messages.warning(request, msg, tag, fail_silently=True)
+    elif tag=='success':
+        messages.warning(request, msg, tag, fail_silently=True)
+    else: 
+        messages.info(request, msg, tag, fail_silently=True)
+    print msg
+
+
 

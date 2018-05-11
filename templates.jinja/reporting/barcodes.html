@@ -8,45 +8,83 @@
 {% block html %}
 
 <div class="page-title">
-    <span class="title">ΕΚΤΥΠΩΣΕΙΣ</span>
+    <span class="title">ΕΚΤΥΠΩΣΕΙΣ Barcodes</span>
 </div>                        
 
-<div id="printLinks" class="row">
 
-   <!--Μάθημα-->
-    <div class="col-xs-2"> <!-- /reporting/pdf/school/... -->
-           
-     <h3 class="info">α.Σχολεία</h3>
-     <a id="printSchoolLabels" href="/reporting/pdf/school/labels/" class="btn btn-sm btn-primary" role="button">Ετικέττες Σχολείων</a>
-     <a id="printSchoolCoverLetter" href="/reporting/pdf/school/coverletter/" class="btn btn-sm btn-primary" role="button">Διαβιβαστικό Σχολείων</a>
-    
-   </div>
- 
+<div id="printLinks" class="row">
+    <div class="col-xs-2"> <!-- -->
+     <a id="printBarcode" href="/reporting/pdf/barcode/" class="btn btn-sm btn-primary" role="button">Barcodes</a>
+    </div> 
 </div>
 <!-- ./row -->
 
-<!-- Start Dialogue SELECT SCHOOL/DDE -->
+
+<!-- Start Dialogue PRINT -->
 <!-- *****************************************-->
-<!--           Dialogue SELECT SCHOOL/DDE    -->
+<!--           Dialogue PRINT                 -->
 <!-- *****************************************-->
 <div id="dialogPrint" >
    
+  <!-- content-->
   <div class="modal-content">
-
-      <div class="modal-body">
+    <!--
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Επιλογές Εκτύπωσης.</h4>
+    </div>
+    -->
+    <div class="modal-body">
+    <!-- Start FORM ADD -->
+    <!-- form action="javascript:void(0);" is for action=none -->
     <form class="form-horizontal" id="formPrint" action="javascript:void(0);" >
     {% csrf_token %}
 
+      <!--Lesson-->
       <div class="form-group">
-        <label class="control-label col-sm-3" for="ddeCode">Σχολείο:</label>
-        <div class="col-sm-9">
-            <div id="jqxcomboboxSchoolToGrade" class="form-control" placeholder="Σχολείο"></div>
+        <label class="control-label col-sm-3" for="ddeCode">Μάθημα:</label>
+        <div class="col-sm-8">
+            <div id="jqxcomboboxLesson" class="form-control" placeholder="Μάθημα"></div>
+        </div>
+      </div>
+
+      <!--Folder numbers-->
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="fromNo">Από:</label>
+        <div class="col-sm-3">
+        <input id="fromNo" name="fromNo" class="form-control" placeholder="ΑΑ">
+        </div>
+
+        <label class="control-label col-sm-2" for="toNo">Έως:</label>
+        <div class="col-sm-3">
+        <input id="toNo" name="toNo" class="form-control" placeholder="ΑΑ">
         </div>
       </div>
 
 
+      <!--Folder type-->
+      <div class="form-group">
+      <div name="optionsCodeType" class="col-sm-offset-4 col-sm-8">
+
+      <div class="radio3 radio-check radio-inline3">
+        <input id="radio0" name="codeType" value="0" checked="" type="radio">
+        <label for="radio0" >
+          KANONIKOI
+        </label>
+      </div>
+
+      <div class="radio3 radio-check radio-inline" >
+        <input id="radio1" name="codeType" value="2" type="radio">
+        <label for="radio1" >
+          ΑΝΑΒΑΘΜΟΛΟΓΗΣΗ
+        </label>
+      </div>
+      </div>
+      </div>
+
+      <!--HIDDENS-->
       <input id='printLink' name='printLink' type="hidden"/>
       
+      <!--BUTTONS-->
       <div class="form-group">
         <div class="col-sm-offset-4 col-sm-8">
           <div class="col-sm-3">
@@ -59,13 +97,18 @@
       </div>
 
     </form>
+    <!-- End FORM ADD -->
     
     </div>
+    <!-- ./body -->
     <div class="modal-footer"></div>
+    <!-- ./footer-->
 
   </div>
+  <!-- ./content-->
 
 </div>
+<!-- End Dialogue NEW -->
 
 <!-- End Block HTML -->
 {% endblock %}
@@ -81,47 +124,51 @@ $(document).ready(function () {
 // jqxcomboboxLessons
 ***********************/
 //Lessons > RecordSet  
-var sourceSchoolToGrade = {
+var sourceLesson = {
     datatype: "json",
-    url:'/schooltograde/crud/', 
     datafields: [
         {name: "id"}, 
-        {name: 'code', type: 'string' },
-        {name: 'name', type: 'string' },
-        {name: 'ddeCode', type: 'string' },
-        {name: 'ddeName', type: 'string' },
-        //{name: 'type'},
+        {name: "name"}, 
+        {name: 'category', type: 'string' },
         {name: 'type', type: 'integer' }, // number, 
         {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
     ],
-    id: 'id',
-    sortcolumn: 'name',
-    sortdirection: 'asc',     
+    url: '/lesson/crud/', 
 }; //source
 
 // DataAdapter
-//DataAdapter create + 
-var dataAdapterSchoolToGrade = new $.jqx.dataAdapter(sourceSchoolToGrade);
-var dataAdapterSchoolToGrade = new $.jqx.dataAdapter(sourceSchoolToGrade,
+
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson,
     {
         beforeLoadComplete: function (records) {
             for (var i = 0; i < records.length-1; i++) {
-                records[i]['name'] = records[i]['ddeName']+"-"+ records[i]['name']+"-"+ records[i]['lexType'] ;
+                records[i]['name'] = records[i]['name']+"-"+ records[i]['category'] +"-"+ records[i]['lexType'] ;
                 //var row = {};
             }//for
                 return records;
         }//beforeLoadComplete
     }
 );
+//var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
 
 //http://jsfiddle.net/jqwidgets/5SnVH/
-$("#jqxcomboboxSchoolToGrade").jqxComboBox({
-    source: dataAdapterSchoolToGrade, 
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, 
     valueMember: "id", displayMember: "name", 
     selectedIndex: -1, //selectIndex:-1, 
-    placeHolder:"ΟΛΑ ΤΑ ΣΧΟΛΕΙΑ ή Επιλέξτε Σχολείο...",  
+    placeHolder:"Επιλέξτε Μάθημα...",  
     //itemHeight: 20, height: 30, 
-    width: '95%', theme:theme, 
+    width: '100%', theme:theme, 
+    /*
+    renderer: function (index, label, value) {
+        //var datarecord = data[index];
+        var datarecord = dataAdapterLesson.records[index];    
+        //var row = "<b>"+label +"</b> " + datarecord.category + "[<u>" + datarecord.lexType + "</u>]" ;
+        //var row = "<b>"+label +"</b> ";
+        var row = "<b>"+label +"</b> ";
+        return row;
+    }
+    */
 });
 //$("#jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
 
@@ -141,31 +188,63 @@ $('#printLinks a').click(function (event) {
 /////////////////////////                
 // Dialogue 
 $('#dialogPrint').jqxWindow({ 
-    autoOpen: false, title: 'Εκτύπωση!', isModal: true, 
+    autoOpen: false, title: 'Εκτύπωση Barcodes', isModal: true, 
     keyboardNavigation: true, 
     keyboardCloseKey: 13, showAnimationDuration: 600, //closeAnimationDuration: 200,
     resizable: false, modalOpacity: 0.8, 
     //position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
-    width: '600px', height: 'auto',
+    width: 'auto', height: 'auto',
 });        
 
 // Dialogue > Event
 $("#dialogPrint").on('open', function () {
-    $("#jqxcomboboxSchoolToGrade").jqxComboBox('selectIndex', -1 );
-    //$("[name=codeType]").val(["0"]);    //instead of $("#codeType").val(0);
-    //#$("#fromNo").val('');
-    //$("#toNo").val('');
+    $("#jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
+    $("[name=codeType]").val(["0"]);    //instead of $("#codeType").val(0);
+    $("#fromNo").val('');
+    $("#toNo").val('');
 });
 
+// Dialogue > inputs
+
 // Dialogue > Buttons
-// Dialogue > Buttons > Cancel > click
+// Button > No > Event
 $( '#buttonCancel' ).click(function () {
     $( '#dialogPrint' ).jqxWindow('close');
 });
-
-// Dialogue > Button > Print > click
+// Button > Yes > Event
 $( '#buttonPrint' ).click(function (event) {
-    $('#formPrint').jqxValidator('validate');    
+
+    $('#formPrint').jqxValidator('validate');
+    /*        
+    var url = $('#printLink').val();
+    var LessonID = $("#jqxcomboboxLesson").jqxComboBox('val');
+    //var buttonClicked = clickedButton[0].id;    
+    var qstring  = $('#formPrint').serialize();
+    qstring  = qstring  + (LessonID == '' ? '' : '&LessonID=' + LessonID );
+    //alert (qstring);
+    window.location.href = url + '?' + qstring ;    
+    $( "#dialogPrint" ).jqxWindow('close');
+    */
+    
+    
+    //window.location.href = "Posts?Category=" + sel;
+    /*
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.send();
+    */
+    
+    /*
+    $.get( url, { LessonID: item.id} )
+        .done(function( data ) {
+            alert( "Data Loaded: " + data );
+        })
+        .fail(function() {
+            alert( "error" );
+        });
+    $( "#dialogPrint" ).jqxWindow('close');
+    */
+    
 });
 
 
@@ -193,10 +272,10 @@ $('#formPrint').jqxValidator( {
  
     onSuccess: function () { 
         var url = $('#printLink').val();
-        var SchoolToGradeID = $("#jqxcomboboxSchoolToGrade").jqxComboBox('val');
+        var LessonID = $("#jqxcomboboxLesson").jqxComboBox('val');
         //var buttonClicked = clickedButton[0].id;    
         var qstring  = $('#formPrint').serialize();
-        qstring  = qstring  + (SchoolToGradeID == '' ? '' : '&SchoolToGradeID=' + SchoolToGradeID );
+        qstring  = qstring  + (LessonID == '' ? '' : '&LessonID=' + LessonID );
         //alert (qstring);
         window.location.href = url + '?' + qstring ;    
         

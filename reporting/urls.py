@@ -33,10 +33,15 @@ urlpatterns = [
     url(r'^general/$', staff_or_403(TemplateView.as_view(template_name='reporting/general.html')), name='reportgeneral'),
 
     #Barcode+SECRETARIAT
-    url(r'^barcode/$', staff_or_403(TemplateView.as_view(template_name='reporting/barcode.html')), name='reportbarcode'),
-    url(r'^letter/$', staff_or_403(TemplateView.as_view(template_name='reporting/letter.html')), name='reportletter'),
+    url(r'^accepting/$', staff_or_403(TemplateView.as_view(template_name='reporting/accepting.html')), name='reportaccepting'),
+    url(r'^grading/$', staff_or_403(TemplateView.as_view(template_name='reporting/grading.html')), name='reportgrading'),
+    url(r'^barcodes/$', staff_or_403(TemplateView.as_view(template_name='reporting/barcodes.html')), name='reportbarcodes'),
     url(r'^schools/$', staff_or_403(TemplateView.as_view(template_name='reporting/schools.html')), name='reportschools'),
+    url(r'^graders/$', staff_or_403(TemplateView.as_view(template_name='reporting/graders.html')), name='reportgraders'),
+    url(r'^work/$', staff_or_403(TemplateView.as_view(template_name='reporting/work.html')), name='reportwork'),
     url(r'^secretariat/$', staff_or_403(TemplateView.as_view(template_name='reporting/secretariat.html')), name='reportsecretariat'),
+    #Closing reports
+    url(r'^closing/$', staff_or_403(TemplateView.as_view(template_name='reporting/closing.html')), name='reportclosing'),
 
     ###########################################
     #DOCX
