@@ -218,12 +218,15 @@ def jsonFileCSVImportSchoolToGrade(request):
             next(dataReader, None)  # skip the headers
             (msg, tag) = ('', 'info')
             for row in dataReader:  #exclude 1st row
-                schoolCode, schoolName, schoolType, schoolTypeLex, schoolDdeCode, schoolDdeName, = row[0], row[1], row[2], row[3],row[4], row[5], 
+                schoolCode, schoolName, schoolType, schoolTypeLex, schoolDdeCode, schoolDdeName, = row[0], row[1], row[2], row[3],row[4], row[5]
+                schoolAddress, schoolCity, schoolTk = row[6], row[7], row[8]
+                
                 #print schoolCode, schoolName, schoolDdeCode, schoolDdeName, 
                 codeIsNull = True  if schoolCode == ''  else False 
                 nameIsNull = True  if schoolName == ''  else False 
                 ddeCodeIsNull = True  if schoolDdeCode == ''  else False 
                 ddeNameIsNull = True  if schoolDdeName == ''  else False 
+
                 schoolExists = False  if SchoolToGrade.objects.filter(code = schoolCode).count() == 0  else True 
                 
                 # Dry run
@@ -239,7 +242,7 @@ def jsonFileCSVImportSchoolToGrade(request):
                     if (actionP =='doimport'):
                         try:
                             SchoolToGrade(code = schoolCode, name = schoolName, type = schoolType, 
-                                    ddeCode = schoolDdeCode, ddeName =  schoolDdeName, ).save()
+                                    ddeCode = schoolDdeCode, ddeName =  schoolDdeName, address=schoolAddress, city=schoolCity, tk=schoolTk, ).save()
                             print "SCHOOL-TO-GRADE  IMPORT:", schoolCode, schoolName, schoolDdeCode, schoolDdeName
                             (status, msg, tag) = ('OK', "Επιτυχής εισαγωγή εγγραφής!", 'info')
                         except DatabaseError:
@@ -247,7 +250,8 @@ def jsonFileCSVImportSchoolToGrade(request):
                             
                 #responseData.append ( {'name': schoolName, 'type': lessonType , 'status': status })
                 responseData.append ( {'code': schoolCode, 'name': schoolName , 'type': schoolType,\
-                    'ddeCode': schoolDdeCode, 'ddeName': schoolDdeName, 'status': status })                    
+                    'ddeCode': schoolDdeCode, 'ddeName': schoolDdeName,\
+                    'address': schoolAddress, 'city': schoolCity, 'tk': schoolTk, 'status': status })                    
                     
             # page ajax
             helperMessageLog(request, msg, tag)

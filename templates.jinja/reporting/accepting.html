@@ -17,18 +17,17 @@
   {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") %} 
     
     <!--Μάθημα-->
-    <div id="printLesson" class="col-xs-2"> <!-- /reporting/xls/lesson -->           
+    <div id="groupAcceptance" class="col-xs-2"> <!-- /reporting/xls/lesson -->           
      <h3 class="info">A.Παραλαβές</h3>
-     <a id="printAcceptanceByLesson" href="/reporting/xls/acceptance/" class="btn btn-sm btn-primary" role="button">Παραλαβές ανα Μάθημα</a>
-     <a id="printAcceptanceByLessonSum" href="/reporting/xls/acceptance/sum/" class="btn btn-sm btn-primary" role="button">Γενικά Σύνολα Παραλαβών</a>
+     <a id="printAcceptance" href="/reporting/xls/acceptance/" class="btn btn-sm btn-primary" role="button">Παραλαβές ανα Μάθημα</a>
+     <a id="printAcceptance" href="/reporting/xls/acceptance/sum/" class="btn btn-sm btn-primary" role="button">Γενικά Σύνολα Παραλαβών</a>
     </div>
     
-    <!--
-    <div class="col-xs-3"> 
+    <!-- -->
+    <div id="groupBarcode" class="col-xs-3"> 
      <h3 class="info">B.Κωδικοί Barcodes</h3>
      <a id="printBarcode" href="/reporting/pdf/barcode/" class="btn btn-info" role="button">Barcodes</a>
     </div>
-    -->
   {% endif %} 
   
 
@@ -36,11 +35,10 @@
 <!-- ./row -->
 
 
-<!-- Start Dialogue PRINT -->
-<!-- *****************************************-->
-<!--           Dialogue PRINT                 -->
-<!-- *****************************************-->
-<div id="dialogPrint" >
+<!-- ****************************************-->
+<!-- Dialogue PRINT ACCEPTANCE               -->
+<!-- ****************************************-->
+<div id="dialogPrintAcceptance" >
 
 <!-- content-->
 <div class="modal-content">
@@ -95,6 +93,96 @@
 <!-- End Dialogue PRINT -->
 
 
+<!-- ****************************************-->
+<!-- Dialogue PRINT BARCODES                 -->
+<!-- ****************************************-->
+<div id="dialogPrintBarcode" >
+   
+  <!-- content-->
+  <div class="modal-content">
+    <!--
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Επιλογές Εκτύπωσης.</h4>
+    </div>
+    -->
+    <div class="modal-body">
+    <!-- Start FORM ADD -->
+    <!-- form action="javascript:void(0);" is for action=none -->
+    <form class="form-horizontal" id="formPrint" action="javascript:void(0);" >
+    {% csrf_token %}
+
+      <!--Lesson-->
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="ddeCode">Μάθημα:</label>
+        <div class="col-sm-8">
+            <div id="jqxcomboboxLesson2" class="form-control" placeholder="Μάθημα"></div>
+        </div>
+      </div>
+
+      <!--Folder numbers-->
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="fromNo">Από:</label>
+        <div class="col-sm-3">
+        <input id="fromNo" name="fromNo" class="form-control" placeholder="ΑΑ">
+        </div>
+
+        <label class="control-label col-sm-2" for="toNo">Έως:</label>
+        <div class="col-sm-3">
+        <input id="toNo" name="toNo" class="form-control" placeholder="ΑΑ">
+        </div>
+      </div>
+
+
+      <!--Folder type-->
+      <div class="form-group">
+      <div name="optionsCodeType" class="col-sm-offset-4 col-sm-8">
+
+      <div class="radio3 radio-check radio-inline3">
+        <input id="radio0" name="codeType" value="0" checked="" type="radio">
+        <label for="radio0" >
+          KANONIKOI
+        </label>
+      </div>
+
+      <div class="radio3 radio-check radio-inline" >
+        <input id="radio1" name="codeType" value="2" type="radio">
+        <label for="radio1" >
+          ΑΝΑΒΑΘΜΟΛΟΓΗΣΗ
+        </label>
+      </div>
+      </div>
+      </div>
+
+      <!--HIDDENS-->
+      <input id='printLink' name='printLink' type="hidden"/>
+      
+      <!--BUTTONS-->
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+          <div class="col-sm-3">
+          <button id="buttonPrint" class="btn btn-primary" >OK</button> 
+        </div>
+          <div class="col-sm-3">
+          <button id="buttonCancel" class="btn btn-default" >Cancel</button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <!-- End FORM ADD -->
+    
+    </div>
+    <!-- ./body -->
+    <div class="modal-footer"></div>
+    <!-- ./footer-->
+
+  </div>
+  <!-- ./content-->
+
+</div>
+<!-- End Dialogue NEW -->
+
+
 <!-- End Block HTML -->
 {% endblock %}
 
@@ -137,7 +225,8 @@ var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson,
 //var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
 
 //http://jsfiddle.net/jqwidgets/5SnVH/
-$("#jqxcomboboxLesson").jqxComboBox({
+//+same source for 2 combos
+$("#jqxcomboboxLesson , #jqxcomboboxLesson2").jqxComboBox({
     source: dataAdapterLesson, 
     valueMember: "id", displayMember: "name", 
     selectedIndex: -1, //selectIndex:-1, 
@@ -167,18 +256,25 @@ $("#jqxdatetimeinputDate").jqxDateTimeInput({ width: '100%', height: '25px' });
 // Buttons 
 ////////////////////////////////
 //$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
-// Saves a.href in hidden input 
-$('#printLinks a').click(function (event) {
+// Saves a.href in hidden input + opens appropriate print dialog
+$('#groupAcceptance a').click(function (event) {
     event.preventDefault();
     $("#printLink").val($(this).attr('href'));    
-    $( '#dialogPrint').jqxWindow('open');
+    $( '#dialogPrintAcceptance').jqxWindow('open');
+});
+
+// Saves a.href in hidden input + opens appropriate print dialog
+$('#groupBarcode a').click(function (event) {
+    event.preventDefault();
+    $("#printLink ").val($(this).attr('href'));    
+    $( '#dialogPrintBarcode').jqxWindow('open');
 });
 
 /////////////////////////
-//Dialogue PRINT
+//Dialogue PRINT Acceptance
 /////////////////////////                
 // Dialogue 
-$('#dialogPrint').jqxWindow({ 
+$('#dialogPrintAcceptance').jqxWindow({ 
     autoOpen: false, title: 'Επιλογές Εκτύπωσης.', isModal: true, 
     //keyboardNavigation: true, 
     keyboardCloseKey: 13, showAnimationDuration: 600, //closeAnimationDuration: 200,
@@ -188,42 +284,104 @@ $('#dialogPrint').jqxWindow({
 });        
 
 // Dialogue > Event
-$("#dialogPrint").on('open', function () {
-    $("#jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
-    $("#jqxdatetimeinputDate").val(null);
+$("#dialogPrintAcceptance").on('open', function () {
+    $("#dialogPrintAcceptance #jqxcomboboxLesson").jqxComboBox('selectIndex', -1 );
+    $("#dialogPrintAcceptance #jqxdatetimeinputDate").val(null);
     
 });
 
-///////////////////
-// Dialogue > input
-///////////////////
+// Dialogue > Buttons
+// Button > No > Event (ID ascendants used here)
+$( '#dialogPrintAcceptance #buttonCancel' ).click(function () {
+    $( '#dialogPrintAcceptance' ).jqxWindow('close');
+});
+
+// Button > Yes > Event
+$( '#dialogPrintAcceptance #buttonPrint' ).click(function (event) {
+    var url = $('#printLink').val();
+    var qstring = $("#dialogPrintAcceptance :input[value!='']").serialize() 
+    //alert(url + '?' + qstring) ;
+    window.location.href = url + '?' + qstring ;        
+    $( "#dialogPrintAcceptance" ).jqxWindow('close');
+});
+
+
+
+
+
+/////////////////////////
+//Dialogue PRINT Barcode
+/////////////////////////                
+$('#dialogPrintBarcode').jqxWindow({ 
+    autoOpen: false, title: 'Εκτύπωση Barcodes', isModal: true, 
+    keyboardNavigation: true, 
+    keyboardCloseKey: 13, showAnimationDuration: 600, //closeAnimationDuration: 200,
+    resizable: false, modalOpacity: 0.8, 
+    //position: { x: parseInt($("#jqxgridGrader").offset().left) + 60, y: parseInt($("#jqxgridGrader").offset().top) + 60,}, 
+    width: 'auto', height: 'auto',
+});        
+
+// Dialogue > Event
+$("#dialogPrintBarcode").on('open', function () {
+    $("#dialogPrintBarcode #jqxcomboboxLesson2").jqxComboBox('selectIndex', -1 );
+    $("#dialogPrintBarcode [name=codeType]").val(["0"]);    //instead of $("#codeType").val(0);
+    $("#dialogPrintBarcode #fromNo").val('');
+    $("#dialogPrintBarcode #toNo").val('');
+});
+
+
 // Dialogue > Buttons
 // Button > No > Event
-$( '#buttonCancel' ).click(function () {
-    $( '#dialogPrint' ).jqxWindow('close');
+$( '#dialogPrintBarcode #buttonCancel' ).click(function () {
+    $( '#dialogPrintBarcode' ).jqxWindow('close');
 });
 // Button > Yes > Event
-$( '#buttonPrint' ).click(function (event) {
-    var url = $('#printLink').val();
-    //var LessonID = $("#jqxcomboboxLesson").jqxComboBox('val');
-    //var dateFrom = $("#jqxdatetimeinputDate").val();    
-    //var qstring1 = (LessonID == '' ? '' : '?LessonID=' + LessonID );
-    //var qstring2 = (dateFrom == '' ? '' : 'dateFrom=' + dateFrom );
-    // eliminate empty fields and serialize 
-    var qstring = $("#formPrint :input[value!='']").serialize() 
-    //var qstring = $('#formPrint').serialize();
-    //alert(qstring);
-    window.location.href = url + '?' + qstring ;    
-    //window.location.href = "Posts?Category=" + sel;
-    /*
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.send();
-    */    
-    $( "#dialogPrint" ).jqxWindow('close');
+$( '#dialogPrintBarcode #buttonPrint' ).click(function (event) {
+    $('#dialogPrintBarcode #formPrint').jqxValidator('validate');    
 });
 
 
+////////////////////////////
+// form > jqxValidator
+////////////////////////////
+$('#dialogPrintBarcode #formPrint').jqxValidator( { 
+    rules: [
+                
+        { input: '#fromNo', message: 'Nα είναι ακέραιος!', 
+        rule: function (input, commit) {
+            var fromNo = $('#fromNo').val();
+            if ( ($.isNumeric(fromNo)) || (fromNo == '') ) return true; else return false;
+            }
+        },
+        
+        { input: '#toNo', message: 'Nα είναι ακέραιος!', 
+        rule: function (input, commit) {
+            var toNo = $('#toNo').val();
+            if ( ($.isNumeric(toNo)) || (toNo == '') ) return true; else return false;
+            }
+        },
+        
+    ],  //rules 
+ 
+    onSuccess: function () { 
+        var url = $('#printLink').val();
+        var LessonID = $("#dialogPrintBarcode #jqxcomboboxLesson2").jqxComboBox('val');
+        //var buttonClicked = clickedButton[0].id;    
+        var qstring  = $('#dialogPrintBarcode #formPrint').serialize();
+        qstring  = qstring  + (LessonID == '' ? '' : '&LessonID=' + LessonID );
+        //alert (qstring);
+        window.location.href = url + '?' + qstring ;    
+        
+        $( "#dialogPrintBarcode" ).jqxWindow('close');
+
+        //console.log("Success");
+        //alert('Success!'); 
+    },//onSuccess
+    onError: function () { 
+        console.log("Failed!");
+        alert('Failed!'); 
+    }, 
+} );
 
 
 

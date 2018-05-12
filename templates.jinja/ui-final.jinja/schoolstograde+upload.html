@@ -197,7 +197,12 @@ var sourceSchoolToGrade = {
         {name: 'ddeCode', type: 'string' },
         {name: 'ddeName', type: 'string' },
         {name: 'type', type: 'integer' }, // number, 
-        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },                
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+        //2018
+        {name: 'address', type: 'string' }, 
+        {name: 'city', type: 'string' },
+        {name: 'tk', type: 'string' },
+
         {name: 'status', type: 'string' },
     ],
 };
@@ -211,13 +216,16 @@ $("#jqxgridSchoolToGradeCheck").jqxGrid({
         { text: "Όνομα", datafield: 'name',  width: '15%' },
         { text: "Κωδ.ΔΔΕ", datafield: 'ddeCode', width: '10%' },
         { text: "ΔΔΕ", datafield: 'ddeName', width: '20%' },
-        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'30%', 
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', width:'10%', 
             createeditor: function (row, value, editor) {
                 editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
             }, // createeditor
             //aggregates: ['count'],
         },
         
+        { text: "Δ-νση", datafield: 'address',  width: '20%' },
+        { text: "Πόλη", datafield: 'city',  width: '10%' },
+        { text: "ΤΚ", datafield: 'tk',  width: '5%' },
         { text: "Κατάσταση", datafield: 'status', editable: false, filtertype: 'input', width: '10%' },
         //return '<div style="text-align: center; margin-top: 7px;"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></div>'        
     ], 

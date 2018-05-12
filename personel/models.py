@@ -126,7 +126,7 @@ class School(models.Model):
     stype = models.IntegerField(choices=SCHOOL_TYPE)
     
     #UPD:2018-05
-    address = models.CharField(max_length=32, default='')
+    address = models.CharField(max_length=48, default='')
     city = models.CharField(max_length=32, default='')
     tk = models.CharField(max_length=6, default='')
 
@@ -162,6 +162,11 @@ class SchoolToGrade (models.Model):
     #DDE
     ddeCode = models.SmallIntegerField(null=True)      # Na allaxei se Int
     ddeName = models.CharField(max_length=64, blank=True, null=True)
+
+    #UPD:2018-05
+    address = models.CharField(max_length=48, default='')
+    city = models.CharField(max_length=32, default='')
+    tk = models.CharField(max_length=6, default='')
 
     def __unicode__(self):
         return "%s %s" %(self.SCHOOL_TYPE[type], self.name)

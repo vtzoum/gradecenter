@@ -140,6 +140,27 @@
       </div>
 
       <div class="form-group">
+        <label class="control-label col-sm-3" for="type">Δ-νση:</label>
+        <div class="col-sm-6">
+            <div id="address" class="form-control" placeholder="Δ-νση"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="type">Πόλη:</label>
+        <div class="col-sm-6">
+            <div id="city" class="form-control" placeholder="Πόλη"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="type">ΤΚ:</label>
+        <div class="col-sm-6">
+            <div id="tk" class="form-control" placeholder="ΤΚ"></div>
+        </div>
+      </div>
+
+
+      <div class="form-group">
         <div class="col-sm-offset-3 col-sm-9">
           <button id="buttonDialogAddSchoolToGradeYes" class="btn btn-primary" >OK</button> 
           <button id="buttonDialogAddSchoolToGradeNo" class="btn btn-default" >Άκυρο</button>
@@ -192,6 +213,10 @@ var sourceSchoolToGrade = {
         {name: 'name', type: 'string' },
         {name: 'ddeCode', type: 'string' },
         {name: 'ddeName', type: 'string' },
+        //2018
+        {name: 'address', type: 'string' }, 
+        {name: 'city', type: 'string' },
+        {name: 'tk', type: 'string' },
         //{name: 'type'},
         {name: 'type', type: 'integer' }, // number, 
         {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
@@ -272,16 +297,21 @@ $("#jqxgridSchoolToGrade").jqxGrid({
     source: dataAdapterSchoolToGrade,
     columns: [ //columntype: 'textbox', 
         { text: 'id', datafield: 'id', hidden: true },
-        { text: 'Kωδικός', datafield: 'code', filtertype: 'input', width: '10%', },
+        { text: 'Kωδικός', datafield: 'code', filtertype: 'input', width: '5%', },
         { text: "Όνομα", datafield: 'name',  filtertype: 'input',  }, //width: '30%',
-        { text: "Κωδ.ΔΔΕ", datafield: 'ddeCode', columntype: 'textbox', filtertype: 'checkedlist', width: '10%', }, //filtertype: 'input', 
-        { text: "ΔΔΕ", datafield: 'ddeName', filtertype: 'input', width: '20%', },
-        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', filtertype: 'checkedlist', width:'15%', 
+        { text: "Κωδ.ΔΔΕ", datafield: 'ddeCode', columntype: 'textbox', filtertype: 'checkedlist', width: '5%', }, //filtertype: 'input', 
+        { text: "ΔΔΕ", datafield: 'ddeName', filtertype: 'input', width: '15%', },
+        { text: "Τύπος", datafield: 'type', displayfield: 'lexType', columntype: 'dropdownlist', filtertype: 'checkedlist', width:'10%', 
             createeditor: function (row, value, editor) {
                 editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
             }, // createeditor
             aggregates: ['count'], 
         },
+
+        { text: "Δ-νση", datafield: 'address',  width: '15%' },
+        { text: "Πόλη", datafield: 'city',  width: '10%' },
+        { text: "ΤΚ", datafield: 'tk',  width: '5%' },
+        
         /*
         { text: 'Edit', editable: false, columntype: 'button', width: '5%', 
             cellsrenderer: function () {
@@ -354,7 +384,7 @@ $("#jqxgridSchoolToGrade").jqxGrid({
 ////////////////////////////////              
 //$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
 $( '#buttonAddSchoolToGrade' ).click(function (event) {
-    $("#code, #name, #ddeCode, #ddeName, #type").val(''); 
+    $("#code, #name, #ddeCode, #ddeName, #type, #address, #city, #tk", ).val(''); 
     //$("#jqxgridSchoolToGrade").jqxGrid({disabled:true});
     $( '#dialogAddSchoolToGrade').jqxWindow('open');
 });
@@ -424,6 +454,7 @@ $("#ddeCode").jqxComboBox({
 $("#code, #name").jqxInput();
 $("#ddeCode").jqxDropDownList({ source: dataAdapterDDETable, selectedIndex: 0, });
 $("#type").jqxDropDownList({ source: ArraySchoolToGradeSchoolType, selectedIndex: 0, });
+$("#address, #city, #tk").jqxInput();
 //$("#addWinRowButton").jqxButton({ theme: theme, width: 210, height: 40 });
 //$("#code, #ddeCode").width(50); $("#name, #ddeName").width(150);
 //$("#price").jqxNumberInput({ spinMode: 'simple', symbol: '$', width: 150, min: 0, height: 23, spinButtons: true });
@@ -435,6 +466,7 @@ $('#buttonDialogAddSchoolToGradeYes, #buttonDialogAddSchoolToGradeNo').jqxButton
 // Event > Dialogue
 $( '#dialogAddSchoolToGrade' ).on('open', function () {
     $("#code, #name").val('');
+    $("#address, #city, #tk").val('');
     $("#ddeCode").jqxDropDownList({ selectedIndex: 0, });
     $("#type").jqxDropDownList({ selectedIndex: 0, });
 });
@@ -531,10 +563,15 @@ $('#formAddSchoolToGrade').jqxValidator( {
         // set record values
         var code = $("#code").val();
         var name = $("#name").val(); 
+    
+        var address = $("#address").val(); 
+        var city = $("#city").val(); 
+        var tk = $("#tk").val(); 
+        
         var indexDDE = $("#ddeCode").jqxDropDownList('getSelectedIndex'); 
         //var indexDDE = 230; 
         var indexType = $("#type").jqxDropDownList('getSelectedIndex'); 
-        var newrow = { code: code, name: name, ddeCode: indexDDE, ddeName: 'NotUsed', type: indexType, };
+        var newrow = { code: code, name: name, ddeCode: indexDDE, ddeName: 'NotUsed', type: indexType, address:address, city:city , tk:tk};
         $( "#jqxgridSchoolToGrade" ).jqxGrid('addrow', null, newrow);
         $( "#dialogAddSchoolToGrade" ).jqxWindow('close');   
         console.log("Success");

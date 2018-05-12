@@ -10,15 +10,13 @@ def initial_data(apps, schema_editor):
     # We can't import the XXX model directly as it may be a newer
     from django.contrib.auth.models import User, Group
     # version than this migration expects. We use the historical version.
-    
+ 
 
     #Person = apps.get_model("yourappname", "Person")    
     #Group = apps.get_model("bk043", "Group")    
     #User = apps.get_model("bk043", "User")    
     
-    # SUPERUSER
-    User.objects.create_superuser('admin', 'myuser@mydomain.com', 'admin')
-
+    
     ######################################
     #GROUPS
     #g = Group.objects.get(name='groupname') 
@@ -28,7 +26,10 @@ def initial_data(apps, schema_editor):
         obj, created = Group.objects.get_or_create(name=n)
         #g = Group.objects.create(name=n)
 
-    #USERS
+    # SUPERUSER
+    User.objects.create_superuser('admin', 'myuser@mydomain.com', 'admin')
+
+    #OTHER USERS
     #user = User.objects.create(username="username", password = "password", email="email")
     #u1 = User.objects.create(name="tzoumak")
     #user = User.objects.get(username="username")
@@ -36,25 +37,25 @@ def initial_data(apps, schema_editor):
     #user.save()
 
     #USERS+BATCH
-    usernames=['u1','u2','u3','u4','u5']
+    usernames=['uA1','uA2','uF1','uF2',]
     for name in usernames:
         u1 = User.objects.create(username=name, password="1234")
-
+    """
     usernames=['u1','u2','u3','u4','u5']
     for name in usernames:
         User.objects.get(username=name).set_password('1234'+name)
-
+    """
 
     #USERS+BATCH+LIST
     userList=[ 
             #{'name':'tzoumak', 'passw':'1234', 'group':'Admin', 'staff': True},
-            {'name':'u1', 'passw':'1234', 'group':'Apothiki', 'staff': False},
-            {'name':'u2', 'passw':'1234', 'group':'Apothiki', 'staff': False},
-            {'name':'u3', 'passw':'1234', 'group':'Filaxi', 'staff': False},
-            {'name':'u4', 'passw':'1234', 'group':'Filaxi', 'staff': False},
+            {'name':'Gramm1', 'passw':'1234', 'group':'Grammateia', 'staff': True},
+            {'name':'uA1', 'passw':'1234', 'group':'Apothiki', 'staff': False},
+            {'name':'uA2', 'passw':'1234', 'group':'Apothiki', 'staff': False},
+            {'name':'uF1', 'passw':'1234', 'group':'Filaxi', 'staff': False},
+            {'name':'uF2', 'passw':'1234', 'group':'Filaxi', 'staff': False},
             ]
     for u in userList:
-        #username
         objUser, createdUser = User.objects.get_or_create(username=u['name'])
         print createdUser, objUser
         #update
@@ -77,10 +78,8 @@ class Migration(migrations.Migration):
         ('personel', '0087_auto_20180506_0807'),
     ]
 
-
-    operations = [
-        migrations.RunPython(initial_data),
-    ]
+    
+    operations = [ migrations.RunPython(initial_data),  ]
 
 
 

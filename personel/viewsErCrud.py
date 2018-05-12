@@ -347,11 +347,16 @@ def jsonSchoolToGradeCrud(request):
             ddeCode = request.POST.get('ddeCode', None)
             ddeName = request.POST.get('ddeName', None)
             type = request.POST.get('type', None)
-            print code , name,  ddeCode, ddeName, type 
+            #2018
+            address = request.POST.get('address', None)
+            city = request.POST.get('city', None)
+            tk = request.POST.get('tk', None)
+
+            #print code , name,  ddeCode, ddeName, type 
                     
             try:    #with transaction.atomic():
                 #record = SchoolToGrade(code = code , name = name, ddeCode = ddeCode, ddeName= ddeName, type = type)
-                record = SchoolToGrade(code = code , name = name, ddeCode = ddeCode, type = type)
+                record = SchoolToGrade(code = code , name = name, ddeCode = ddeCode, type = type, address=address, city=city, tk=tk, )
                 record.save()
                 msg = "Επιτυχής εισαγωγή εγγραφής!"                 
                 helperMessageLog(request, msg, tag='info')
@@ -385,10 +390,14 @@ def jsonSchoolToGradeCrud(request):
             ddeCode = request.POST.get('ddeCode', None)
             ddeName = request.POST.get('ddeName', None)
             type = request.POST.get('type', None)
+            address = request.POST.get('address', None)
+            city = request.POST.get('city', None)
+            tk = request.POST.get('tk', None)
 
             try:
                 record = SchoolToGrade.objects.filter(id=id)
-                record.update( code = code , name = name, ddeCode = ddeCode, ddeName = ddeName, type = type )
+                record.update( code = code , name = name, ddeCode = ddeCode, ddeName = ddeName, type = type,\
+                        address=address, city=city, tk=tk, )
                 msg = "Επιτυχής τροποποίηση εγγραφής!"                 
                 helperMessageLog(request, msg, tag='info')
             except DatabaseError:
