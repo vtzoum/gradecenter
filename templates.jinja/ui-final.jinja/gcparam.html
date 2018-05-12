@@ -1,0 +1,277 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    GCPARAMS-JN
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+<!-- AJAXMessages Box -->
+<div id="jsonMessages"></div>
+
+<!-- Data -->
+<div class="row no-margin-bottom">
+
+<!-- <div class="row"> reduces margin -->
+<div class="col-lg-12">
+    <div class="panel panel-primary fresh-color">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> GCPARAMS </h3>
+        </div>
+        <div class="panel-body">
+
+        <!-- *****************************************-->
+        <!--                Dialogue NEW              -->
+        <!-- *****************************************-->
+            <!-- Start FORM ADD -->
+            <!-- form action="javascript:void(0);" is for action=none -->
+            <form class="form-horizontal" id="formGCParameters" action="javascript:void(0);" >
+            {% csrf_token %}
+
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="name">ΚΕΝΤΡΟ-Όνομα:</label>
+                <div class="col-sm-7">
+                    <input name="name" id="name" type="text" class="form-control" placeholder="Όνομα" value="{{data.name}}">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="name">ΠΡΟΕΔΡΟΣ-Άρθρο:</label>
+                <div class="col-sm-1">
+                    <input name="article" id="article" class="form-control" placeholder="" value="{{data.article}}">
+                </div>
+              
+                <label class="control-label col-sm-1" for="name">Όνομα :</label>
+                <div class="col-sm-2">
+                    <input name="presidentName" id="presidentName" class="form-control" placeholder="" value="{{data.presidentName}}">
+                </div>
+
+                <label class="control-label col-sm-1" for="name">Επίθετο :</label>
+                <div class="col-sm-2">
+                    <input name="presidentSurname" id="presidentSurname" class="form-control" placeholder="" value="{{data.presidentSurname}}">
+                </div>
+              </div>
+                  
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="type">Δ/ΝΣΗ ΚΕΝΤΡΟΥ - Τηλ:</label>
+                <div class="col-sm-2">
+                    <input name="phone" id="phone" class="form-control" placeholder="" value={{data.phone}}>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="type">ΠΑΡΑΜΕΤΡΟΙ - Γραπτά / Φάκελο:</label>
+                <div class="col-sm-1">
+                    <input name="folderBooks" id="folderBooks" class="form-control" placeholder="" value={{data.folderBooks}}>
+                </div>
+
+                <label class="control-label col-sm-2" for="type">Ελάχιστα Γραπτά / Φάκελο:</label>
+                <div class="col-sm-1">
+                    <input name="minFolderBooks" id="minFolderBooks" class="form-control" placeholder="" value={{data.minFolderBooks}}>
+                </div>
+              </div>
+
+            <!--
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="type">Δ-νση:</label>
+                <div class="col-sm-6">
+                    <div id="address" class="form-control" placeholder="Δ-νση" ></div>
+                    <input id="name" class="form-control" placeholder="Όνομα" value={{data.name}}>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="type">Πόλη:</label>
+                <div class="col-sm-6">
+                    <input id="city" class="form-control" placeholder="Πόλη" value={{data.name}}>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="control-label col-sm-3" for="type">ΤΚ:</label>
+                <div class="col-sm-6">
+                    <input id="tk" class="form-control" placeholder="ΤΚ" value={{data.name}}>
+                </div>
+              </div>
+            -->
+
+            
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                  <button id="buttonOK" class="btn btn-primary" >OK</button> 
+                  <button id="buttonCancel" class="btn btn-default" >Άκυρο</button>
+                </div>
+              </div>
+
+            <!-- End FORM -->
+            </form>
+
+        </div>
+        <!-- ./body -->
+    </div>
+    <!-- ./panel -->
+
+</div>
+<!-- x/y.col  -->
+
+</div>
+<!-- /.row -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+// Handle Ajax messages
+helperAjaxMessagesProcess();
+
+var aggregateData = null;
+
+// Buttons 
+$( '#buttonOK' ).click(function (event) {
+    //$("#code, #name, #ddeCode, #ddeName, #type, #address, #city, #tk", ).val(''); 
+});
+$( '#buttonCancel' ).click(function (event) {
+    //$("#jqxgridSchoolToGrade").jqxGrid({ source: dataAdapterSchoolToGrade });
+});
+
+
+// Event > Button > Yes
+$( '#buttonOK' ).click(function (event) {    
+    $('#formGCParameters').jqxValidator('validate');
+    //event.preventDefault();
+});
+
+
+
+////////////////////////////
+//Form ADD > jqxValidator
+////////////////////////////
+var msgCode = '-';
+$('#formGCParameters').jqxValidator( { 
+    //hintType: 'label',
+    //rule: 'required',  'length=4,12'  
+    rules: [            
+        // Na dw pali 
+        /*
+        { input: '#name', 
+        action: 'valueChanged',    //'keyup', 
+        message: msgCode,
+        rule: function (input, commit) {
+            var checkVal = $('#code').val();
+            var pass = true; 
+            var msgCode='Ο κωδικός υπάρχει ήδη!';
+            if (checkVal == '') {
+                msgCode = 'Κενός κωδικός!';
+                return false;
+            }
+            var data = dataAdapterSchoolToGrade.records;
+            for (var i=0; i < data.length; i++ ) {
+                if (checkVal == data[i].code) {
+                    msgCode = 'Ο κωδικός υπάρχει ήδη!';
+                    return false;
+                    break;
+                }
+            } 
+        }, //rule
+        }, //#code
+        */
+        { input: '#name', 
+        action: 'valueChanged',    //'keyup', 
+        rule: 'required',     
+        message: 'To όνομα είναι κενό!',
+        },
+
+        { input: '#article', 
+        action: 'valueChanged',    //'keyup', 
+        rule: 'required',     
+        message: 'To άρθρο είναι υποχρεωτικό!',
+        },
+        
+        { input: '#presidentName', 
+        action: 'valueChanged',    //'keyup', 
+        rule: 'required',     
+        message: 'To όνομα είναι υποχρεωτικό!',
+        },
+        
+        { input: '#presidentSurname', 
+        action: 'valueChanged',    //'keyup', 
+        rule: 'required',     
+        message: 'To Επίθετο είναι υποχρεωτικό!',
+        },
+        /*      
+                
+        */
+        { input: '#folderBooks', 
+        message: 'To Πλήθος Τετραδίων / Φάκελο να είναι ακέραιος!',
+        rule: function (input, commit) {
+            var minFolderBooks = $('#minFolderBooks').val();
+            if ( ($.isNumeric(minFolderBooks)) || (minFolderBooks == '') ) return true; else return false;
+            }
+        },
+
+        { input: '#minFolderBooks', 
+        message: 'To Ελάχιστο Πλήθος Τετραδίων / Φάκελο να είναι ακέραιος!',
+        rule: function (input, commit) {
+            var minFolderBooks = $('#minFolderBooks').val();
+            if ( ($.isNumeric(minFolderBooks)) || (minFolderBooks == '') ) return true; else return false;
+            }
+        },
+    
+    ],  //rules 
+ 
+    onSuccess: function () { 
+        //var buttonClicked = clickedButton[0].id;    
+        var qstring  = $('#formGCParameters').serialize();
+        //qstring  = qstring ;
+        alert (qstring);        
+        //var formData    =    $('#formGCParameters').find('#form-group:input') . serialize();
+        //alert (formData);        
+        //console.log((qstring));
+        //alert('Success!'); 
+        
+        $.ajax({
+            method: 'POST', 
+            url: '/gcparam/', 
+            data: qstring,
+            dataType: 'json',
+            cache: false,
+            success: function (response, status, xhr) {
+                //commit(true);// update command is executed.
+                alert('POST Success!'); 
+                console.log(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                //commit(false);
+            }
+        });//.ajax
+
+    },//onSuccess
+
+    onError: function () { 
+        console.log("Failed!");
+        alert('Failed!'); 
+    }, 
+
+}); 
+
+
+/*
+*/
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+
+
+
+

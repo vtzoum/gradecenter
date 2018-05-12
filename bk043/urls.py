@@ -99,7 +99,6 @@ urlpatterns = [
     #################################
     url(r'^/static/(?P<path>.*)$', never_cache(serve_static)), #disable caching
 
-
     
     #################################
     # user profile
@@ -155,6 +154,10 @@ urlpatterns = [
     #################################
     # final > ui
     #################################
+    #url(r'^gcparam/$', TemplateView.as_view(template_name='ui-final.jinja/gcparam.html')),    
+    url(r'^gcparam/$', personel.views.gcparam),
+
+    
     url(r'^about/$', TemplateView.as_view(template_name='ui-final.jinja/about.html')),    
     #RELATIONSHIP(M:N)        
     url(r'^acceptance/$', staff_or_403(TemplateView.as_view(template_name='ui-final.jinja/acceptance.html'))),    

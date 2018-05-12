@@ -16,7 +16,69 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 #from django.contrib.auth.models import User
+
+from models import *
 from helpScripts import *
+
+
+
+
+#########################################
+# Page Views
+#########################################
+#@csrf_exempt
+#def ajax_data(request):
+def gcparam(request):    
+        
+    #x = request.POST.get('postData', 'You submitted nothing!')
+    #lx = request.POST.getlist('postData')        
+    if request.is_ajax() and request.method == 'POST':
+
+        name = request.POST.get('name', None)
+        article = request.POST.get('article', None)
+        presidentName = request.POST.get('presidentName', None)
+        presidentSurname = request.POST.get('presidentSurname', None)        
+        
+        phone = request.POST.get('phone', None)
+        
+        folderBooks = request.POST.get('folderBooks', None)
+        minFolderBooks = request.POST.get('minFolderBooks', None)
+        #maxActionDuration = request.POST.get('postData', None)
+
+        #print name, article,  presidentName, presidentSurname 
+        
+        try:
+            id = GradeCenterInfo.objects.latest('id').id
+            record = GradeCenterInfo.objects.filter(id=id)
+            record.update( name=name, article=article,  presidentName=presidentName, presidentSurname=presidentSurname, \
+                phone = phone, \
+                folderBooks = folderBooks, minFolderBooks = minFolderBooks,
+            )
+            #address=address, city=city, tk=tk, )
+            msg = "Επιτυχής τροποποίηση εγγραφής!"                 
+            helperMessageLog(request, msg, tag='info')
+        except DatabaseError:
+            transaction.rollback()   
+            msg = "Αδυναμία τροποποίησης εγγραφής!"
+            helperMessageLog(request, msg, tag='error')
+        
+        return HttpResponse(json.dumps({'msg':msg}), content_type='application/json')
+        #dictData = {'name': name, "msg":"Hello"}
+        #jsonData = json.dumps(dictData)
+        #print jsonData
+        #return HttpResponse(jsonData, content_type='application/json')
+
+
+    if request.method == 'GET':
+        id = GradeCenterInfo.objects.latest('id').id
+        data = GradeCenterInfo.objects.filter(id=id)[0]
+        html = render(request, 'ui-final.jinja/gcparam.html', {'data': data, "msg":"Hello"})
+        return HttpResponse(html)
+
+    else:
+        raise Http404    
+        #data = 'UNKNOWN REQUEST!'    
+
 
 
 #########################################

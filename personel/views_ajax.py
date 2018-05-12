@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from personel.models import * 
 
 
+
 """ ajaxForm POST | returns JSON response """
 def formPost(request):
 
