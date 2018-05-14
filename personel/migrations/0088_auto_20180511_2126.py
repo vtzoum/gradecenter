@@ -4,11 +4,11 @@ from __future__ import unicode_literals
 from django.db import migrations
 
 # vtzoum here
-#from personel.models import * 
+from django.contrib.auth.models import User, Group
+from personel.models import GradeCenterInfo
 
 def initial_data(apps, schema_editor):
     # We can't import the XXX model directly as it may be a newer
-    from django.contrib.auth.models import User, Group
     # version than this migration expects. We use the historical version.
  
 
@@ -67,9 +67,9 @@ def initial_data(apps, schema_editor):
         objUser.groups.add(objGroup)
         #group = Group.objects.get(name=u['group']) 
 
-
-
-
+        gc1 = GradeCenterInfo.objects.create(folderBooks=25, minFolderBooks=4, maxActionDuration=3,\
+                name='43ο Β.Κ. ΑΙΤ-ΝΙΑΣ', article='ο', presidentName='Όνομα', presidentSurname='Επίθετο',\
+                phone='26410 00000')
 
 
 class Migration(migrations.Migration):

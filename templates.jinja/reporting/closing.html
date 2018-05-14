@@ -21,7 +21,8 @@
     <div class="col-xs-2"> <!-- /reporting/pdf/school/... -->         
      <h3 class="info">A.Σχολείων</h3>
      <a id="printSchoolLabels" href="/reporting/pdf/school/labels/" class="btn btn-sm btn-primary" role="button">Ετικέττες Σχολείων</a>
-     <a id="printSchoolCoverLetter" href="/reporting/pdf/school/coverletter/" class="btn btn-sm btn-primary" role="button">Διαβιβαστικό Σχολείων</a>
+     <a id="printSchoolCoverLetter" href="/reporting/pdf/school/coverletter/" class="btn btn-sm btn-primary" role="button">Διαβιβαστικό Σχολείων(PDF)</a>
+     <a id="printSchoolCoverLetter" href="/reporting/doc/school/coverletter/" class="btn btn-sm btn-primary" role="button">Διαβιβαστικό Σχολείων(DOC)</a>
    </div>
 
     
@@ -190,6 +191,7 @@ $( '#buttonPrint' ).click(function (event) {
 // form > jqxValidator
 ////////////////////////////
 $('#formPrint').jqxValidator( { 
+    /*
     rules: [
                 
         { input: '#fromNo', message: 'Nα είναι ακέραιος!', 
@@ -207,7 +209,7 @@ $('#formPrint').jqxValidator( {
         },
         
     ],  //rules 
- 
+    */
     onSuccess: function () { 
         var url = $('#printLink').val();
         var SchoolToGradeID = $("#jqxcomboboxSchoolToGrade").jqxComboBox('val');

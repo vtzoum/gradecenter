@@ -179,7 +179,7 @@ def docSchoolCoverLetter(request):
     #pdf = doPDFSchoolCoverLetter(buffer, data, LetterCode=1)
 
     #DOC part 
-    docx_data = doDocxTest(data, school)
+    docx_data = doDocSchoolCoverLetter(data)
 
     #Response part
     #filename = 'Letters' + today.strftime('%Y-%m-%d')    

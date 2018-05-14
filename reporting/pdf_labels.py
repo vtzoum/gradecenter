@@ -131,16 +131,19 @@ def doPDFSchoolLabels(buffer, dataDB, lesson=None):
                     leftIndent=16, leading=6, spaceBefore=0, spaceAfter=8,)
             pageTexStyleTag = ParagraphStyle(name="pageTexStyleExplain", alignment=TA_LEFT, fontSize=14, 
                     leftIndent=16, spaceBefore=4, spaceAfter=0,)
-            parag.append(Paragraph('title_text', pageTexStyleHead))
+            #parag.append(Paragraph('title_text', pageTexStyleHead))
             
             schoolName =  recs[count].name
             schoolCode=  recs[count].code
             schoolDDE=  recs[count].ddeName
             #tag1 = u"%s ΦΑΚΕΛΟΣ: %s"  %(valType, str(valNo))            
                         
-            parag.append(Paragraph(schoolName, pageTexStyleTag))
-            parag.append(Paragraph(schoolCode, pageTexStyleTag))
             parag.append(Paragraph(schoolDDE, pageTexStyleTag))
+            parag.append(Paragraph(schoolName, pageTexStyleTag))
+            parag.append(Paragraph(recs[count].address, pageTexStyleTag))
+            parag.append(Paragraph(recs[count].city+' ' +recs[count].tk, pageTexStyleTag))
+
+            #tag1 = uvalType, str(valNo))            
             parag.append(Spacer(width=32, height=10))
 
             dataRow.append(parag)

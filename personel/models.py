@@ -52,7 +52,9 @@ FOLDER_TYPE = ( (0, u'Φ(Α)'), (1, u'Φ(Β)'),(2, u'Φ(ΑΝΑ)'), )
 #UPD: 2018-04
 ###################################
 """
-
+FIELDS: [folderBooks, minFolderBooks, maxActionDuration, 
+name, article, presidentName, presidentSurname,     
+phone, ]
 """
 class GradeCenterInfo(models.Model):
 

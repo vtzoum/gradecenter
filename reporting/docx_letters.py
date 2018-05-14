@@ -33,17 +33,42 @@ from django.conf.urls.static import static
 from personel.models import *
 
 
-
 from docx import Document
-from docx.shared import Inches
+from docx.shared import Inches, Mm
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
 
 ################################################
 # HEADER
 ################################################
 """
 def doXlsHeader(workbook, worksheet, lesson=None):
+
+
 """
+
+
+def getGCInfo():
     
+    #title_cellspan='A1:C1' date_cellspan='G1:I1' report_title_cellspan='A2:I2' lesson_title_cellspan='A3:I3'
+
+    # Get formatters
+    """
+    topTitle_STYLE = workbook.add_format({ 'bold': True, 'font_size': 14, 'align': 'center', 'valign': 'vcenter'})
+    lesson_STYLE = workbook.add_format({ 'bold': True, 'font_size': 14, 'align': 'center', 'valign': 'vcenter'})
+    date_STYLE = workbook.add_format({ 'bold': True, 'align': 'left', 'valign': 'vcenter'})
+    (title_STYLE, header_STYLE, cell_STYLE, cellC_STYLE, cellL_STYLE) = getWorkbookStyles(workbook)
+    """
+    # Header
+    id = GradeCenterInfo.objects.latest('id').id
+    gcinfo = GradeCenterInfo.objects.filter(id=id)[0]
+
+    #record.update( name, article,  presidentName, presidentSurname, phone, folderBooks, minFolderBooks, 
+    date_text =  datetime.now().strftime('%d/%m/%Y %H:%M')
+    
+    return gcinfo
+
+
 #########################################
 # DOCX Letters
 #########################################
@@ -93,55 +118,80 @@ def doDocxTest(dataDB, lesson=None):
 #########################################
 # DOCX Letters
 #########################################
-def doDocSchoolCoverLetter(dataDB, lesson=None):
+def doDocSchoolCoverLetter(dataDB):
     
     #global lesson_col_width    
     #output = StringIO.StringIO()    
     #document = Document(output)
     doc = Document()
+    section = doc.sections[0]
+    section.bottom_margin = Mm(10)
+    section.top_margin = Mm(10)
+    section.left_margin = Mm(10)
+    section.right_margin = Mm(10)
 
-    constGCName=settings.CONST_REPORTS_GCENTER_NAME
-    constGCPresdArticle=settings.CONST_REPORTS_GCENTER_PRESIDENT_ARTICLE
-    constGCPresdName=settings.CONST_REPORTS_GCENTER_PRESIDENT_NAME
-    constGCPresdSurname=settings.CONST_REPORTS_GCENTER_PRESIDENT_SURNAME
+    gcinfo = getGCInfo()
+
+    #record.update( name, article,  presidentName, presidentSurname, phone, folderBooks, minFolderBooks, 
+    constGCName=gcinfo.name
+    constGCPresdArticle=gcinfo.article
+    constGCPresdName=gcinfo.presidentName
+    constGCPresdSurname=gcinfo.presidentSurname
+    date_text =  datetime.now().strftime('%d/%m/%Y %H:%M')
     
     #docx_title=u'ΔΙΑΒΙΒΑΣΤΙΚΟ ΣΧΟΛΕΙΩΝ.docx'    
     
     # ---- Cover Letter ----
     #document.add_picture((r'%s/static/images/my-header.png' % (settings.PROJECT_PATH)), width=Inches(4))
-    doc.add_paragraph()
-    doc.add_paragraph("%s" % date.today().strftime('%B %d, %Y'))
-
+    #doc.add_paragraph()
+    #doc.add_paragraph("%s" % date.today().strftime('%B %d, %Y'))
     #logo = settings.STATIC_ROOT + "/static/images/" + "python_logo.png"    
     formatted_time = time.ctime()
-    
-    #Titles etc
-    document.add_heading(u'ΠΡΩΤΟΚΟΛΛΟ ΠΑΡΑΔΟΣΗΣ ΚΑΙ ΠΑΡΑΛΑΒΗΣ', 0)    
-    #document.add_heading('Heading, level 1', level=1)    
-    #document.add_paragraph('Intense quote', style='IntenseQuote')
-    
-    #List & Bullet paragaphs
-    #document.add_paragraph('first item in unordered list', style='ListBullet')
-    #document.add_paragraph('first item in ordered list', style='ListNumber')
-    
-    #Image
-    #document.add_picture('python.jpeg', width=Inches(1.25))
 
 
     #Rec.-based data
     row = 0 
-    for school in data:
+    for school in dataDB:
         #StoryDB = []        
         name = school.name
         ddeName = school.ddeName
         #print "%s %s %s %s" %(s.code, s.name, s.ddeCode, s.ddeName)
         #ptext2 = u'<font name="DejaVuSansMono"> Σήμερα %s ημέρα  %s και ώρα %s</font>' %(datetime.now(), datetime.now(), datetime.now())
-        text = u'Σήμερα ......... ημέρα ......... και ώρα .........'
-        text += u'o/η υπογραφόμενη/oς Πρόεδρος της Επιτροπής του %s' %(constGCName)
-        text += u'παρέδωσα στη Δ/νση Δ.Ε. %s' %(ddeName)
-        text += u'τα αποκόμματα, των γραπτών δοκιμίων και απουσιών, τις καταστάσεις βαθμολογίας '
-        text += u'των μαθητών της Γ΄Τάξης του %s που εξετάστηκαν στο %s.' %(name, constGCName)
-        doc.add_paragraph(text)
+
+        #Titles etc
+        doc.add_heading(constGCName, level=1)    
+        doc.add_heading(u'ΠΡΩΤΟΚΟΛΛΟ ΠΑΡΑΔΟΣΗΣ ΚΑΙ ΠΑΡΑΛΑΒΗΣ', 0)    
+        #doc.add_paragraph('Intense quote', style='IntenseQuote')        
+        #List & Bullet paragaphs
+        #doc.add_paragraph('first item in unordered list', style='ListBullet')
+        #doc.add_paragraph('first item in ordered list', style='ListNumber')        
+        #Image
+        #doc.add_picture('python.jpeg', width=Inches(1.25))
+
+        paragraph = doc.add_paragraph()
+        text = u'Σήμερα ............... ημέρα ............... και ώρα .............'
+        run = paragraph.add_run(text)
+        text = u'%s υπογραφόμεν%s Πρόεδρος της Επιτροπής του %s παρέδωσα στη ' %(constGCPresdArticle, constGCPresdArticle, constGCName)
+        run = paragraph.add_run(text)
+        text = u'Δ/νση Δ.Ε. %s ' %(ddeName)
+        run = paragraph.add_run(text)
+        run.bold = True
+        text = u'τα αποκόμματα, των γραπτών δοκιμίων και απουσιών, τις καταστάσεις βαθμολογίας '
+        run = paragraph.add_run(text)
+        text = u'των μαθητών της Γ΄Τάξης του Σχολείου με την Επωνυμία '
+        run = paragraph.add_run(text)
+        text = u'%s ' %(name)
+        run = paragraph.add_run(text)
+        run.bold = True
+        text = u'που εξετάστηκαν στο %s.' %(constGCName)
+        run = paragraph.add_run(text)
+        
+        """
+        p = doc.add_paragraph(text)
+        p.add_run('bold').bold = True
+        p.add_run(' and some ')
+        p.add_run('italic.').italic = True
+        """
         
         text = u'Ο αριθμός τους κατά μάθημα και κατεύθυνση φαίνεται στον παρακάτω πίνακα.'
         doc.add_paragraph(text)
@@ -172,20 +222,20 @@ def doDocSchoolCoverLetter(dataDB, lesson=None):
             row_cells[3].text = str(rec.booksZero)            
             part_sum = (rec.books + rec.booksAbscent + rec.booksZero)
             row_cells[4].text = str(part_sum)
-                        
 
-        #StoryDB.append(table)
 
-        #TABLE-stories put together
-        #Story +=  Story1 + StoryDB #+ Story2 
+        # President Signature
+        paragraph = doc.add_paragraph()
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        text = u'%s Πρόεδρος του %s' %(constGCPresdArticle, constGCName)
+        run = paragraph.add_run(text)
+        run.add_break()        
+        text = u'%s %s' %(constGCPresdName, constGCPresdSurname)
+        run = paragraph.add_run(text)
+        
+        #Page break        
         doc.add_page_break()
     
-    # create document
-    #doc.build(Story)
-    #pdf = buffer.getvalue()
-    #buffer.close()
-    #return pdf
-
 
     # Prepare document for download        
     # -----------------------------
