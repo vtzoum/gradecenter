@@ -1211,8 +1211,9 @@ function isValidUserSelection() {
         if ((bookingRS[i].GraderID_id==graderData.id) && (bookingRS[i].FolderID_id==folderData.id)) {
             showModalMyAlert("Ο Βαθμολογητής βαθμολόγησε ξανά τον ΙΔΙΟ Φάκελο!");
             console.log(bookingRS[i]);
+            return false;
         }
-    }
+    };
 
     /*
     To See coding again!

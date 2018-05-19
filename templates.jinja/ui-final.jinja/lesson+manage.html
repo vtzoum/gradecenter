@@ -20,13 +20,14 @@
 <div class="col-lg-12">
     <div class="panel panel-primary fresh-color">
         <div class="panel-heading">
-            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑTA </h3>
+            <span class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑTA </h3>
+            <button id="btnLessonReload" type='button' class='btn btn-info' style='float: right; margin: -5px 10px 0px 10px;width:110px;'><i class="fa fa-bar-chart-o fa-fw"></i>Ανανέωση </button>
         </div>
         <div class="panel-body">
         <!-- Status -->
         <div id='jqxLessonStatus' style="margin-bottom:5px;"></div>
         <!-- jqxGrid -->
-        <div id="jqxgridLesson"></div>
+        <div id="jqxgridLesson" class='table'></div>
         </div>
     </div>
 </div>
@@ -51,7 +52,7 @@ helperAjaxMessagesProcess();
 -jqxLoader
 ****************************/
 $("#jqxloaderAction").jqxLoader({ isModal: true, width: '10%', height: '10%', imagePosition: 'top' });
-/*        
+/*
 $('#jqxloaderAction').jqxLoader({  isModal: true, theme: 'energyblue', imagePosition: 'top', width: '80%', height: '80%', 
     html:'<div style="padding: 10px;"><div style="font-size: small;">Loading</div><div style="font-size: x-large;">jQWidgets</div></div>'});
 */
@@ -178,11 +179,11 @@ $("#jqxgridLesson").jqxGrid({
     showstatusbar:true, 
     showtoolbar:true, rendertoolbar: function (statusbar) {
 
-        var container = $("<div style='position: relative; margin: 5px; '></div>");
+        //var container = $("<div style='position: relative; margin: 5px; '></div>");
         var reloadButton = $("<button type='button' class='btn btn-primary' style='float: right; margin-right: 10px;'> Ανανέωση </button>");
         //var reloadButton = $("<div style='float: right; margin-left: 10px;'><span> Ανανέωση </span></div>");
-        container.append(reloadButton);
-        statusbar.append(container);
+        //container.append(reloadButton);
+        //statusbar.append(container);
         reloadButton.jqxButton();
         // reload grid data.
         reloadButton.click(function (event) {
@@ -213,6 +214,15 @@ $('#jqxgridLesson').on('rowselect', function (event) {      // .on('rowclick',
 });
 
 /****************************
+// Buttons 
+****************************/
+$( '#btnLessonReload' ).click(function (event) {
+    $("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
+});
+
+
+
+/****************************
 // make Status Buttons 
 // jqxButtonGroup widgets.
 ****************************/
@@ -220,16 +230,16 @@ $('#jqxgridLesson').on('rowselect', function (event) {      // .on('rowclick',
 
 function makeStatusButtons() {
 
-    $("#jqxLessonStatus").jqxButtonGroup();  //mode: 'default' 
+    $("#jqxLessonStatus").jqxButtonGroup({ width: '100%', theme: theme });  //mode: 'default' 
     
     for (var i = 0; i < ArrayLessonStatus2.length; i++) {
         /*
         $('#jqxLessonStatus').append('<button style="padding:4px 16px; height:40px;width:50px;" id=status-' 
             + i + '" class="foo">' + ArrayLessonStatus[i] + '</ button>');
         */
-        $('#jqxLessonStatus').append('<button style="font-size:11px; color:#333" id="jqxbuttonStatus-' 
+        $('#jqxLessonStatus').append('<button style="font-size:10px; color:#333; margin-right:0px; " id="jqxbuttonStatus-' 
                 + i + '" class="foo">' + ArrayLessonStatus2[i] + '</ button>');
-        $("#jqxbuttonStatus-" + i).jqxButton({ width: '10.25%', height: 23, theme: theme });
+        $("#jqxbuttonStatus-" + i).jqxButton({ width: '9%', height: 23, theme: theme });
     } 
 
     $("#jqxLessonStatus").jqxButtonGroup({ mode: 'checkbox' });  //mode: 'default' 
@@ -264,9 +274,9 @@ function setLessonStatusButtonUI (status) {
     
     // Handle < than buttonStatus
     for (var i = 0 ; i <= status; i++) {
-        $("#jqxbuttonStatus-" + i).jqxButton({ disabled: true, template: 'inverse', });
+        $("#jqxbuttonStatus-" + i).jqxButton({ disabled: true, template: 'default', });
     }
-    
+       
     //$("#jqxbuttonStatus-" + rowdata.status).jqxButton({ disabled: true, template: 'info', });
     // > than ststus 
     for (var i = ArrayLessonStatus2.length - 1; i > status+1; i--) {
@@ -281,7 +291,6 @@ $("#jqxLessonStatus").on('buttonclick', function (event) {
     var clickedButton = event.args.button;
     $("#eventsLog").html("Clicked: " + clickedButton[0].id);
     var buttonClicked = clickedButton[0].id;
-    
     
     var row = $('#jqxgridLesson').jqxGrid('getselectedrowindex');
     //console.log("ststus+grid-row1:"+row1);
@@ -346,13 +355,14 @@ $("#jqxLessonStatus").on('buttonclick', function (event) {
         }
     }); //.ajax
     
-     event.preventDefault();
-                                     console.log("Clicked: " + clickedButton[0].id);
+    event.preventDefault();
+    console.log("Clicked: " + clickedButton[0].id);
 });
 
 
 }); //doc.ready
 </script>
 {% endblock %}
+
 
 

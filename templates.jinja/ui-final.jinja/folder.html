@@ -491,9 +491,9 @@ $("#jqxgridFolder").jqxGrid({
         statusbar.append(container);
         addButton.jqxButton();
         reloadButton.jqxButton();
-        //addButton.jqxButton( {width: 60, height: 18} );
-        //reloadButton.jqxButton({  width: 65, height: 18 });
-        // add new row.
+        reloadButton.click(function (event) {
+            $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder });
+        });
         addButton.click(function (event) {
                 $("#dialogAddFolder").jqxWindow('open');
             /*    
@@ -512,16 +512,13 @@ $("#jqxgridFolder").jqxGrid({
                 
         });//add.button
         // reload grid data.
-        reloadButton.click(function (event) {
-            $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder });
-        });
     } //render toolbar
 
 });//Folder grid
 
 //$("#acceptanceReload").jqxButton({ height: 30 });
 $("#btnFolderReload").click(function (event) {
-    $("#jqxgridFolder").jqxGrid({ source: dataAdapterAcceptance });
+    $("#jqxgridFolder").jqxGrid({ source: dataAdapterFolder });
 });
 
 //$("#acceptanceReload").jqxButton({ height: 30 });

@@ -129,15 +129,15 @@ ArrayLessonStatus[7]= 'Check Grading';
 ArrayLessonStatus[8]= 'Complete Grading';
 
 var ArrayLessonStatus2 = [];
-ArrayLessonStatus2[0]= 'Αρχή';
-ArrayLessonStatus2[1]= 'Παραλαβή-Πρoετοιμασία';
-ArrayLessonStatus2[2]= 'Παραλαβή-Έναρξη';
-ArrayLessonStatus2[3]= 'Παραλαβή-Έλεγχος';
+ArrayLessonStatus2[0]= 'ΑΡΧΗ';
+ArrayLessonStatus2[1]= 'Παραλαβή-ΠΡΟ';
+ArrayLessonStatus2[2]= 'Παραλαβή-ΈNAΡΞΗ';
+ArrayLessonStatus2[3]= 'Παραλαβή-ΈΛΕΓΧΟΣ';
 ArrayLessonStatus2[4]= 'Παραλαβή-ΤΕΛΟΣ';
-ArrayLessonStatus2[5]= 'Βαθμολόγηση-Πρoετοιμασία ';
-ArrayLessonStatus2[6]= 'Βαθμολόγηση-Έναρξη';
-ArrayLessonStatus2[7]= 'Βαθμολόγηση-Έλεγχος';
-ArrayLessonStatus2[8]= 'Τέλος Βαθμολόγησης';
+ArrayLessonStatus2[5]= 'Βαθμολόγηση-ΠΡΟ';
+ArrayLessonStatus2[6]= 'Βαθμολ/ση-ΈNAΡΞΗ';
+ArrayLessonStatus2[7]= 'Βαθμολ/ση-ΈΛΕΓΧΟΣ';
+ArrayLessonStatus2[8]= 'Βαθμολόγηση-ΤΕΛΟΣ';
 
 ////////////////////////////
 //Function to get a url based on user.info

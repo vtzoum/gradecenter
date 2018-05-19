@@ -19,13 +19,15 @@ from django.views.generic import TemplateView
 
 from personel.decorators import *
 
-from .views import *
+from .views_docx import *
+from .views_pdf import *
+from .views_xlsx import *
 
 urlpatterns = [
 
     #SIMPLE
-    url(r'^home/$', home, name='home'),
-    url(r'^home/html/$', staff_or_403(homeHtml), name='homehtml'),
+    #url(r'^home/$', home, name='home'),
+    #url(r'^home/html/$', staff_or_403(homeHtml), name='homehtml'),
     url(r'^home/pdf/$', staff_or_403(homePdf), name='homepdf'),
     url(r'^home/xls/$', staff_or_403(homeXls), name='homexls'),
 

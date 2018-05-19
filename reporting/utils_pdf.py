@@ -53,15 +53,9 @@ from reportlab.lib.units import inch
 
 
 from django.conf import settings
+from django.conf.urls.static import static
 #from .settings import STATIC_ROOT
 from django.utils.translation import ugettext
-from .utils import get_temperatures, get_wind_speed, get_str_days,\
-    get_random_colors, precip_prob_sum, get_percentage
-legendcolors = get_random_colors(10)
-
-
-from django.conf import settings
-from django.conf.urls.static import static
 
 #print settings.STATIC_ROOT
 #pdfmetrics.registerFont(TTFont('FreeSans', settings.STATIC_ROOT + 'reporting/fonts/FreeSans.ttf'))
@@ -71,8 +65,9 @@ from django.conf.urls.static import static
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-from excel_utils import xlsTitle
 from personel.models import *
+
+from .utils import *
 
 ################################################
 # FONTS 
@@ -107,7 +102,7 @@ def createBarCodesv2(buffer, dataDB, lesson=None):
     #story = []
     
     # write title
-    lesson_text = xlsTitle(lesson)
+    lesson_text = reportTitle(lesson)
     title_text = u"{0}({1})-{2}".format(lesson_text, lesson.category[0:3], Lesson.lexLessonType(Lesson, lesson.type)[0:2])
     #title_text = u"{0} {1}".format(ugettext(u"ΜΑΘΗΜΑ"), lesson_text)
     #valLessonType = (Lesson.lexLessonType(Lesson, dataDB[count]['codeType']))

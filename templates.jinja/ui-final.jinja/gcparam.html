@@ -1,7 +1,7 @@
 ﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
 
 {% block title %}
-    GCPARAMS-JN
+    ΣΤΟΙΧΕΙΑ ΒΚ-JN
 {% endblock %}
 
 <!-- Start Block HTML -->
@@ -17,7 +17,7 @@
 <div class="col-lg-12">
     <div class="panel panel-primary fresh-color">
         <div class="panel-heading">
-            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> GCPARAMS </h3>
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΣΤΟΙΧΕΙΑ ΒΚ </h3>
         </div>
         <div class="panel-body">
 
@@ -63,7 +63,7 @@
               <div class="form-group">
                 <label class="control-label col-sm-3" for="type">ΠΑΡΑΜΕΤΡΟΙ - Γραπτά / Φάκελο:</label>
                 <div class="col-sm-1">
-                    <input name="folderBooks" id="folderBooks" class="form-control" placeholder="" value={{data.folderBooks}}>
+                    <input name="folderBooks" id="folderBooks" class="form-control" disabled="true" placeholder="" value={{data.folderBooks}}>
                 </div>
 
                 <label class="control-label col-sm-2" for="type">Ελάχιστα Γραπτά / Φάκελο:</label>
@@ -99,8 +99,8 @@
             
               <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
-                  <button id="buttonOK" class="btn btn-primary" >OK</button> 
-                  <button id="buttonCancel" class="btn btn-default" >Άκυρο</button>
+                  <button id="buttonOK" class="btn btn-primary" >ΑΠΟΘΗΚΕΥΣΗ</button> 
+                  <button id="buttonCancel" class="btn btn-default" >AKΥΡΟ</button>
                 </div>
               </div>
 
@@ -231,7 +231,7 @@ $('#formGCParameters').jqxValidator( {
         //var buttonClicked = clickedButton[0].id;    
         var qstring  = $('#formGCParameters').serialize();
         //qstring  = qstring ;
-        alert (qstring);        
+        //alert (qstring);        
         //var formData    =    $('#formGCParameters').find('#form-group:input') . serialize();
         //alert (formData);        
         //console.log((qstring));
@@ -245,7 +245,7 @@ $('#formGCParameters').jqxValidator( {
             cache: false,
             success: function (response, status, xhr) {
                 //commit(true);// update command is executed.
-                alert('POST Success!'); 
+                //alert('POST Success!'); 
                 console.log(response);
             },
             error: function(jqXHR, textStatus, errorThrown) {

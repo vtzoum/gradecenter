@@ -1,8 +1,28 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from random import choice
 from reportlab.lib.colors import HexColor
-from .models import Weather, Town
+from personel.models  import *
+
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 
 
+"""
+"""
+def reportTitle(lesson=None):
+    # write title
+    if lesson:
+        lesson_text = lesson.name        
+    else:
+        lesson_text = ugettext(u"Όλα τα Μαθήματα")
+    return lesson_text
+
+
+#===========================================
+# TO REMOVE code Below
+#===========================================
 def get_temperatures(values):
     temperatures = []
     t_min, t_max = (), ()

@@ -8,65 +8,64 @@ from datetime import date, timedelta
 import time
 import StringIO
 import xlsxwriter
-from django.utils.translation import ugettext
+
 from django.db.models import Avg, Sum, Max, Min, Count
-
-from .models import Town, Weather
-
-from personel.models import *
-from personel.helpScripts import td2DayHourMin
-
-from django.utils.translation import ugettext_lazy as _
-
-
-
-from django.conf import settings
-from django.utils.translation import ugettext
-from .utils import get_temperatures, get_wind_speed, get_str_days,\
-    get_random_colors, precip_prob_sum, get_percentage
-legendcolors = get_random_colors(10)
-
-
 from django.conf import settings
 from django.conf.urls.static import static
-
-from personel.models import *
-
+from django.http import HttpResponse,HttpResponseRedirect, Http404
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from docx import Document
 from docx.shared import Inches, Mm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
+from personel.models import *
+from personel.helpScripts import td2DayHourMin
 
-################################################
-# HEADER
-################################################
-"""
-def doXlsHeader(workbook, worksheet, lesson=None):
-
-
-"""
+from .utils import *
+#from .utils import get_temperatures, get_wind_speed, get_str_days, get_random_colors, precip_prob_sum, get_percentage, legendcolors = get_random_colors(10)
 
 
-def getGCInfo():
+
+#########################################
+# DOCX VIEWS
+#########################################
+#url(r'^doc/test/$', staff_or_403(docTest), name='docTest'),
+def docTest(request, LessonID=None):
     
-    #title_cellspan='A1:C1' date_cellspan='G1:I1' report_title_cellspan='A2:I2' lesson_title_cellspan='A3:I3'
-
-    # Get formatters
-    """
-    topTitle_STYLE = workbook.add_format({ 'bold': True, 'font_size': 14, 'align': 'center', 'valign': 'vcenter'})
-    lesson_STYLE = workbook.add_format({ 'bold': True, 'font_size': 14, 'align': 'center', 'valign': 'vcenter'})
-    date_STYLE = workbook.add_format({ 'bold': True, 'align': 'left', 'valign': 'vcenter'})
-    (title_STYLE, header_STYLE, cell_STYLE, cellC_STYLE, cellL_STYLE) = getWorkbookStyles(workbook)
-    """
-    # Header
-    id = GradeCenterInfo.objects.latest('id').id
-    gcinfo = GradeCenterInfo.objects.filter(id=id)[0]
-
-    #record.update( name, article,  presidentName, presidentSurname, phone, folderBooks, minFolderBooks, 
-    date_text =  datetime.now().strftime('%d/%m/%Y %H:%M')
+    #Lesson as filter
+    LessonID = request.GET.get('LessonID', None)
+    if LessonID:
+        lesson = Lesson.objects.get(id=LessonID)
+    else:
+        lesson = None
     
-    return gcinfo
+    #Data
+    #data = AcceptanceJoinTablesX2(LessonID).order_by('LessonID__name','SchoolToGradeID__name')
+    data = None
+    #print data    
+
+
+    """
+    # Prepare document for download        
+    # -----------------------------
+    f = StringIO()
+    document.save(f)
+    length = f.tell()
+    f.seek(0)
+    response = HttpResponse(
+        f.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+    response['Content-Disposition'] = 'attachment; filename=' + docx_title
+    response['Content-Length'] = length
+    return response
+    """
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename=docTest.docx'
+    docx_data = doDocxTest(data, lesson)
+    response.write(docx_data)
+    return response
 
 
 #########################################
@@ -115,6 +114,43 @@ def doDocxTest(dataDB, lesson=None):
     docx_data = output.getvalue()
     return docx_data
 
+#############################################
+# ΔΙΑΒΙΒΑΣΤΙΚΑ ΣΧΟΛΕΙΩΝ για ΑΠΟΣΤΟΛΗ
+#############################################
+def docSchoolCoverLetter(request):
+    
+    SchoolToGradeId = request.GET.get('SchoolToGradeID', None)
+    print SchoolToGradeId
+    
+    if SchoolToGradeId: 
+        #theSchoolToGrade = SchoolToGrade.objects.get(id=SchoolToGradeId)    
+        data = SchoolToGrade.objects.filter(id=SchoolToGradeId)
+        #data = data.filter(LessonID=LessonID)
+    else:
+        data = SchoolToGrade.objects.all()
+ 
+    data = data.order_by('name')
+    #print data
+    
+    #PDF part 
+    #Buffer
+    #buffer = BytesIO()
+    #pdf = doPDFSchoolCoverLetter(buffer, data, LetterCode=1)
+
+    #DOC part 
+    docx_data = doDocSchoolCoverLetter(data)
+
+    #Response part
+    #filename = 'Letters' + today.strftime('%Y-%m-%d')    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    today = date.today()
+    filename = 'SchoolCoverLetters'
+    response['Content-Disposition'] = 'attachement; filename={0}.docx'.format(filename)
+    
+    response.write(docx_data)
+    return response
+
+
 #########################################
 # DOCX Letters
 #########################################
@@ -129,9 +165,9 @@ def doDocSchoolCoverLetter(dataDB):
     section.top_margin = Mm(10)
     section.left_margin = Mm(10)
     section.right_margin = Mm(10)
-
-    gcinfo = getGCInfo()
-
+    
+    # Get GC info record
+    gcinfo = GradeCenterInfo.getGCInfo(GradeCenterInfo)
     #record.update( name, article,  presidentName, presidentSurname, phone, folderBooks, minFolderBooks, 
     constGCName=gcinfo.name
     constGCPresdArticle=gcinfo.article
@@ -229,6 +265,8 @@ def doDocSchoolCoverLetter(dataDB):
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         text = u'%s Πρόεδρος του %s' %(constGCPresdArticle, constGCName)
         run = paragraph.add_run(text)
+        run.add_break()        
+        run.add_break()        
         run.add_break()        
         text = u'%s %s' %(constGCPresdName, constGCPresdSurname)
         run = paragraph.add_run(text)

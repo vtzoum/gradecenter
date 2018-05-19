@@ -16,7 +16,9 @@
 <div class="col-lg-12">
     <div class="panel panel-primary fresh-color">
         <div class="panel-heading">
-            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑΤΑ </h3>
+            <span class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑΤΑ </h3>
+            <button id="btnLessonAdd" type='button' class='btn btn-warning' style='float: right; margin: -5px 10px 0px 10px; width:90px;'><i class="fa fa-bar-chart-o fa-fw"></i>Νέο </button>
+            <button id="btnLessonReload" type='button' class='btn btn-info' style='float: right; margin: -5px 10px 0px 10px;width:110px;'><i class="fa fa-bar-chart-o fa-fw"></i>Ανανέωση </button>
         </div>
         <div class="panel-body">
         <!-- jqxGrid -->
@@ -63,7 +65,7 @@
 <!-- content-->
 <div class="modal-content">
     <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">Προσθήκη Εγγραφής.</h4>
+        <h4 class="modal-title" id="myModalLabel">Νέο Μάθημα</h4>
     </div>
 
     <div class="modal-body">
@@ -259,20 +261,23 @@ $("#jqxgridLesson").jqxGrid({
     ],       
     
     editable: true, editmode: 'dblclick', selectionmode: 'singlerow', //multiplecellsextended
-    filterable: true,showfilterrow: true, 
-    pageable: false, 
+    filterable: true, showfilterrow: true, 
+    pageable: true, pagesize: 20, 
     sortable: true, 
-    width: '100%', height:'500', theme:theme, 
-    autoheight: false, columnsresize: true, //rowsheight: 30,    
+    width: '99.5%', height:'540', theme:theme, 
+    autoheight: false, columnsresize: true, 
+    rowsheight: 21, 
+    toolbarheight:15,
     showaggregates: true, 
-    showstatusbar:true, showtoolbar:true, rendertoolbar: function (statusbar) {
+    showstatusbar:true, 
+    rendertoolbar: function (statusbar) {
         // appends buttons to the status bar.
         var container = $("<div style='position: relative; margin: 5px; '></div>");
         var addButton = $("<button type='button' class='btn btn-primary' style='float:right;'> Προσθήκη </button>");
         var reloadButton = $("<button type='button' class='btn btn-primary' style='float: right; margin-right: 10px;'> Ανανέωση </button>");
         container.append(addButton);
         container.append(reloadButton);
-        statusbar.append(container);
+        //statusbar.append(container);
         addButton.jqxButton();
         reloadButton.jqxButton();
         // add new row.
@@ -292,11 +297,11 @@ $("#jqxgridLesson").jqxGrid({
 // Buttons 
 ****************************/
 //$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
-$( '#buttonAddLesson' ).click(function (event) {
+$( '#btnLessonAdd' ).click(function (event) {
     $( '#dialogAddLesson').jqxWindow('open');
     //$("#jqxgridLesson").jqxGrid({disabled:true});
 });
-$( '#buttonUpdateGridLesson' ).click(function (event) {
+$( '#btnLessonReload' ).click(function (event) {
     $("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
 });
 

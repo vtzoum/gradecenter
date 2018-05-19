@@ -14,6 +14,7 @@ from personel.models import *
 from personel.helpScripts import td2DayHourMin
 
 from .models import Town, Weather
+from .utils import *
 
 #Global report params
 title_cellspan='A1:C1'
@@ -25,23 +26,19 @@ lesson_title_cellspan='A3:I3'
 start_row=4
 
 # column widths
-#lesson_col_width = 15
-#code_col_width = 15
+#lessonColWidth = 15
+#codeColWidth = 15
 observations_col_width = 25
-stringColWidth = 20
-numberColWidth = 5
 # column widths
 afm_col_width = 15
-code_col_width = 15
-date_col_width = 20
-lesson_col_width = 25
-surname_col_width = 30
-name_col_width = 30
-num_col_width = 5
+codeColWidth = 15
+dateColWidth = 20
+lessonColWidth = 25
+nameColWidth = 30
+numColWidth = 10
+strColWidth = 20
+snameColWidth = 30
 # column widths
-namesColWidth = 30
-numberColWidth = 10
-stringColWidth = 20
 
 
 def setWorkbookStyles ( workbook ):
@@ -82,16 +79,6 @@ def getWorkbookStyles(workbook):
     return title_STYLE, header_STYLE, cell_STYLE, cellC_STYLE, cellL_STYLE
 
 """
-"""
-def xlsTitle(lesson=None):
-    # write title
-    if lesson:
-        lesson_text = lesson.name        
-    else:
-        lesson_text = ugettext(u"Όλα τα Μαθήματα")
-    return lesson_text
-
-"""
 Prepares header for workbook 
 @The workbook @The Lesson-or all
 """
@@ -105,8 +92,16 @@ def doXlsHeader(workbook, worksheet, lesson=None):
     date_STYLE = workbook.add_format({ 'bold': True, 'align': 'left', 'valign': 'vcenter'})
     (title_STYLE, header_STYLE, cell_STYLE, cellC_STYLE, cellL_STYLE) = getWorkbookStyles(workbook)
 
+
+    # Get GC info record
+    gcinfo = GradeCenterInfo.getGCInfo(GradeCenterInfo)
+    #record.update( name, article,  presidentName, presidentSurname, phone, folderBooks, minFolderBooks, 
+    title_text=gcinfo.name
+    #constGCPresdArticle=gcinfo.article
+    #constGCPresdName=gcinfo.presidentName
+    #constGCPresdSurname=gcinfo.presidentSurname
+    #date_text =  datetime.now().strftime('%d/%m/%Y %H:%M')
     # Header
-    title_text =settings.CONST_REPORTS_GCENTER_NAME
     date_text =  datetime.now().strftime('%d/%m/%Y %H:%M')
     #worksheet.merge_range('A1:C1', title_text, cell_STYLE)
     worksheet.write('D1', title_text, topTitle_STYLE)
@@ -137,7 +132,7 @@ def doXlsHeader(workbook, worksheet, lesson=None):
 #########################################
 def doXlsAcceptance (dataDB, lesson=None):
     
-    global lesson_col_width
+    global lessonColWidth
     
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)
@@ -149,7 +144,7 @@ def doXlsAcceptance (dataDB, lesson=None):
     title_STYLE, header_STYLE, cell_STYLE, cellC_STYLE, cellL_STYLE = formatAWorkbook(workbook)
     
     # write title
-    lesson_text = xlsTitle(lesson)
+    lesson_text = reportTitle(lesson)
     title_text = u"{0} {1}".format(ugettext(u"ΠΑΡΑΛΑΒΕΣ"), lesson_text)
     
     # merge cells
@@ -188,19 +183,19 @@ def doXlsAcceptance (dataDB, lesson=None):
         worksheet_s.write_number(row, 0, idx + 1, cellC_STYLE)
         
         val = data.LessonID.name
-        worksheet_s.write_string(row, 1, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        worksheet_s.write_string(row, 1, val, cellL_STYLE)        
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
 
         val = data.SchoolToGradeID.code
         worksheet_s.write_string(row, 2, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
 
         val = data.SchoolToGradeID.name
-        worksheet_s.write_string(row, 3, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        worksheet_s.write_string(row, 3, val, cellL_STYLE)        
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
 
         val = data.SchoolToGradeID.type
         worksheet_s.write_number(row, 4, val, cell_STYLE)        
@@ -219,8 +214,9 @@ def doXlsAcceptance (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('B:B', lesson_col_width)  # Lesson column
-
+    worksheet_s.set_column('B:B', nameColWidth )  # Lesson column
+    worksheet_s.set_column('C:C', codeColWidth )  # Lesson column
+    worksheet_s.set_column('D:D', nameColWidth )  # Lesson column
     row = row + 1
 	
     # close workbook
@@ -232,7 +228,7 @@ def doXlsAcceptance (dataDB, lesson=None):
 """
 def doXlsAcceptanceSum (dataDB, lesson=None):
     
-    global lesson_col_width
+    global lessonColWidth
     
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)
@@ -283,7 +279,7 @@ def doXlsAcceptanceSum (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('B:B', lesson_col_width)  # Lesson column
+    worksheet_s.set_column('B:B', lessonColWidth)  # Lesson column
     worksheet_s.set_column('F:F', 10)  # Lesson column
 
     row = row + 1
@@ -337,7 +333,7 @@ def doXlsBooking (dataDB, lesson=None):
         #[{'action': 0, 'station': 0, 'GraderID': 46, 'actionTime': datetime.datetime(2016, 9, 23, 14, 51, 7)},
         val = data.FolderID.LessonID.name
         worksheet_s.write_string(row, 1, val, cellL_STYLE)        
-        #if len(val) > lesson_col_width:lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:lesson_col_width = len(val)
 
         val = (data.FolderID.LessonID.lexLessonType(Lesson,data.FolderID.LessonID.type))[0:4]
         worksheet_s.write_string(row, 2, val, cellL_STYLE)
@@ -366,11 +362,11 @@ def doXlsBooking (dataDB, lesson=None):
         #worksheet_s.write_string(row, 8, val, cellC_STYLE)
 
     # change column widths
-    worksheet_s.set_column('A:A', numberColWidth)  
+    worksheet_s.set_column('A:A', numColWidth)  
     worksheet_s.set_column('B:B', 30)  
-    worksheet_s.set_column('C:C', numberColWidth)  
-    worksheet_s.set_column('D:D', date_col_width)  
-    worksheet_s.set_column('E:G', numberColWidth)  
+    worksheet_s.set_column('C:C', numColWidth)  
+    worksheet_s.set_column('D:D', dateColWidth)  
+    worksheet_s.set_column('E:G', numColWidth)  
     worksheet_s.set_column('H:H', 30) 
     row = row + 1
 	
@@ -386,7 +382,7 @@ def doXlsBooking (dataDB, lesson=None):
 # dataDB is 
 def doXlsBookingWeekdaysCount (dataDB, lesson=None):
        
-    global lesson_col_width   # used when we use if .. for cell wodth
+    global lessonColWidth   # used when we use if .. for cell wodth
 
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)
@@ -457,7 +453,7 @@ def doXlsBookingWeekdaysCount (dataDB, lesson=None):
     # change column widths
     worksheet_s.set_column('A:A', num_col_width)
     worksheet_s.set_column('B:C', afm_col_width)
-    worksheet_s.set_column('D:E', name_col_width)
+    worksheet_s.set_column('D:E', nameColWidth)
     worksheet_s.set_column('F:F', 8)
     #worksheet_s.set_column('F:G', None, None, {'hidden': True})
     worksheet_s.set_column('G:H', None, None, {'hidden': True})
@@ -476,7 +472,7 @@ def doXlsBookingWeekdaysCount (dataDB, lesson=None):
 # dataDB is 
 def doXlsBookingWeekdaysDetails (dataDB, lesson=None):
     
-    global lesson_col_width   # used when we use if .. for cell wodth
+    global lessonColWidth   # used when we use if .. for cell wodth
     
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)
@@ -520,8 +516,8 @@ def doXlsBookingWeekdaysDetails (dataDB, lesson=None):
         val = data['GraderID__LessonID__name']        
         #val = data.GraderID.LessonID.name
         worksheet_s.write_string(row, 1, val, cellL_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
         
         val = data['GraderID__LessonID__type']
@@ -562,13 +558,13 @@ def doXlsBookingWeekdaysDetails (dataDB, lesson=None):
         """
 
     # change column widths
-    worksheet_s.set_column('A:A', numberColWidth)  
+    worksheet_s.set_column('A:A', numColWidth)  
     worksheet_s.set_column('B:B', 30)  
-    worksheet_s.set_column('C:C', numberColWidth)  
-    worksheet_s.set_column('D:D', date_col_width)  # Lesson column
-    worksheet_s.set_column('E:F', name_col_width)  
+    worksheet_s.set_column('C:C', numColWidth)  
+    worksheet_s.set_column('D:D', dateColWidth)  # Lesson column
+    worksheet_s.set_column('E:F', nameColWidth)  
     worksheet_s.set_column('G:G', num_col_width)  
-    worksheet_s.set_column('H:H', date_col_width)  
+    worksheet_s.set_column('H:H', dateColWidth)  
 
 
     row = row + 1
@@ -588,7 +584,7 @@ def doXlsBookingWeekdaysDetails (dataDB, lesson=None):
 # dataDB is 
 def doXlsBookingWeekendsCount (dataDB, lesson=None):
     
-    global lesson_col_width   # used when we use if .. for cell wodth
+    global lessonColWidth   # used when we use if .. for cell wodth
     
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)
@@ -660,7 +656,7 @@ def doXlsBookingWeekendsCount (dataDB, lesson=None):
     # change column widths
     worksheet_s.set_column('A:A', num_col_width)
     worksheet_s.set_column('B:C', afm_col_width)
-    worksheet_s.set_column('D:E', name_col_width)
+    worksheet_s.set_column('D:E', nameColWidth)
     worksheet_s.set_column('F:F', 8)
     #worksheet_s.set_column('F:G', None, None, {'hidden': True})
     worksheet_s.set_column('G:H', None, None, {'hidden': True})
@@ -772,13 +768,13 @@ def doXlsBookingWeekendsDetails (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('A:A', numberColWidth)  
+    worksheet_s.set_column('A:A', numColWidth)  
     worksheet_s.set_column('B:B', 30)  
-    worksheet_s.set_column('C:C', numberColWidth)  
-    worksheet_s.set_column('D:D', date_col_width)  # Lesson column
-    worksheet_s.set_column('E:F', name_col_width)  
+    worksheet_s.set_column('C:C', numColWidth)  
+    worksheet_s.set_column('D:D', dateColWidth)  # Lesson column
+    worksheet_s.set_column('E:F', nameColWidth)  
     worksheet_s.set_column('G:G', num_col_width)  
-    worksheet_s.set_column('H:H', date_col_width)  
+    worksheet_s.set_column('H:H', dateColWidth)  
 
     row = row + 1
 	
@@ -852,11 +848,11 @@ def doXlsFolder (dataDB, lesson=None):
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
     # change column widths
-    worksheet_s.set_column('A:A', numberColWidth)  
+    worksheet_s.set_column('A:A', numColWidth)  
     worksheet_s.set_column('B:B', 30)  
-    worksheet_s.set_column('C:C', numberColWidth)  
-    worksheet_s.set_column('D:E', numberColWidth)  
-    worksheet_s.set_column('F:G', numberColWidth)  
+    worksheet_s.set_column('C:C', numColWidth)  
+    worksheet_s.set_column('D:E', numColWidth)  
+    worksheet_s.set_column('F:G', numColWidth)  
 
     row = row + 1	
     """
@@ -905,9 +901,9 @@ def doXlsFolderDelays (dataDB, lesson=None):
     worksheet_s.write(4, 7, ugettext(u"Βαθμολογητής"), header_STYLE)
 
     # column widths
-    lesson_col_width = 15
-    stringColWidth = 20
-    numberColWidth = 10
+    lessonColWidth = 15
+    strColWidth = 20
+    numColWidth = 10
      
     #print dataDB
     # add data to the sheet
@@ -921,7 +917,7 @@ def doXlsFolderDelays (dataDB, lesson=None):
         #val = data['LessonID__name']
         val = data.GraderID.LessonID.name
         worksheet_s.write_string(row, 1, val, cell_STYLE)        
-        #if len(val) > lesson_col_width: lesson_col_width = len(val)
+        #if len(val) > lessonColWidth: lesson_col_width = len(val)
 
         #val = (Folder.lexCodeType(Folder, data['codeType']))
         val = (Folder.lexCodeType(Folder, data.FolderID.codeType))
@@ -946,9 +942,9 @@ def doXlsFolderDelays (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('B:B', stringColWidth) 
-    worksheet_s.set_column('C:E', numberColWidth) 
-    worksheet_s.set_column('F:G', stringColWidth) 
+    worksheet_s.set_column('B:B', strColWidth) 
+    worksheet_s.set_column('C:E', numColWidth) 
+    worksheet_s.set_column('F:G', strColWidth) 
     worksheet_s.set_column('H:H', 40) 
 
     row = row + 1
@@ -1001,11 +997,11 @@ def doXlsFolderHistory (dataDB, lesson=None):
         #val = data.GraderID.LessonID.name
         val = data['f'].LessonID.name
         worksheet_s.write_string(row, 1, val, cellL_STYLE)        
-        #if len(val) > lesson_col_width: lesson_col_width = len(val)
+        #if len(val) > lessonColWidth: lesson_col_width = len(val)
 
         val = (Lesson.lexLessonType(Lesson,data['f'].LessonID.type))[0:4]
         worksheet_s.write_string(row, 2, val, cellL_STYLE)
-        #if len(val) > lesson_col_width: lesson_col_width = len(val)
+        #if len(val) > lessonColWidth: lesson_col_width = len(val)
 
         val = u"Φ(%d)%s" %(data['f'].no,\
                 (Folder.lexCodeType(Folder, data['f'].codeType))[1:])
@@ -1027,9 +1023,9 @@ def doXlsFolderHistory (dataDB, lesson=None):
             worksheet_s.write_string(row, 7+c_idx, val, cellL_STYLE)        
 
     # change column widths
-    worksheet_s.set_column('B:B', stringColWidth) 
-    worksheet_s.set_column('C:E', numberColWidth) 
-    worksheet_s.set_column('F:G', stringColWidth) 
+    worksheet_s.set_column('B:B', strColWidth) 
+    worksheet_s.set_column('C:E', numColWidth) 
+    worksheet_s.set_column('F:G', strColWidth) 
     worksheet_s.set_column('H:I', 40) 
 
     row = row + 1
@@ -1082,7 +1078,7 @@ def doXlsFolderNow (dataDB, lesson=None):
         #val = data.GraderID.LessonID.name
         val = data['b'].GraderID.LessonID.name
         worksheet_s.write_string(row, 1, val, cell_STYLE)        
-        #if len(val) > lesson_col_width: lesson_col_width = len(val)
+        #if len(val) > lessonColWidth: lesson_col_width = len(val)
 
         val = (Folder.lexCodeType(Folder, data['f'].codeType))
         worksheet_s.write_string(row, 2, val, cell_STYLE)        
@@ -1106,9 +1102,9 @@ def doXlsFolderNow (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('B:B', stringColWidth) 
-    worksheet_s.set_column('C:E', numberColWidth) 
-    worksheet_s.set_column('F:G', stringColWidth) 
+    worksheet_s.set_column('B:B', strColWidth) 
+    worksheet_s.set_column('C:E', numColWidth) 
+    worksheet_s.set_column('F:G', strColWidth) 
     worksheet_s.set_column('H:H', 40) 
 
     row = row + 1
@@ -1148,9 +1144,9 @@ def doXlsFolderStatus0 (dataDB, lesson=None):
     #worksheet_s.write(start_row, 5, ugettext(u"Θέση"), header_STYLE)
 
     # column widths
-    lesson_col_width = 15
-    stringColWidth = 20
-    numberColWidth = 5
+    lessonColWidth = 15
+    strColWidth = 20
+    numColWidth = 5
 
     """     
     dataDB = [{'codeType': 0, 'countCodeType': 21, 'LessonID': 4, 'codeStatus': 0}, 
@@ -1174,7 +1170,7 @@ def doXlsFolderStatus0 (dataDB, lesson=None):
         #[{'countCodeLocation': 4, 'countCodeType': 4, 'codeStatus': 0, 'codeType': 0, 'LessonID': 4, 'countCodeStatus': 4},
         val = data['LessonID__name']
         worksheet_s.write_string(row, 1, val, cell_STYLE)        
-        #if len(val) > lesson_col_width: lesson_col_width = len(val)
+        #if len(val) > lessonColWidth: lesson_col_width = len(val)
 
         val = (Folder.lexCodeType(Folder, data['codeType']))
         #val = data['codeType']
@@ -1192,7 +1188,7 @@ def doXlsFolderStatus0 (dataDB, lesson=None):
         #worksheet_s.write_string(row, 4, val, cell_STYLE)        
         
     # change column widths
-    worksheet_s.set_column('B:E', stringColWidth) 
+    worksheet_s.set_column('B:E', strColWidth) 
 
     row = row + 1
 	
@@ -1243,7 +1239,7 @@ def doXlsFolderSum (dataDB, lesson=None):
         #val = data.LessonID.name
         val = data['LessonID__name']
         worksheet_s.write_string(row, 1, val, cellL_STYLE)        
-        #if len(val) > lesson_col_width: lesson_col_width = len(val)
+        #if len(val) > lessonColWidth: lesson_col_width = len(val)
 
         val = (Lesson.lexLessonType(Lesson,data['LessonID__type']))[0:4]
         worksheet_s.write_string(row, 2, val, cellL_STYLE)
@@ -1267,11 +1263,11 @@ def doXlsFolderSum (dataDB, lesson=None):
 
     # change column widths
     # change column widths
-    worksheet_s.set_column('A:A', numberColWidth) 
+    worksheet_s.set_column('A:A', numColWidth) 
     worksheet_s.set_column('B:B', 30)  
-    worksheet_s.set_column('C:C', numberColWidth)  
-    worksheet_s.set_column('D:E', numberColWidth)  
-    worksheet_s.set_column('F:G', numberColWidth)  
+    worksheet_s.set_column('C:C', numColWidth)  
+    worksheet_s.set_column('D:E', numColWidth)  
+    worksheet_s.set_column('F:G', numColWidth)  
 
     row = row + 1
 	
@@ -1312,8 +1308,8 @@ def doXlsGrader (dataDB, lesson=None):
     worksheet_s.write(start_row, 8, ugettext(u"Μάθημα"), header_STYLE)
 
     # column widths
-    lesson_col_width = 15
-    code_col_width = 15
+    lessonColWidth = 15
+    codeColWidth = 15
     observations_col_width = 25
 
     #print dataDB
@@ -1328,8 +1324,8 @@ def doXlsGrader (dataDB, lesson=None):
         
         val = data.TeacherID.surname
         worksheet_s.write_string(row, 1, val, cellL_STYLE)
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         
         val = data.TeacherID.name
         worksheet_s.write_string(row, 2, val, cellL_STYLE)
@@ -1353,14 +1349,14 @@ def doXlsGrader (dataDB, lesson=None):
         valType = Lesson.lexLessonType(data.LessonID, data.LessonID.type)
         val = val + '('+valType+')'
         worksheet_s.write_string(row, 8, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
 
     # change column widths
-    worksheet_s.set_column('B:C', names_col_width)      # 
-    worksheet_s.set_column('D:H', code_col_width)     # Lesson column
+    worksheet_s.set_column('B:C', nameColWidth)      # 
+    worksheet_s.set_column('D:H', codeColWidth)     # Lesson column
     worksheet_s.set_column('I:I', 20)     # Lesson column
     #worksheet_s.set_column('G:G', 20)  # Lesson column
 
@@ -1432,7 +1428,8 @@ def doXlsGraderWorkv3 (dataDB, lesson=None):
 
         for c_idx, b in enumerate(data['bSums']):      #bSums=Action duration sums
             #row = row + 1
-            print "\t", b['FolderID__id'], b['sumAction'], b['wasTypeOf']
+            #print "\t", b['FolderID__id'], b['sumAction'], b['wasTypeOf']
+            
             #row = row + 1
             #val = u"{0} {1} {2}".format( str(b['FolderID__no']), str(Folder.lexCodeType(Folder, b['wasTypeOf'])), str(b['sumAction']) ) #ugettext(), lesson_text)
             val = u"Φ"+str(b['FolderID__no'])
@@ -1483,9 +1480,9 @@ def doXlsGraderWorkv3 (dataDB, lesson=None):
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
         """
     # change column widths
-    worksheet_s.set_column('B:B', lesson_col_width)  # Lesson column
-    worksheet_s.set_column('C:C', surname_col_width)  # Lesson column
-    worksheet_s.set_column('D:D', name_col_width)  # Lesson column
+    worksheet_s.set_column('B:B', lessonColWidth)  # Lesson column
+    worksheet_s.set_column('C:C', snameColWidth)  # Lesson column
+    worksheet_s.set_column('D:D', nameColWidth)  # Lesson column
     worksheet_s.set_column('E:E', 15)  # Lesson column
 
     row = row + 1
@@ -1527,8 +1524,8 @@ def doXlsGraderWork (dataDB, lesson=None):
     #$worksheet_s.write(4, 6, ugettext(u"Συντ"), header_STYLE)
 
     # column widths
-    #lesson_col_width = 15
-    #code_col_width = 15
+    #lessonColWidth = 15
+    #codeColWidth = 15
     #observations_col_width = 25
 
     #print dataDB
@@ -1560,23 +1557,23 @@ def doXlsGraderWork (dataDB, lesson=None):
 
         val = g.TeacherID.surname
         worksheet_s.write_string(row, 2, val, cellL_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
         val = g.TeacherID.name
         #val = data['GraderID__TeacherID__surname']
         worksheet_s.write_string(row, 3, val, cellL_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
         #val =  b[0].countCodeType if (len(b)>0) else 0
         val =  len(b) if (len(b)>0) else 0
         #val = data['GraderID__TeacherID__name']
         worksheet_s.write_number(row, 4, val, cellC_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
         """        
@@ -1586,9 +1583,9 @@ def doXlsGraderWork (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('B:B', lesson_col_width)  # Lesson column
-    worksheet_s.set_column('C:C', surname_col_width)  # Lesson column
-    worksheet_s.set_column('D:D', name_col_width)  # Lesson column
+    worksheet_s.set_column('B:B', lessonColWidth)  # Lesson column
+    worksheet_s.set_column('C:C', snameColWidth)  # Lesson column
+    worksheet_s.set_column('D:D', nameColWidth)  # Lesson column
     worksheet_s.set_column('E:E', 15)  # Lesson column
 
     row = row + 1
@@ -1643,8 +1640,8 @@ def doXlsGraderWorkOld (dataDB, lesson=None):
     #$worksheet_s.write(4, 6, ugettext(u"Συντ"), header_STYLE)
 
     # column widths
-    lesson_col_width = 15
-    code_col_width = 15
+    lessonColWidth = 15
+    codeColWidth = 15
     observations_col_width = 25
 
     #print dataDB
@@ -1664,20 +1661,20 @@ def doXlsGraderWorkOld (dataDB, lesson=None):
 
         val = data['FolderID__LessonID__name']
         worksheet_s.write_string(row, 1, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
         val = data['GraderID__TeacherID__surname']
         worksheet_s.write_string(row, 2, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
         val = data['GraderID__TeacherID__name']
         worksheet_s.write_string(row, 3, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
         
@@ -1686,7 +1683,7 @@ def doXlsGraderWorkOld (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('B:B', lesson_col_width)  # Lesson column
+    worksheet_s.set_column('B:B', lessonColWidth)  # Lesson column
 
     row = row + 1
 	
@@ -1747,19 +1744,19 @@ def doXlsGraderWorkDay (dataDB, lesson=None):
         
         val = data['FolderID__LessonID__name']
         worksheet_s.write_string(row, 1, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
 
         val = data['GraderID__TeacherID__surname']
         worksheet_s.write_string(row, 2, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
         #worksheet_s.write(row, 2, data.date.strftime('%d/%m/%Y'), cellC_STYLE)        
 
         val = data['GraderID__TeacherID__name']
         worksheet_s.write_string(row, 3, val, cell_STYLE)        
-        #if len(val) > lesson_col_width:
-        #    lesson_col_width = len(val)
+        #if len(val) > lessonColWidth:
+        #    lessonColWidth = len(val)
 
         
         val = data['station']
@@ -1773,8 +1770,8 @@ def doXlsGraderWorkDay (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('B:D', lesson_col_width)  # Lesson column
-    worksheet_s.set_column('G:G', date_col_width)  # Lesson column
+    worksheet_s.set_column('B:D', lessonColWidth)  # Lesson column
+    worksheet_s.set_column('G:G', dateColWidth)  # Lesson column
 
     row = row + 1
 	
@@ -1826,7 +1823,7 @@ def doXlsTotal (dataDB, lesson=None):
     #worksheet_s.write_string(row, 8, val, cellC_STYLE)
     """
     # change column widths
-    worksheet_s.set_column('B:B', lesson_col_width)
+    worksheet_s.set_column('B:B', lessonColWidth)
 
     # Creating the pie chart
     pie_chart = workbook.add_chart({'type': 'pie'})

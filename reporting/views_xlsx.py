@@ -6,10 +6,8 @@ import datetime
 from datetime import date, timedelta
 import itertools, json
 import time
-
-from .excel_utils import WriteToExcel
-from .pdf_utils import PdfPrint
-
+import StringIO
+import xlsxwriter
 
 from django import forms
 from django.conf import settings
@@ -17,26 +15,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-
 from django.db.models import Avg, Count, Max, Min, Sum
 from django.db.models import IntegerField, DurationField 
 from django.db.models import ExpressionWrapper, Func, F
 #from django.db.models.functions import Length, Upper
-
-
 from django.http import HttpResponse,HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
-
-
-import StringIO
-import xlsxwriter
-
-from .docx_letters import *
-from .excel_utils import *
-from .pdf_utils import *
+from django.db.models import ExpressionWrapper, Func, F
+from django.db.models import IntegerField
+#from django.settings import CONST_MAXACTIONDURATION
 
 from reportlab.graphics.widgets.markers import makeMarker
 from reportlab.graphics.charts.barcharts import VerticalBarChart
@@ -55,7 +45,6 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table,\
     TableStyle
 
-
 from reportlab.lib.units import inch, cm, mm
 from reportlab.lib.pagesizes import A4, letter
 #from reportlab.lib.styles import getSampleStyleSheet
@@ -67,382 +56,10 @@ from reportlab.graphics import renderPDF
 from reportlab.graphics.barcode import code39, code128, code93, eanbc, qr, usps
 from reportlab.graphics.barcode import getCodes, getCodeNames, createBarcodeDrawing
 
-
-from .utils import get_temperatures, get_wind_speed, get_str_days,\
-    get_random_colors, precip_prob_sum, get_percentage
-legendcolors = get_random_colors(10)
-
 from personel.models import *
-from personel.models import Folder
 from personel.helpScripts import countDays0
 
-from django.db.models import ExpressionWrapper, Func, F
-from django.db.models import IntegerField
-#from django.settings import CONST_MAXACTIONDURATION
-
-from pdf_letters import doPDFSchoolCoverLetter
-from pdf_labels import doPDFSchoolLabels
-
-#print settings.STATIC_ROOT
-#pdfmetrics.registerFont(TTFont('FreeSans', settings.STATIC_ROOT + 'reporting/fonts/FreeSans.ttf'))
-#pdfmetrics.registerFont(TTFont('FreeSansBold', settings.STATIC_ROOT + 'reporting/fonts/FreeSansBold.ttf'))
-
-pdfmetrics.registerFont(TTFont('FreeSans', settings.STATIC_ROOT + '/static/reporting/fonts/FreeSans.ttf'))
-pdfmetrics.registerFont(TTFont('FreeSansBold', settings.STATIC_ROOT + '/static/reporting/fonts/FreeSansBold.ttf'))
-
-#VTZOUM HACK
-#from django.templatetags.static import static
-#pdfmetrics.registerFont(TTFont('FreeSans', static('fonts/FreeSans.ttf')))
-#pdfmetrics.registerFont(TTFont('FreeSans', static('fonts/FreeSansBold.ttf')))
-
-
-#########################################
-# HTML Views
-#########################################
-def homeSecretariat(request):
-    return render(request,"templates/home.html")
-
-def homeHtml(request):
-    return render(request,"home.html")
-
-# Create your views here.
-def home(request):
-    #return render(request, 'personel/home.html', {'msg': 'Hello'})
-    return HttpResponse('This Is Home')
-
-
-#########################################
-# DOCX VIEWS
-#########################################
-#url(r'^doc/test/$', staff_or_403(docTest), name='docTest'),
-def docTest(request, LessonID=None):
-    
-    #Lesson as filter
-    LessonID = request.GET.get('LessonID', None)
-    if LessonID:
-        lesson = Lesson.objects.get(id=LessonID)
-    else:
-        lesson = None
-    
-    #Data
-    #data = AcceptanceJoinTablesX2(LessonID).order_by('LessonID__name','SchoolToGradeID__name')
-    data = None
-    #print data    
-
-
-    """
-    # Prepare document for download        
-    # -----------------------------
-    f = StringIO()
-    document.save(f)
-    length = f.tell()
-    f.seek(0)
-    response = HttpResponse(
-        f.getvalue(),
-        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    )
-    response['Content-Disposition'] = 'attachment; filename=' + docx_title
-    response['Content-Length'] = length
-    return response
-    """
-
-
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = 'attachment; filename=docTest.docx'
-    docx_data = doDocxTest(data, lesson)
-    response.write(docx_data)
-    return response
-
-
-
-#############################################
-# ΔΙΑΒΙΒΑΣΤΙΚΑ ΣΧΟΛΕΙΩΝ για ΑΠΟΣΤΟΛΗ
-#############################################
-def docSchoolCoverLetter(request):
-    
-    SchoolToGradeId = request.GET.get('SchoolToGradeID', None)
-    print SchoolToGradeId
-    
-    if SchoolToGradeId: 
-        #theSchoolToGrade = SchoolToGrade.objects.get(id=SchoolToGradeId)    
-        data = SchoolToGrade.objects.filter(id=SchoolToGradeId)
-        #data = data.filter(LessonID=LessonID)
-    else:
-        data = SchoolToGrade.objects.all()
- 
-    data = data.order_by('name')
-    #print data
-    
-    #PDF part 
-    #Buffer
-    #buffer = BytesIO()
-    #pdf = doPDFSchoolCoverLetter(buffer, data, LetterCode=1)
-
-    #DOC part 
-    docx_data = doDocSchoolCoverLetter(data)
-
-    #Response part
-    #filename = 'Letters' + today.strftime('%Y-%m-%d')    
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    today = date.today()
-    filename = 'SchoolCoverLetters'
-    response['Content-Disposition'] = 'attachement; filename={0}.docx'.format(filename)
-    
-    response.write(docx_data)
-    return response
-
-
-
-
-#########################################
-# PDF Views
-#########################################
-def homePdf(request):
-    
-    response = HttpResponse(content_type='application/pdf')
-    today = date.today()
-    filename = 'pdf_demo' + today.strftime('%Y-%m-%d')
-    response['Content-Disposition'] =\
-        'attachement; filename={0}.pdf'.format(filename)
-    buffer = BytesIO()
-
-    #report = PdfPrint(buffer, 'A4')
-    
-    #weather_period = Weather.objects.all()    
-    #pdf = report.report(weather_period, 'Weather statistics data')
-
-    data = Folder.objects.all()
-    print data    
-    pdf = report.report(data, 'Data')
-    response.write(pdf)
-    return response
-
-
-#########################################
-#PDF LABELS for SCHOOL 
-#########################################
-    # SCHOOLS
-#url(r'^/reporting/pdf/school/labels/$', staff_or_403(pdfSchoolLabels), name='pdfschoollabels'),
-#url(r'^/reporting/pdf/school/coverletter/$', staff_or_403(pdfSchoolCoverLetter), name='pdfschoolcoverletter'),
-def pdfSchoolLabels(request):
-    
-    SchoolToGradeId = request.GET.get('SchoolToGradeID', None)
-    print SchoolToGradeId
-    
-    if SchoolToGradeId: 
-        #theSchoolToGrade = SchoolToGrade.objects.get(id=SchoolToGradeId)    
-        data = SchoolToGrade.objects.filter(id=SchoolToGradeId)
-        #data = data.filter(LessonID=LessonID)
-    else:
-        data = SchoolToGrade.objects.all()
- 
-    data = data.order_by('name')
-    #print data
-    
-    #PDF part 
-    #Buffer
-    buffer = BytesIO()
-    pdf = doPDFSchoolLabels(buffer, data)
-
-    #Response part
-    response = HttpResponse(content_type='application/pdf')
-    today = date.today()
-    #filename = 'Letters' + today.strftime('%Y-%m-%d')
-    filename = 'SchoolLabels'
-    response['Content-Disposition'] = 'attachement; filename={0}.pdf'.format(filename)
-    
-    response.write(pdf)
-    return response
-
-
-#########################################
-#PDF LETTERS for SCHOOL 
-#########################################
-def pdfSchoolCoverLetter(request):
-    
-    SchoolToGradeId = request.GET.get('SchoolToGradeID', None)
-    print SchoolToGradeId
-    
-    if SchoolToGradeId: 
-        #theSchoolToGrade = SchoolToGrade.objects.get(id=SchoolToGradeId)    
-        data = SchoolToGrade.objects.filter(id=SchoolToGradeId)
-        #data = data.filter(LessonID=LessonID)
-    else:
-        data = SchoolToGrade.objects.all()
- 
-    data = data.order_by('name')
-    #print data
-    
-    #PDF part 
-    #Buffer
-    buffer = BytesIO()
-    pdf = doPDFSchoolCoverLetter(buffer, data, LetterCode=1)
-
-    #Response part
-    response = HttpResponse(content_type='application/pdf')
-    today = date.today()
-    #filename = 'Letters' + today.strftime('%Y-%m-%d')
-    filename = 'SchoolCoverLetters'
-    response['Content-Disposition'] = 'attachement; filename={0}.pdf'.format(filename)
-    
-    response.write(pdf)
-    return response
-
-#########################################
-# PDF Barcode
-#########################################
-def pdfBarcode(request):
-
-    #Lesson as filter
-    LessonID = request.GET.get('LessonID', None)
-    codeType = request.GET.get('codeType', None)
-    fromNo = request.GET.get('fromNo', None)
-    toNo = request.GET.get('toNo', None)
-    
-    print LessonID, codeType, fromNo, toNo 
-    
-    if (LessonID==None):
-        #return render(request, "resp-nodata.html")
-        html = "<html><body><h1>ΔΕΝ ΕΠιλέξατε Μάθημα!</h1></body></html>"
-        return HttpResponse(html)        
-
-    #Data
-    #data = Folder.objects
-    #data = Folder.objects.filter(LessonID=LessonID).all()
-
-    if LessonID:
-        lesson = Lesson.objects.get(id=LessonID)    
-        data = Folder.objects.filter(LessonID=LessonID)
-    
-    if codeType:
-        data = data.filter(codeType=codeType)
-    
-    if fromNo:
-        data = data.filter(no__gte = int(fromNo))
-    
-    if toNo:
-        data = data.filter(no__lte= int(toNo))
-
-    data = data.values().order_by('codeType', 'no')
-    #data = data.values('id', 'no', 'codeBarcode').order_by('codeType', 'no')
-    #data = Folder.objects.filter(LessonID=LessonID, codeType=codeType).values('id', 'no', 'codeBarcode').order_by('codeType', 'no')
-    
-    
-    if len(data)==0:
-        return render(request, "resp-nodata.html", {'msg':u'ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΙΑΘΕΣΙΜOI ΦΑΚΕΛΟΙ!'})
-        #html = "<html><body><h1>ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΙΑΘΕΣΙΜΟΙ ΦΑΚΕΛΟΙ!</h1></body></html>"
-        #return HttpResponse(html)        
-    
-    #print "view(2):LEN:",  len(data), " DATA:", data
-    
-    #PDF part-Buffer
-    buffer = BytesIO()
-    pdf = createBarCodesv2(buffer, data, lesson)
-
-    #Response 
-    response = HttpResponse(content_type='application/pdf')
-    today = date.today()
-    filename = 'barcodes-' + str(lesson.id) + '-' + today.strftime('%Y-%m-%d')
-    response['Content-Disposition'] ='attachement; filename={0}.pdf'.format(filename)
-    response.write(pdf)
-    return response
-
-#########################################
-# PDF Letter
-#########################################
-def pdfLetter(request):
-
-    #Lesson as filter
-    LessonID = request.GET.get('LessonID', None)
-    GraderArrayID = json.loads(request.GET['jqxinputGraderArrayID']) 
-    LetterCode = request.GET.get('LetterCode', None)
-    #jqxinputLesson = request.POST.get('jqxinputGraderNewLesson', None)
-    print LessonID, GraderArrayID, LetterCode
-    
-    #Data
-    #data = Grader.objects
-    #data = GraderJoinTables(LessonID=None, exclude=False)
-    data = Grader.objects.select_related("LessonID", "TeacherID")
-    
-    #GraderArrayIDInt = [int(e) if e.isdigit() else e for e in GraderArrayID.split(',')]
-    GraderArrayIDInt = [int(e) if e.isdigit() else e for e in GraderArrayID.split(',')]
-    
-    if LessonID:
-        lesson = Lesson.objects.get(id=LessonID)    
-        data = data.filter(LessonID=LessonID)
-    
-    if GraderArrayID:
-        data = data.filter(pk__in = GraderArrayIDInt)
-        #(no__gte = fromNo) (no__lte= toNo)
-    
-    #if not LetterCode:
-    #    LetterCode =1
-        #(no__gte = fromNo) (no__lte= toNo)
-    
-    """
-    #print 'POST Received:', jqxinputLesson, jqxinputTeacherArray        
-    #lessonIsNull = True  if jqxinputLesson == ''  else False 
-    #teacherArrayIsNull = True  if jqxinputTeacherArray == ''  else False 
-
-    #print "Found in DB (LESSON):", lesson.name
-    for jqxinputTeacher in jqxinputTeacherArray:
-        teacher = Teacher.objects.get(id = jqxinputTeacher )  # get Teacher Data 
-        #print "Found in DB (TEACHER):", teacher.surname
-        graderExists = False  if Grader.objects.filter(TeacherID = teacher, LessonID = lesson).count() == 0  else True 
-        if not (graderExists):
-            #print 'No GraderExists:', teacher,  lesson
-            # INSERT to DB > MUST CHECK FOR FAIL CONDITIONS
-            Grader(LessonID = lesson, TeacherID = teacher, ).save()
-            #print 'INSERT Grader:', teacher,  lesson
-        else: 
-            print 'GraderExists:', teacher,  lesson
-            status = 'Error'
-
-    dictData = {'status': status, }
-    """
-
-    data = data.order_by('TeacherID__surname', 'TeacherID__name')
-    print data
-    
-    #
-    #PDF part 
-    #
-    #Buffer
-    buffer = BytesIO()
-    pdf = createPDFLetters(buffer, data, LetterCode)
-
-    #
-    #Response part
-    #
-    response = HttpResponse(content_type='application/pdf')
-    today = date.today()
-    #filename = 'Letters' + today.strftime('%Y-%m-%d')
-    filename = 'Letters'
-    response['Content-Disposition'] =\
-        'attachement; filename={0}.pdf'.format(filename)
-    
-    response.write(pdf)
-    return response
-    """
-    """
-
-#########################################
-# PDF Users
-#########################################
-def print_users(request):
-    # Create the HttpResponse object with the appropriate PDF headers.
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="My Users.pdf"'
-
-    buffer = BytesIO()
-
-    report = MyPrint(buffer, 'Letter')
-    pdf = report.print_users()
-
-    response.write(pdf)
-    return response
-
-
+from .utils_xlsx import *
 
 
 #########################################

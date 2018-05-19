@@ -84,6 +84,17 @@ class GradeCenterInfo(models.Model):
         unique_together = ('contact', 'address_type',)
     """    
 
+
+    @staticmethod
+    def getGCInfo(cls):        
+        """
+        Gets latest record using (id)
+        """
+        id = GradeCenterInfo.objects.latest('id').id
+        gcinfo = GradeCenterInfo.objects.filter(id=id)[0]
+        #record.update( name, article,  presidentName, presidentSurname, phone, folderBooks, minFolderBooks, 
+        return gcinfo
+
 ###################################
 # TEACHER
 ###################################
@@ -241,14 +252,12 @@ class Lesson(models.Model):
     def __str__(self):              # __unicode__ on Python 2
         return self.name
     """    
-
     @staticmethod
     def lexLessonType(cls, id):
         if id in[0,1]: 
             return cls.LESSON_TYPE[id][1]
         else: 
             return "ΑΓΝΩΣΤΟ"
-
 
     #get next Folder no
     def getNextFolderNo(self, codeType=-1):
@@ -259,13 +268,16 @@ class Lesson(models.Model):
             res = self.folder_set.filter(codeType = codeType).order_by("-no")
         return 1 if (len(res) == 0) else res[0].no + 1
 
-    def prepareGradingAB(self):      #aka Make AB-Folders for Lesson
-        
+    def prepareGradingAB(self):      #aka Make AB-Folders for Lesson        
         #@settings.py => CONST_MINFOLDERBOOKS=4 #(eg. Folder has at least 4 books)
+        folderCount = 0
 
-        folderCount = 0 
-        folderSize = settings.CONST_FOLDERBOOKS #25 
-        folderSizeMargin = settings.CONST_MINFOLDERBOOKS
+        #Get params
+        gcinfo = GradeCenterInfo.getGCInfo(GradeCenterInfo)
+        folderSize = gcinfo.folderBooks
+        folderSizeMargin = gcinfo.minFolderBooks
+        #folderSize = settings.CONST_FOLDERBOOKS #25 
+        #folderSizeMargin = settings.CONST_MINFOLDERBOOKS
         #folderSizeMargin = 2 
         
         if self.status != 4:
@@ -332,25 +344,6 @@ class Lesson(models.Model):
                 else: 
                     print "Unkown Case in prepareGradingAB"
                     break 
-
-
-    """
-    class Folder(models.Model):    
-    
-    GRAD_TYPE = ( (0, u'Κανονικός'), (1, u'Αναβαθμολόγηση'), )   
-    LOCATION_TYPE = ( (0, u'Αποθήκη'), (1, u'Βαθμολογητής'), (2, u'Φύλαξη'), )
-    STATUS_TYPE = ( (0, u'Αχρέωτος(A)'), (1, u'Αχρέωτος(Β)'), (2, u'Αχρέωτος(C)'), 
-            (3, u'Χρεωμένος(A)'), (4, u'ΧρεωμένοςΒ)'), (5, u'Χρεωμένος(C)'), 
-            (8, u'Επιστροφή' ), )
-    
-    books = models.PositiveSmallIntegerField(default=0, blank=False, null=False)   # 0:
-    no = models.IntegerField(blank=False, null=False)
-    
-    codeBarcode =  models.CharField(max_length=16, blank=False, default='0000-0000')      #OP: anth|thetikh|oikon
-    codeLocation  = models.PositiveSmallIntegerField(default=0, blank=False, null=False)   # 0: 
-    codeStatus = models.PositiveSmallIntegerField(default=0, blank=False, null=False)
-    codeType = models.PositiveSmallIntegerField(default=0, blank=False, null=False)    
-    """
 
 
     #ACCEPTING Methods

@@ -32,7 +32,9 @@
 <div class="col-lg-12">
     <div class="panel panel-primary fresh-color">
         <div class="panel-heading">
-            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΒΑΘΜΟΛΟΓΗΤΕΣ </h3>
+            <span class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΒΑΘΜΟΛΟΓΗΤΕΣ </h3>
+            <button id="btnGraderAdd" type='button' class='btn btn-warning' style='float: right; margin: -5px 10px 0px 10px; width:90px;'><i class="fa fa-bar-chart-o fa-fw"></i>Νέος </button>
+            <button id="btnGraderReload" type='button' class='btn btn-info' style='float: right; margin: -5px 10px 0px 10px;width:110px;'><i class="fa fa-bar-chart-o fa-fw"></i>Ανανέωση </button>
         </div>
         <div class="panel-body no-padding">
         <!-- Graders -->
@@ -88,7 +90,7 @@
       <div class="panel panel-primary fresh-color" class="form-group">
 
         <div class="panel-heading">
-            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Καθηγητές </h3>
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Προσθήκη Καθηγητή </h3>
         </div>
         <!--
         -->
@@ -314,13 +316,20 @@ $("#jqxgridGrader").jqxGrid({
           } // buttonclick
         }, //remove        
     ],
-
-    autoheight: false, columnsresize: true, editable: true, //editmode: 'selectedrow',
-    filterable: true, showfilterrow: true, selectionmode: 'singlerow', //multiplecellsextended
-    pageable: false, sortable: true, width: '99.5%', height:'450', theme: theme, 
+    
+    editable: true, editmode: 'dblclick', selectionmode: 'singlerow', //multiplecellsextended
+    filterable: true, showfilterrow: true, 
+    pageable: true, pagesize: 20, 
+    sortable: true, 
+    width: '99.5%', height:'540', theme:theme, 
+    autoheight: false, columnsresize: true, 
+    rowsheight: 21, 
+    toolbarheight:15,
     showaggregates: true, 
-    showstatusbar:true, 
-    showtoolbar:true, rendertoolbar: function (statusbar) {
+    showstatusbar:true, //showtoolbar:true,     
+
+
+    rendertoolbar: function (statusbar) {
         // appends buttons to the status bar.
         var container = $("<div style='position: relative; margin: 5px; '></div>");
         //var addButton = $("<button type='button' class='btn btn-default' style='float: right;'>Update Grid</button>");
@@ -331,9 +340,9 @@ $("#jqxgridGrader").jqxGrid({
         //<button type="button" class="btn btn-default">Update Grid</button>
         //<button id="buttonAddGrader" type="button" class="btn btn-primary">Add Record</button>
         
-        container.append(addButton);
-        container.append(reloadButton);
-        statusbar.append(container);
+        //container.append(addButton);
+        //container.append(reloadButton);
+        //statusbar.append(container);
         addButton.jqxButton( {disabled:varDisabled,} );
         reloadButton.jqxButton( {disabled:varDisabled,} );
 
@@ -357,15 +366,32 @@ $("#jqxgridGrader").jqxGrid({
 //ready: function () {$("#jqxnotificationServer").html(notificationServerMessage).jqxNotification("open");},
 
 
-/////////////////////////////////
+/****************************
+// Buttons 
+****************************/
+//$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
+
+$( '#btnGraderAdd' ).click(function (event) {
+    $("#codeAfm, #codeGrad, #codeSpec, #name, #surname").val(''); 
+    //$("#jqxgridTeacher").jqxGrid({disabled:true});
+    $( '#dialogAddGrader').jqxWindow('open');
+    
+});
+
+$( '#btnGraderReload' ).click(function (event) {
+    $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });
+});
+
+/****************************
 // Events
-////////////////////////////////
+****************************/
+/*
 $("#jqxbuttonGraderNew").click(function () {
     if( $('#jqxgridTeacher').jqxGrid('getselectedrowindexes').length > 0 ) {
         $('#jqxgridTeacher').jqxGrid('clearselection');
     }
 });
-
+*/
 /****************************
 // Teacher data
 ****************************/
@@ -415,7 +441,6 @@ $("#jqxgridTeacher").jqxGrid({
 /****************************
 //Buttons 
 ****************************/
-/*
 //$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
 $( '#buttonAddGrader' ).click(function (event) {
     //$("#code, #name, #ddeCode, #ddeName, #type").val(''); 
@@ -426,7 +451,7 @@ $( '#buttonAddGrader' ).click(function (event) {
 $( '#buttonUpdateGridGrader' ).click(function (event) {
     $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });
 });
-*/
+/**/
 
 /****************************
 //Dialogue DELETE
