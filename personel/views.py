@@ -45,14 +45,15 @@ def gcparam(request):
         minFolderBooks = request.POST.get('minFolderBooks', None)
         #maxActionDuration = request.POST.get('postData', None)
 
-        #print name, article,  presidentName, presidentSurname 
+        #print name, article,  presidentName, presidentSurname , phone, folderBooks , minFolderBooks
         
         try:
             id = GradeCenterInfo.objects.latest('id').id
             record = GradeCenterInfo.objects.filter(id=id)
             record.update( name=name, article=article,  presidentName=presidentName, presidentSurname=presidentSurname, \
                 phone = phone, \
-                folderBooks = folderBooks, minFolderBooks = minFolderBooks,
+                folderBooks = folderBooks, \
+                minFolderBooks = minFolderBooks,
             )
             #address=address, city=city, tk=tk, )
             msg = "Επιτυχής τροποποίηση εγγραφής!"                 

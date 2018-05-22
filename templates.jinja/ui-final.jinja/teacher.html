@@ -286,10 +286,9 @@ var dataAdapterTeacher = new $.jqx.dataAdapter( sourceTeacher, {
     loadComplete: function () {
         var length = dataAdapterTeacher.records.length;
         var rec = dataAdapterTeacher.records[0];
-        //alert (length + rec.name + rec.type + rec.lexType);    
-        
+        //alert (length + rec.name + rec.type + rec.lexType);        
         // aggregates
-        aggregateData = $("#jqxgridTeacher").jqxGrid('getcolumnaggregateddata', 'type', ['count', 'min', 'max']);
+        aggregateData = $("#jqxgridTeacher").jqxGrid('getcolumnaggregateddata', 'codeAfm', ['count', 'min', 'max']);
     },  //loadComplete
 });
 

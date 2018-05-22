@@ -1,0 +1,13 @@
+virtualenv==1.11.4
+Django==1.9
+django-registration-redux==1.4
+Jinja==1.2
+Jinja2==2.8
+jinja2-django-tags==0.4
+MarkupSafe==0.23
+Pillow==2.3.0
+XlsxWriter==0.9.3
+docx==0.2.4
+python-docx==0.8.6
+python-pptx==0.6.1
+reportlab==3.0

@@ -218,10 +218,15 @@ $('#formGCParameters').jqxValidator( {
         },
 
         { input: '#minFolderBooks', 
-        message: 'To Ελάχιστο Πλήθος Τετραδίων / Φάκελο να είναι ακέραιος!',
+        message: 'To Ελάχιστο Πλήθος Τετραδίων / Φάκελο να είναι ακέραιος και μεταξύ [0,10]!',
         rule: function (input, commit) {
             var minFolderBooks = $('#minFolderBooks').val();
-            if ( ($.isNumeric(minFolderBooks)) || (minFolderBooks == '') ) return true; else return false;
+            //if ( ($.isNumeric(minFolderBooks)) && (minFolderBooks <=10 ) && (minFolderBooks <=10 ) ) return true; else return false;
+            if  ( $.isNumeric(minFolderBooks) )
+                    if ( (minFolderBooks <=10 ) && (minFolderBooks >=0) ) return true; 
+            else return false;
+            /*
+            */
             }
         },
     
@@ -229,7 +234,9 @@ $('#formGCParameters').jqxValidator( {
  
     onSuccess: function () { 
         //var buttonClicked = clickedButton[0].id;    
-        var qstring  = $('#formGCParameters').serialize();
+        var qstring  = $('#formGCParameters').helperSerializeAll();
+        //var qstring  = $('#formGCParameters').serialize();
+        
         //qstring  = qstring ;
         //alert (qstring);        
         //var formData    =    $('#formGCParameters').find('#form-group:input') . serialize();
@@ -256,8 +263,8 @@ $('#formGCParameters').jqxValidator( {
     },//onSuccess
 
     onError: function () { 
-        console.log("Failed!");
-        alert('Failed!'); 
+        //console.log("Failed!");
+        //alert('Failed!'); 
     }, 
 
 }); 

@@ -14,7 +14,6 @@ pathDest=/var/www/html/gradecenter-DEVELOP/db-bk043-2017
 sudo cp -a  db.sqlite3 "db.sqlite3.$(date +%F-%R)"
 rsync -avzh --dry-run -progress  --exclude '*.sqlite3' /media/tzoumak/CRUZER64G/Web-SITES-Code/DJANGO-python/APPS/gradecenter-DEVELOP/ /var/www/html/gradecenter-DEVELOP/
 
-
 #########################
 #GIT pull new code
 #########################

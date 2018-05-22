@@ -142,22 +142,22 @@
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-3" for="type">Δ-νση:</label>
+        <label class="control-label col-sm-3" for="address">Δ-νση:</label>
         <div class="col-sm-6">
-            <div id="address" class="form-control" placeholder="Δ-νση"></div>
+            <input id="address" class="form-control" placeholder="Δ-νση">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-3" for="type">Πόλη:</label>
+        <label class="control-label col-sm-3" for="city">Πόλη:</label>
         <div class="col-sm-6">
-            <div id="city" class="form-control" placeholder="Πόλη"></div>
+            <input id="city" class="form-control" placeholder="Πόλη">
         </div>
       </div>
       <div class="form-group">
-        <label class="control-label col-sm-3" for="type">ΤΚ:</label>
+        <label class="control-label col-sm-3" for="tk">ΤΚ:</label>
         <div class="col-sm-6">
-            <div id="tk" class="form-control" placeholder="ΤΚ"></div>
+            <input id="tk" class="form-control" placeholder="ΤΚ">
         </div>
       </div>
 
@@ -309,7 +309,6 @@ $("#jqxgridSchoolToGrade").jqxGrid({
             }, // createeditor
             aggregates: ['count'], 
         },
-
         { text: "Δ-νση", datafield: 'address',  width: '15%' },
         { text: "Πόλη", datafield: 'city',  width: '10%' },
         { text: "ΤΚ", datafield: 'tk',  width: '5%' },

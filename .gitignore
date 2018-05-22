@@ -7,6 +7,7 @@ db/
 .git/
 
 #Unused Statics
+static/themes/flat-admin-bootstrap-templates-master/unused/
 static-unused/*
 
 #Scripts

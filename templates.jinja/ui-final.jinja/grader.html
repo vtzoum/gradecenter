@@ -201,11 +201,13 @@ $('#jqxcomboboxLesson').on('select', function (event) {
         sourceGrader.url = '/grader/crud/'+'?action=filter&LessonID='+ data.id;    // SUPER 
         $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader});    
         $("#jqxinputGraderNewLesson").val(data.id);   // Lesson.id
-        varDisabled = false;
+        varDisabled = false;        
         /*
         addButton.jqxButton( {disabled:varDisabled,} );
         reloadButton.jqxButton({disabled:varDisabled,} );
         */
+        $("#btnGraderAdd").prop('disabled', false);
+        $("#btnGraderReload").prop('disabled', false);
         //console.log ('Lesson id:' + data.id);        
     }
 });// combo.event
@@ -326,8 +328,7 @@ $("#jqxgridGrader").jqxGrid({
     rowsheight: 21, 
     toolbarheight:15,
     showaggregates: true, 
-    showstatusbar:true, //showtoolbar:true,     
-
+    showstatusbar:true, //showtoolbar:true,  
 
     rendertoolbar: function (statusbar) {
         // appends buttons to the status bar.
@@ -370,7 +371,7 @@ $("#jqxgridGrader").jqxGrid({
 // Buttons 
 ****************************/
 //$("#addrowbutton #deleterowbutton #updaterowbutton").jqxButton({ theme: theme });
-
+$("#btnGraderAdd").prop('disabled', true);
 $( '#btnGraderAdd' ).click(function (event) {
     $("#codeAfm, #codeGrad, #codeSpec, #name, #surname").val(''); 
     //$("#jqxgridTeacher").jqxGrid({disabled:true});
@@ -378,6 +379,7 @@ $( '#btnGraderAdd' ).click(function (event) {
     
 });
 
+$("#btnGraderReload").prop('disabled', true);
 $( '#btnGraderReload' ).click(function (event) {
     $("#jqxgridGrader").jqxGrid({ source: dataAdapterGrader });
 });
