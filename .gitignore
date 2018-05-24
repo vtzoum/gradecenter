@@ -20,7 +20,7 @@ testing/
 templates/
 
 #Upload dir    s
-/uploads
+/uploads/*
 /uploads-toUPLOAD
 
 ####################

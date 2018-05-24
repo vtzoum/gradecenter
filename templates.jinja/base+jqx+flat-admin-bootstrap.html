@@ -558,7 +558,8 @@
         {% endif %} 
 
         <!-- START menuItem Αποθήκη -->
-        {% if request.user is has_group("Apothiki") %} 
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or 
+           request.user is has_group("Apothiki") %} 
         <li class="panel panel-default dropdown">
             <a data-toggle="collapse" href="#dropdown-warehouse0">
                 <span class="icon fa fa-desktop"></span><span class="title"> Αποθήκη </span>
@@ -575,7 +576,8 @@
         {% endif %}
 
         <!-- START menuItem Φύλαξη  -->
-        {% if request.user is has_group("Filaxi") %}          
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or 
+            request.user is has_group("Filaxi") %} 
         <li class="panel panel-default dropdown">
             <a data-toggle="collapse" href="#dropdown-warehouse1">
                 <span class="icon fa fa-desktop"></span><span class="title"> Φύλαξη </span>
@@ -614,7 +616,8 @@
 
 
         <!-- START menuItem Αναφορές -->
-        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or request.user is has_group("Reports") %} 
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or 
+            request.user is has_group("Reports") %} 
         
         <li class="panel panel-default dropdown">
             <a data-toggle="collapse" href="#dropdown-report">

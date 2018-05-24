@@ -1,0 +1,30 @@
+﻿{% extends 'base+auth.html' %}
+
+
+{% block body_block %}
+
+
+<!--
+<h1>Register Here</h1>
+<form method="post" action=".">
+    <input type='hidden' name='csrfmiddlewaretoken' value='LDC7xrl7mJVVr2n9LplBMGwe6kzwzN9W' />
+    <p><label for="id_username">Username:</label> <input id="id_username" maxlength="30" name="username" type="text" /> <span class="helptext">Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.</span></p>
+    <p><label for="id_email">Email:</label> <input id="id_email" name="email" type="email" /> <span class="helptext">email address</span></p>
+    <p><label for="id_password1">Password:</label> <input id="id_password1" name="password1" type="password" /></p>
+    <p><label for="id_password2">Password confirmation:</label> <input id="id_password2" name="password2" type="password" /> <span class="helptext">Enter the same password as before, for verification.</span></p>
+
+    <input type="submit" value="Submit" />
+
+</form>
+-->
+
+<!--
+<h1>Register Here</h1>
+        <form method="post" action=".">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <input type="submit" value="Submit" />
+        </form>
+-->
+{% endblock %}

@@ -286,7 +286,6 @@ MESSAGE_TAGS = {
 CONST_FOLDERBOOKS=25               #Books/Folder    (eg. Full Folder has 25 books)
 CONST_MINFOLDERBOOKS=4             #Books    (eg. Folder has at least 4 books)
 CONST_MAXACTIONDURATION=3          #Days     (eg. keep folder max 3 days)
-
 ##REPORTING
 CONST_REPORTS_GCENTER_NAME=u"43ο ΒΚ ΑΓΡΙΝΙΟY"                #
 CONST_REPORTS_GCENTER_PRESIDENT_ARTICLE=u"o"                 #

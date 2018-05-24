@@ -1,0 +1,151 @@
+﻿{% extends 'base+auth.html' %}
+
+<!--
+<h1>Register Here</h1>
+<form method="post" action=".">
+    <input type='hidden' name='csrfmiddlewaretoken' value='LDC7xrl7mJVVr2n9LplBMGwe6kzwzN9W' />
+    <p><label for="id_username">Username:</label> 
+        <input id="id_username" maxlength="30" name="username" type="text" /> 
+        <span class="helptext">Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.</span></p>
+    
+    <p><label for="id_email">Email:</label> 
+        <input id="id_email" name="email" type="email" /> 
+        <span class="helptext">email address</span></p>
+    
+    <p><label for="id_password1">Password:</label> 
+        <input id="id_password1" name="password1" type="password" /></p>
+    
+    <p><label for="id_password2">Password confirmation:</label> 
+        <input id="id_password2" name="password2" type="password" /> 
+        <span class="helptext">Enter the same password as before, for verification.</span></p>
+
+    <input type="submit" value="Submit" />
+
+</form>
+-->
+
+
+{% block body_block %}
+
+<div class="container">           
+<div id="signupbox" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+  
+  <div class="panel panel-info">
+    <div class="panel-heading">
+    <div class="panel-title">Sign Up</div>
+      <div style="float:right; font-size: 85%; position: relative; top:-10px">
+        <a id="signinlink" href="#" onclick="$('#signupbox').hide(); $('#loginbox').show()">Sign In</a>
+      </div>
+    </div>  
+    <!-- panel-heading -->
+
+<div class="panel-body" >
+
+<!-- Start Form -->
+<form method="post" action="." id="signupform" class="form-horizontal" role="form">
+    {% csrf_token %}
+
+    <div id="signupalert" style="display:none" class="alert alert-danger">
+        <p>Error:</p>
+        <span></span>
+    </div>    
+      
+    <div class="form-group">
+        <label for="email" class="col-md-3 control-label">Username</label>
+        <div class="col-md-9">
+            <input id="id_username" maxlength="30" name="username" type="text"  class="form-control" placeholder="Username">
+            <span class="helptext">Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.</span></p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="email" class="col-md-3 control-label">Email</label>
+        <div class="col-md-9">
+            <input id="id_email" name="email" type="email"  class="form-control" placeholder="Email Address">
+            <span class="helptext">email address</span></p>
+        </div>
+    </div>
+    <!--
+    <div class="form-group">
+        <label for="firstname" class="col-md-3 control-label">First Name</label>
+        <div class="col-md-9">
+            <input type="text" class="form-control" name="firstname" placeholder="First Name">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="lastname" class="col-md-3 control-label">Last Name</label>
+        <div class="col-md-9">
+            <input type="text" class="form-control" name="lastname" placeholder="Last Name">
+        </div>
+    </div>
+    -->
+    <div class="form-group">
+        <label for="password" class="col-md-3 control-label">Password</label>
+        <div class="col-md-9">
+            <input id="id_password1" name="password1" type="password"  class="form-control" placeholder="Password">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password2" class="col-md-3 control-label">Password</label>
+        <div class="col-md-9">
+            <input id="id_password2" name="password2" type="password"  class="form-control" placeholder="Password">
+            <span class="helptext">Enter the same password as before, for verification.</span></p>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <!-- Button -->                                        
+        <div class="col-md-offset-3 col-md-9">
+            <input type="submit" value="&nbsp Sign Up" class="btn btn-primary" />
+            <span style="margin-left:8px;"></span>  
+        </div>
+    </div>
+    
+
+    <!--    
+    <div style="border-top: 1px solid #999; padding-top:20px"  class="form-group">        
+        <div class="col-md-offset-3 col-md-9">
+            <button id="btn-fbsignup" type="button" class="btn btn-primary"><i class="icon-facebook"></i>   Sign Up with Facebook</button>
+        </div>                                               
+    </div>
+    -->
+<!-- End Form -->
+</form>
+
+</div>
+<!-- panel-body-->
+
+</div>
+<!-- panel-info -->
+
+</div> 
+<!-- div id="signupbox -->
+
+</div> 
+<!-- div class="conteiner" -->
+
+
+<!--
+<h1>Register Here</h1>
+<form method="post" action=".">
+    <input type='hidden' name='csrfmiddlewaretoken' value='LDC7xrl7mJVVr2n9LplBMGwe6kzwzN9W' />
+    <p><label for="id_username">Username:</label> <input id="id_username" maxlength="30" name="username" type="text" /> <span class="helptext">Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.</span></p>
+    <p><label for="id_email">Email:</label> <input id="id_email" name="email" type="email" /> <span class="helptext">email address</span></p>
+    <p><label for="id_password1">Password:</label> <input id="id_password1" name="password1" type="password" /></p>
+    <p><label for="id_password2">Password confirmation:</label> <input id="id_password2" name="password2" type="password" /> <span class="helptext">Enter the same password as before, for verification.</span></p>
+
+    <input type="submit" value="Submit" />
+
+</form>
+-->
+
+<!--
+<h1>Register Here</h1>
+        <form method="post" action=".">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Submit" />
+        </form>
+-->
+{% endblock %}
