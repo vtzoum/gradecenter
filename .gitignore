@@ -19,8 +19,8 @@ testing/
 #Templates for JQX test
 templates/
 
-#Upload dir    s
-/uploads/*
+#Upload dirs
+uploads/*
 /uploads-toUPLOAD
 
 ####################
