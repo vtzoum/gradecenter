@@ -129,7 +129,8 @@ def jsonFileCSVImportLesson(request):
             next(dataReader, None)  # skip the headers
             (msg, tag) = ('', 'info')
             for row in dataReader:  #exclude 1st row
-            #for row in dataReader:
+                if (len(row)==0):  # skips null lines
+                    continue                
                 #if row[0] != 'ΜΑΘΗΜΑ': # Ignore header
                 #Lesson(name = lessonName).save()
                 lessonName, lessonCategory, lessonType = row[0], row[1], row[2]
@@ -218,9 +219,10 @@ def jsonFileCSVImportSchoolToGrade(request):
             next(dataReader, None)  # skip the headers
             (msg, tag) = ('', 'info')
             for row in dataReader:  #exclude 1st row
+                if (len(row)==0):  # skips null lines
+                    continue                
                 schoolCode, schoolName, schoolType, schoolTypeLex, schoolDdeCode, schoolDdeName, = row[0], row[1], row[2], row[3],row[4], row[5]
-                schoolAddress, schoolCity, schoolTk = row[6], row[7], row[8]
-                
+                schoolAddress, schoolCity, schoolTk = row[6], row[7], row[8]                
                 #print schoolCode, schoolName, schoolDdeCode, schoolDdeName, 
                 codeIsNull = True  if schoolCode == ''  else False 
                 nameIsNull = True  if schoolName == ''  else False 
@@ -291,6 +293,8 @@ def jsonFileCSVImportSpecialty (request):
             next(dataReader, None)  # skip the headers
             (msg, tag) = ('', 'info')
             for row in dataReader:  #exclude 1st row
+                if (len(row)==0):  # skips null lines
+                    continue                
                 code, name, = row[0], row[1]
                 #print schoolCode, schoolName, schoolDdeCode, schoolDdeName, 
                 codeIsNull = True  if code == ''  else False 
@@ -347,15 +351,17 @@ def jsonFileCSVImportTeacher(request):
             next(dataReader, None)  # skip the headers
             (msg, tag) = ('', 'info')
             for row in dataReader:  #exclude 1st row
+                if (len(row)==0):  # skips null lines
+                    continue                
                 #t = Teacher(name='Βασίλης', surname='Τζουμάκας', codeAfm = '10000000', codeGrad = '02000000', codeSpec = 'ΠΕ19-01',)
-                codeAfm, surname, name, codeSpec, codeGrad , phoneMob = row[0], row[1], row[2], row[3], row[4], row[5],
-                #print teacherAFM, teacherSurname, teacherName, teacherCodeSpec, teacherCodeGrad  
-                codeAfmIsNull = True  if codeAfm == ''  else False 
-                surnameIsNull = True  if surname == ''  else False 
-                nameIsNull = True  if name == ''  else False 
-                codeGradIsNull = True  if codeGrad == ''  else False 
-                codeSpecIsNull = True  if codeSpec == ''  else False 
-                phoneMobIsNull = True  if phoneMob == ''  else False 
+                codeAfm, surname, name, codeSpec, codeGrad, phoneMob, phoneHom = row[0], row[1], row[2], row[3], row[4], row[5],row[6],
+                codeAfmIsNull = True  if codeAfm == ''  else False
+                surnameIsNull = True  if surname == ''  else False
+                nameIsNull = True  if name == ''  else False
+                codeGradIsNull = True  if codeGrad == ''  else False
+                codeSpecIsNull = True  if codeSpec == ''  else False
+                phoneMobIsNull = True  if phoneMob == ''  else False
+                phoneHomIsNull = True  if phoneHom == ''  else False
 
                 teacherExists = False  if Teacher.objects.filter( codeAfm = codeAfm ).count() == 0  else True 
                 if codeAfmIsNull or codeGradIsNull or nameIsNull or surnameIsNull or teacherExists:
@@ -364,14 +370,15 @@ def jsonFileCSVImportTeacher(request):
                     (status, tag) = ('OK', 'info')
                     if (actionP =='doimport'):         # Now, do Import in DB 
                         try:
-                            print "TEACHER IMPORT:", codeAfm, surname, name, codeGrad, codeSpec, codeSpec, phoneMob
-                            Teacher(codeAfm = codeAfm, codeGrad = codeGrad, codeSpec = codeSpec, surname = surname, name = name, phoneMob=phoneMob).save()
-
+                            print "TEACHER IMPORT:", codeAfm, surname, name, codeGrad, codeSpec, codeSpec, phoneMob, phoneHom
+                            Teacher(codeAfm = codeAfm, codeGrad = codeGrad, codeSpec = codeSpec, surname = surname, name = name,\
+                                    phoneMob=phoneMob, phoneHom=phoneHom).save()
                             (status, msg, tag) = ('OK', "Επιτυχής εισαγωγή εγγραφής!", 'info')
                         except DatabaseError:
                             (status, msg, tag) = ('error', "Αδυναμία εισαγωγή εγγραφής!", 'error')
                             
-                responseData.append ( {'codeAfm': codeAfm, 'codeGrad': codeGrad, 'codeSpec': codeSpec, 'surname': surname , 'name': name, 'phoneMob':phoneMob, 'status': status })
+                responseData.append ( {'codeAfm': codeAfm, 'codeGrad': codeGrad, 'codeSpec': codeSpec, 'surname': surname , 'name': name,\
+                        'phoneMob':phoneMob, 'phoneHom':phoneHom, 'status': status })
 
             # page ajax
             helperMessageLog(request, msg, tag)

@@ -152,6 +152,14 @@
     </div>
   </div>
 
+  <!-- Mobile Phone -->
+  <div class="form-group">
+    <label class="control-label col-sm-3" for="homPhone">Σταθ.Τηλ:</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="homPhone" name="homPhone" placeholder="Σταθ.Τηλ" tabindex="6">
+    </div>
+  </div>
+
 
     <!--BUTTONS-->
       <div class="form-group">
@@ -203,6 +211,7 @@ var sourceTeacher = {
         {name: 'codeGrad', type: 'string' },
         {name: 'codeSpec'},
         {name: 'phoneMob', type: 'string' },
+        {name: 'phoneHom', type: 'string' },
         
         //{name: 'type'},
         //{name: 'type', type: 'integer' }, // number, 
@@ -308,6 +317,7 @@ $("#jqxgridTeacher").jqxGrid({
         { text: "Κωδ.βαθμολογ.", datafield: 'codeGrad', filtertype: 'input', width: '10%' },
         { text: "Ειδικότητα", datafield: 'codeSpec', filtertype: 'input', },  //width: '15%' 
         { text: "Κιν.Τηλ.", datafield: 'phoneMob',  width: '10%' },
+        { text: "Σταθ.Τηλ.", datafield: 'phoneHom',  width: '10%' },
         //{name: 'lexAction', value: 'action', values: { source: dataAdapterBookingAction.records, value: 'action', name: 'lexAction' } },        
         /*
         { text: 'Edit', editable: false, columntype: 'button', width: '5%', 
@@ -446,6 +456,7 @@ $("#dialogAddTeacher").on('open', function () {
     $("#codeAfm").focus();
     $("#codeSpec").jqxDropDownList({selectedIndex:-1,});
     $("#phoneMob").val('');
+    $("#phoneHom").val('');
 });
 
 $( '#dialogAddTeacher' ).on('close', function () {
@@ -454,7 +465,7 @@ $( '#dialogAddTeacher' ).on('close', function () {
 
 //Dialogue > Input
 //Dialogue > inputs
-$("#codeAfm, #codeGrad, #name, #surname,#phoneMob").jqxInput();
+$("#codeAfm, #codeGrad, #name, #surname,#phoneMob, #phoneHom").jqxInput();
 $("#codeSpec").jqxDropDownList({ source: dataAdapterSpecialtyTable,  displayMember: "code", valueMember: "code", 
          placeHolder:"Επιλέξτε Ειδικότητα...",  selectedIndex: 0, });
 //$("#codeAfm, #codeGrad, #codeSpec, #name, #surname").val(''); 
@@ -541,6 +552,7 @@ $('#formAddTeacher').jqxValidator( {
             codeAfm: $("#codeAfm").val(), codeGrad: $("#codeGrad").val(), codeSpec: $("#codeSpec").val(), 
             surname: $("#surname").val(), name: $("#name").val(), 
             phoneMob: $("#phoneMob").val(), 
+            phoneHom: $("#phoneHom").val(), 
         };
         $( "#jqxgridTeacher" ).jqxGrid('addrow', null, newrow);
         $( "#dialogAddTeacher" ).jqxWindow('close');        

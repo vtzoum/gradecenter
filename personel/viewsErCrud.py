@@ -613,11 +613,12 @@ def jsonTeacherCrud(request):
             surname = request.POST.get('surname', None)
             name = request.POST.get('name', None)
             phoneMob = request.POST.get('phoneMob', None)
+            phoneHom = request.POST.get('phoneHom', None)
 
             try:
                 record = Teacher( codeAfm = codeAfm, codeGrad = codeGrad , codeSpec = codeSpec,\
                         surname = surname, name=name,\
-                        phoneMob=phoneMob)
+                        phoneMob=phoneMob, phoneHom=phoneHom, )
                 record.save()
                 msg = 'Επιτυχής εισαγωγή εγγραφής!' 
                 helperMessageLog(request, msg, tag='info')
@@ -654,11 +655,12 @@ def jsonTeacherCrud(request):
             surname = request.POST.get('surname', None)
             name = request.POST.get('name', None)
             phoneMob = request.POST.get('phoneMob', None)
-            phoneMob
+            phoneHom = request.POST.get('phoneHom', None)
 
             try:
                 record = Teacher.objects.filter(id=id)            
-                record.update( codeAfm = codeAfm, codeGrad = codeGrad , codeSpec = codeSpec,surname = surname, name=name , phoneMob=phoneMob)
+                record.update( codeAfm = codeAfm, codeGrad = codeGrad , codeSpec = codeSpec,surname = surname, name=name,\
+                        phoneMob=phoneMob, phoneHom=phoneHom)
                 msg = 'Επιτυχής τροποποίηση εγγραφής!' 
                 helperMessageLog(request, msg, tag='info')
             except DatabaseError:

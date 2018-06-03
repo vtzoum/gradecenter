@@ -165,6 +165,7 @@ var sourceTeacher = {
         {name: 'codeGrad', type: 'string' },
         {name: 'codeSpec', type: 'integer' },
         {name: 'phoneMob', type: 'string' },
+        {name: 'phoneHom', type: 'string' },
         {name: 'status', type: 'string' },
     ],
 };
@@ -180,6 +181,7 @@ $("#jqxgridTeacherCheck").jqxGrid({
         { text: "Κωδ.βαθμολογ.", datafield: 'codeGrad', width: '10%' },
         { text: "Ειδικότητα", datafield: 'codeSpec', width:'15%' },
         { text: "Κιν.Τηλ.", datafield: 'phoneMob',  width: '10%' },
+        { text: "Σταθ.Τηλ.", datafield: 'phoneHom',  width: '10%' },
         { text: "Status", datafield: 'status', width:'5%' },
     ], 
     autoheight: false, height: 300, pageable: false, pagesize: 25, sortable:true, width: '100%', //theme: 'classic',

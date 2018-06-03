@@ -113,6 +113,7 @@ class Teacher(models.Model):
     surname = models.CharField(max_length=64)
     
     #added 2018-04
+    phoneHom = models.CharField(max_length=14, default='26410')
     phoneMob = models.CharField(max_length=14, default='0000-')
 
     #idSchool
