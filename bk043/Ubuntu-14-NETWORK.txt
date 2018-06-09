@@ -1,0 +1,23 @@
+How to restart network in ubuntu server 14.04.04？
+==================================================
+sudo service network-manager restart
+
+==================================================
+When in doubt try:
+
+sudo ifdown <interface>
+sudo ifup <interface>
+
+That should work, if doing this over ssh combine the commands:
+sudo ifdown <interface> && sudo ifup <interface>
+==================================================
+
+To restart network interfaces one by one you can use 
+$ sudo ifconfig interfacename down && sudo ifconfig interfacename up . 
+
+But what if you wanted to restart all interfaces at once without banging off multiple commands?
+
+for i in $(ifconfig -a | sed 's/[ \t].*//;/^\(lo\|\)$/d');do sudo ifconfig $i down && sudo ifconfig $i up;done
+
+
+

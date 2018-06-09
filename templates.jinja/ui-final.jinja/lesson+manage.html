@@ -250,8 +250,17 @@ function makeStatusButtons() {
 
 function setLessonStatusButtonUI (status) {   
     
-    console.log('IN setLessonStatusButtonUI status=' + status);
+    console.log('IN setLessonStatusButtonUI status=' + status);    
 
+    {% if (request.user is has_group("Admin")) == False %} 
+        {% set Foo=1 %}
+    {% endif %} 
+
+    /*
+    //if ( {{StationID}} == 2 ) {
+    if ( request.user is has_group("Admin") ) {
+    }
+    */
     /*
     Button template values
     'default' - the default button's template. The button's style depends only on its "theme" property value.
@@ -272,7 +281,6 @@ function setLessonStatusButtonUI (status) {
     // Handle THE buttonStatus
     //$("#jqxbuttonStatus-" + status).jqxButton({ disabled: false, template: 'danger', });
     
-    // Handle < than buttonStatus
     for (var i = 0 ; i <= status; i++) {
         $("#jqxbuttonStatus-" + i).jqxButton({ disabled: true, template: 'default', });
     }
@@ -283,6 +291,10 @@ function setLessonStatusButtonUI (status) {
         $("#jqxbuttonStatus-" + i).jqxButton({ disabled: true, template: 'default', });
     }
 }
+
+
+        
+
 
 
 /* ButtonGroup > events*/

@@ -49,7 +49,7 @@ NameVirtualHost *:8000
     
     #Application entry point 
     WSGIScriptAlias / /var/www/html/gradecenter/index.wsgi
-    Alias /static/ /var/www/html/gradecenter/static/
+    Alias /static/ /var/www/html/static/
     
     <Location "/static/">
         Options -Indexes

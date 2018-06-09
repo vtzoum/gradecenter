@@ -3,7 +3,7 @@
 ####################
 
 build/
-db/
+db*/
 .git/
 
 #Unused Statics
@@ -35,3 +35,6 @@ db*.sqlite3
 *.py~
 *.pyc
 *.swo
+
+*.csv
+

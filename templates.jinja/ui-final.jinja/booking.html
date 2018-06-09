@@ -1205,16 +1205,6 @@ function isValidUserSelection() {
         return false;
     };
     
-    var bookingRS = dataAdapterBooking.records;
-    for (i=0; i<bookingRS.length-1; i++){
-        console.log(bookingRS[i].GraderID_id +"-"+ graderData.id +"-"+ bookingRS[i].FolderID_id +"-"+ folderData.id);
-        if ((bookingRS[i].GraderID_id==graderData.id) && (bookingRS[i].FolderID_id==folderData.id)) {
-            showModalMyAlert("Ο Βαθμολογητής βαθμολόγησε ξανά τον ΙΔΙΟ Φάκελο!");
-            console.log(bookingRS[i]);
-            return false;
-        }
-    };
-
     /*
     To See coding again!
     if ((location != 1) && ((station == 0) || ((station == 2)) ) {
@@ -1231,6 +1221,21 @@ function isValidUserSelection() {
         //showModalMyAlert("Ασυμφωνία Σταθμού & Θέσης Φακέλου!");
         return false;
    };
+
+    // Apothiki+Out > Check if Grader got same Folder before > Applies on in 
+    if ((station == 0) && (location==0)) {
+    var bookingRS = dataAdapterBooking.records;
+        for (i=0; i<bookingRS.length-1; i++){
+            console.log(bookingRS[i].GraderID_id +"-"+ graderData.id +"-"+ bookingRS[i].FolderID_id +"-"+ folderData.id);
+            if ((bookingRS[i].GraderID_id==graderData.id) && (bookingRS[i].FolderID_id==folderData.id)) {
+                showModalMyAlert("Ο Βαθμολογητής βαθμολόγησε ξανά τον ΙΔΙΟ Φάκελο!");
+                console.log(bookingRS[i]);
+                return false;
+            }
+        };
+
+   };
+    
     return true;
 };
 
@@ -2206,8 +2211,6 @@ function myBook() {
     //event.preventDefault();
     // check required values 
 };
-
-*/
 
 
 

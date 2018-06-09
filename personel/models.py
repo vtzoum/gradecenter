@@ -103,8 +103,8 @@ codeAfm codeGrad codeSpec name surname
 """
 class Teacher(models.Model):
 
-    codeAfm = models.CharField(max_length=8, null = False, unique = True )
-    codeGrad = models.CharField(max_length=8, null = False, unique = True)
+    codeAfm = models.CharField(max_length=12, null = False, unique = True )
+    codeGrad = models.CharField(max_length=12, null = False, unique = True)
     
     codeSpec = models.CharField(max_length=8)
     codeSpecId = models.SmallIntegerField(null = True)

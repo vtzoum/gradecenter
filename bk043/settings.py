@@ -181,9 +181,9 @@ WSGI_APPLICATION = 'bk043.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': os.path.join(BASE_DIR, 'dbStartUp.sqlite3'),
-        #'NAME': os.path.join(BASE_DIR, 'dbBK043_2017.sqlite3'),
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        #'NAME': os.path.join(BASE_DIR, 'dbDemo-2018.sqlite3'),
+        #'NAME': os.path.join(BASE_DIR, 'dbBK043_2017.sqlite3'),
     }
 }
 
@@ -223,18 +223,18 @@ ROOT_PATH = os.path.dirname(__file__)
 #STATIC_URL = '/static/'
 #Production@APACHE2
 #STATIC_ROOT = os.path.join(BASE_DIR, "../static")
-#=======
 
 #Development
-STATIC_ROOT = os.path.join(BASE_DIR)
-STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR)
+#STATIC_URL = '/static/'
 #STATIC_ROOT = os.path.join(BASE_DIR)
 #STATIC_URL = 'http://mydomain/static/'
 
 
 #Production@APACHE2
-#STATIC_ROOT = os.path.join(BASE_DIR)
-#STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR)
+STATIC_URL = '/static/'
 #STATIC_URL = 'http://mydomain/static/'
 #OLD-probalby Wrong : STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
