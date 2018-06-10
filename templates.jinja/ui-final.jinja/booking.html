@@ -1176,6 +1176,17 @@ function isValidUserSelection() {
     
     //console.log(status + "-" + folderID+ "-" + currentFolderID+ "-" + folderData.codeType+ "-" + graderData.isgraderC);
 
+    //!non-compatibility
+    //[1, 2, 3].includes(2); // true
+    //if ((station == 0) && ([2].includes(location)) {
+    // to see CODING values again // tyhey mislead me but not a BIIIIG problm
+    if (((station == 0) && (location==2)) || ((station == 1) && (location==0))) {
+    //if (((station == 0) && (location == 0)) || ((station == 1) && (location == 2))) {
+        showModalMyAlert("Μή Επιτρεπτή Πράξη για τον Σταθμό & τον Φάκελο!");
+        //showModalMyAlert("Ασυμφωνία Σταθμού & Θέσης Φακέλου!");
+        return false;
+   };
+
     // folder > complete
     if (status == 2){
         showModalMyAlert("Ο Φάκελος Έχει Ολοκληρωθεί!");
@@ -1211,16 +1222,7 @@ function isValidUserSelection() {
         return false;
     };
     */
-    //!non-compatibility
-    //[1, 2, 3].includes(2); // true
-    //if ((station == 0) && ([2].includes(location)) {
-    // to see CODING values again // tyhey mislead me but not a BIIIIG problm
-    if (((station == 0) && (location==2)) || ((station == 1) && (location==0))) {
-    //if (((station == 0) && (location == 0)) || ((station == 1) && (location == 2))) {
-        showModalMyAlert("Μή Επιτρεπτή Πράξη για τον Σταθμό & τον Φάκελο!");
-        //showModalMyAlert("Ασυμφωνία Σταθμού & Θέσης Φακέλου!");
-        return false;
-   };
+
 
     // Apothiki+Out > Check if Grader got same Folder before > Applies on in 
     if ((station == 0) && (location==0)) {

@@ -11,6 +11,7 @@ static/themes/flat-admin-bootstrap-templates-master/unused/
 static-unused/*
 
 #Scripts
+scripts/
 
 #Test 
 test/
@@ -30,7 +31,7 @@ uploads/*
 Session-*.vim
 
 #All SQLITE DB
-db*.sqlite3
+db*.sqlite3*
 
 *.py~
 *.pyc
