@@ -34,6 +34,13 @@ from django.http import Http404, HttpResponse,HttpResponseRedirect, HttpResponse
 
 from functools import wraps
 
+
+from personel.helpScripts import td2DayHourMin
+
+
+#############################################
+# 
+#############################################
 def has_group(user, group_name): 
     try:
         group = Group.objects.get(name=group_name) 
@@ -41,9 +48,10 @@ def has_group(user, group_name):
        group = None
     return True if group in user.groups.all() else False 
 
-"""
-Returns tuple (name, StationID)
-"""
+
+#############################################
+# Returns tuple (name, StationID)
+#############################################
 def jinjaCheckGroup(user): 
 
     user_groups = user.groups.all().values_list('name')
@@ -78,6 +86,4 @@ def jinjaCheckGroup(user):
 
 #def lower(value):
 #    return value.lower()
-
-
 

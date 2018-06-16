@@ -4,6 +4,11 @@
     ΜΑΘΗΜΑTA (ΔΙΑΧ.)-JN
 {% endblock %}
 
+<!-- For dynamic UI -->
+{% set user = jinjaCheckGroup(request.user)[1] %}
+{% if user==2 %} {% set CanEdit = True %} {% else %} {% set CanEdit = False %} {% endif %}
+
+
 <!-- Start Block HTML -->
 {% block html %}
 
@@ -48,6 +53,8 @@ $(document).ready(function () {
 //handle Ajax messages
 helperAjaxMessagesProcess();
 
+if ({{user}} == 2) { canEdit = true;}  else {canEdit = false;}
+
 /****************************
 -jqxLoader
 ****************************/
@@ -89,7 +96,7 @@ var sourceLesson = {
     sortdirection: 'asc',     
     // UPDATE ONLY C Folder Data 
     updaterow: function (rowid, rowdata, commit) {
-        var data = "action=updatelessonc&amp;" + $.param(rowdata);
+        var data = "action=update&amp;" + $.param(rowdata);
         //alert ('Edit B4 .ajax');
         $.ajax({
             method: 'POST', 
@@ -155,7 +162,7 @@ $("#jqxgridLesson").jqxGrid({
                 editor.jqxDropDownList({ source: dataAdapterSchoolToGradeType, displayMember: 'lexType', valueMember: 'type', });
             }, // createeditor
         },
-        { text: 'Τετράδια(AB)', datafield: 'booksAB', editable: false, filtertype: 'input', width: '8%',
+        { text: 'Τετράδια(AB)', datafield: 'booksAB', editable: canEdit, filtertype: 'input', width: '8%',
             aggregates: ['sum'], 
         },
         { text: 'Φάκελοι(AB)', datafield: 'booksABFolders', editable: false, filtertype: 'input', width: '8%',

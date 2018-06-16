@@ -1,7 +1,7 @@
 ﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
 
 {% block title %}
-    BOOKING-JN
+    BOOKING ΔΙΟΡΘΩΣΕΙΣ -JN
 {% endblock %}
            
 
@@ -10,7 +10,6 @@
 
 <!-- AJAXRQST MessageBox -->
 <div id="jsonMessages"></div>
-
 
 <!-- row -->
 <div class="row" style="margin-top:-20px;">
@@ -25,7 +24,7 @@
     </div>
 
     <div class="col-lg-1" style="margin-left: 0px;">
-        {% if request.user is has_group("DBoperator") %} 
+        {% if request.user is has_group("Admin") %} 
             <button id="jqxbuttonDeleteLastBooking" type='button' class='btn btn-danger' style=''><i class="fa fa-check-square-o right"></i>ΑΝΑΙΡΕΣΗ</button>
         {% endif %} 
     </div>
@@ -67,9 +66,9 @@
 <!-- /.col -->
 
 
-<div class="col-lg-6 no-margin-bottom">
+<div class="col-lg-6 no-margin-bottom" >
 
-    <div class="panel panel-primary fresh-color" >
+    <div class="panel panel-primary fresh-color" style="margin: -15px -0px -0px -10px;">
         <div class="panel-heading">
             <h3 class="panel-title"><i class="fa fa-exchange fa-fw"></i> ΧΡΕΩΣΕΙΣ </h3>
         </div>

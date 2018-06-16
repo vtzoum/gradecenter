@@ -19,6 +19,7 @@ from django.views.generic import TemplateView
 
 from personel.decorators import *
 
+from .views import *
 from .views_docx import *
 from .views_pdf import *
 from .views_xlsx import *
@@ -76,6 +77,11 @@ urlpatterns = [
     url(r'^xls/folder/status0/$', staff_or_403(xlsFolderStatus0), name='xlsfolderstatus0'),
     url(r'^xls/folder/sum/$', staff_or_403(xlsFolderSum), name='xlsfoldersum'),
 
+    # HTML
+    url(r'^html/folder/now/$', htmlFolderNow, name='htmlfoldernow'),
+    url(r'^html/grader/workv3/$', htmlGraderWorkv3, name='htmlgraderworkv3'),
+    #url(r'^booking03/$', group_required_or_403('Grammateia', 'Filaxi', 'Apothiki')(TemplateView.as_view(template_name='ui-final.jinja/booking+v0.3.html'))),
+    
     #XLS GRADER
     url(r'^xls/grader/$', staff_or_403(xlsGrader), name='xlsgrader'),
     url(r'^xls/grader/workv3/$', staff_or_403(xlsGraderWorkv3), name='xlsgraderworkv3'),

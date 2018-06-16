@@ -19,11 +19,13 @@ from django import template
 from django.contrib.auth.models import Group 
 
 
+from personel.helpScripts import td2DayHourMin
+
+
 ################################
 # MUST
 ################################                              
 register = template.Library() 
-
 
 
 ################################
@@ -181,6 +183,14 @@ def has_group(user, group_name):
 @register.filter
 def lower(value):
     return value.lower()
+
+
+################################
+# 2018
+################################ 
+@register.filter(name='td2DayHourMin') 
+def td2DayHourMin(time): 
+    return td2DayHourMin(time)
 
 
 

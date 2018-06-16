@@ -1,0 +1,128 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΦΑΚΕΛΟΙ ΠΟΥ ΔΙΟΡΘΩΝΟΝΤΑΙ ΤΩΡΑ
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+
+<div class="page-title">
+    <span class="title">ΦΑΚΕΛΟΙ ΠΟΥ ΔΙΟΡΘΩΝΟΝΤΑΙ ΤΩΡΑ</span>
+</div>                        
+ 
+<!--
+    report_title = u"ΦΑΚΕΛΟΙ ΠΟΥ ΔΙΟΡΘΩΝΟΝΤΑΙ ΤΩΡΑ-"
+    #worksheet_s.merge_range(report_title_cellspan, report_title, title_STYLE)
+    worksheet_s.write('D2', report_title, title_STYLE)
+
+    # write header
+    #start_row=4    
+    worksheet_s.write(4, 0, ugettext(u"AA"), header_STYLE)
+    worksheet_s.write(4, 1, ugettext(u"Μάθημα"), header_STYLE)
+    worksheet_s.write(4, 2, ugettext(u"Τύπος"), header_STYLE)
+    worksheet_s.write(4, 3, ugettext(u"Φάκελος "), header_STYLE)
+    worksheet_s.write(4, 4, ugettext(u"Τετράδια"), header_STYLE)
+    worksheet_s.write(4, 5, ugettext(u"Κατάσταση"), header_STYLE)
+    worksheet_s.write(4, 6, ugettext(u"Θέση"), header_STYLE)
+    worksheet_s.write(4, 7, ugettext(u"Βαθμολογητής"), header_STYLE)
+
+    row = 0 
+    for idx, data in enumerate(dataDB):
+        row = start_row +1 + idx        
+        
+        
+        worksheet_s.write_string(row, 1, val, cell_STYLE)        
+
+        val = (Folder.lexCodeType(Folder, data['f'].codeType))
+        worksheet_s.write_string(row, 2, val, cell_STYLE)        
+        
+        val = data['f'].no
+        worksheet_s.write_number(row, 3, val, cellC_STYLE)        
+
+        val = data['f'].books
+        worksheet_s.write_number(row, 4, val, cellC_STYLE)        
+        
+        val = (Folder.lexCodeStatus(Folder, data['f'].codeStatus))
+        worksheet_s.write_string(row, 5, val, cell_STYLE)        
+        
+        val = (Folder.lexCodeLocation(Folder, data['f'].codeLocation))
+        worksheet_s.write_string(row, 6, val, cell_STYLE)        
+
+        #R.FolderID.codeStatus, R.GraderID.LessonID.id, R.GraderID.isgraderC, R.GraderID.LessonID.name, R.GraderID.LessonID.surname
+        val = data['b'].GraderID.TeacherID.surname
+        val = val + " " + data['b'].GraderID.TeacherID.name
+        worksheet_s.write_string(row, 7, val, cellC_STYLE)        
+
+
+
+<table>
+{% for d in data %}
+<TR> 
+   <TD class="c2">ΜΑΘΗΜΑ: {{d['b'].GraderID.LessonID.name}}</TD>
+   <TD class="c2">{{d['f'].no}}</TD>
+   <TD class="c2">{{d['b'].GraderID.TeacherID.surname}}</TD>
+   <TD class="c2">{{d['b'].GraderID.TeacherID.name}}</TD>
+</TR>
+{% endfor %}
+</table>
+
+
+-->
+
+
+<!-- active success info warning danger -->
+<div class="row">
+    <div class="col-sm-12 col-md-10">
+        <!-- <div class="sub-title">Contextual classes <span class="description">( .active , .success , .info , .warning , .danger )</span></div> -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ΜΑΘΗΜΑ</th>
+                    <th>ΦΑΚΕΛΟΣ</th>
+                    <th>ΕΠΩΝΥΜΟ</th>
+                    <th>ΟΝΟΜΑ</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for d in data %}            
+            <!-- class="{{loop.cycle('active', 'success', 'info', 'warning', 'danger')}}" -->
+            <tr class="{{loop.cycle('active', 'warning')}}">
+                <th scope="row">{{loop.index}}</th>
+               <td >{{d['b'].GraderID.LessonID.name}}</td>
+               <td >{{d['f'].no}}</td>
+               <td >{{d['b'].GraderID.TeacherID.surname}}</td>
+               <td >{{d['b'].GraderID.TeacherID.name}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">    
+
+$(document).ready(function () {
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

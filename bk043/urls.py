@@ -334,6 +334,7 @@ urlpatterns = [
     url(r'^grid/filter/row/$', TemplateView.as_view(template_name='ui-jqwidgets/grid+filter+row.html')),    
     url(r'^grid/format/$', TemplateView.as_view(template_name='ui-jqwidgets/grid+format.html')),
     url(r'^grid/keyboard/$', TemplateView.as_view(template_name='ui-jqwidgets/grid+keyboard.html')),
+    url(r'^grid/keyboard1/$', TemplateView.as_view(template_name='ui-jqwidgets/grid+keyboard1.html')),
     url(r'^grid/msg/$', TemplateView.as_view(template_name='ui-jqwidgets/grid+msg.html')),
     url(r'^gridgraders/$', TemplateView.as_view(template_name='ui-jqwidgets/grid-graders-mn.html')),
     url(r'^grid/row/disable/$', TemplateView.as_view(template_name='ui-jqwidgets/grid+row+disable.html')),

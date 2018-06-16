@@ -183,6 +183,7 @@ def jsonLessonCrud(request):
             id = request.POST.get('id', None)
             #Fakeloi 1o 2o xeri (AB)
             #booksAB booksABFolders 
+            booksAB = request.POST.get('booksAB', None)
             booksC = request.POST.get('booksC', None)
             booksCFolders = request.POST.get('booksCFolders', None)
             name = request.POST.get('name', None)
@@ -191,7 +192,7 @@ def jsonLessonCrud(request):
             try:    #with transaction.atomic():
                 record = Lesson.objects.filter(id=id)
                 #record.update( booksC = booksC, booksCFolders = booksCFolders, name=name , type = type, )
-                record.update( name=name , type = type, )
+                record.update( name=name , type = type, booksAB = booksAB, )
                 msg = "Επιτυχής τροποποίηση εγγραφής!"                 
                 helperMessageLog(request, msg, tag='info')
             except DatabaseError:
