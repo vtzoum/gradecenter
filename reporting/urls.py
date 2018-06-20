@@ -75,13 +75,20 @@ urlpatterns = [
     url(r'^xls/folder/history/$', staff_or_403(xlsFolderHistory), name='xlsfolderhistory'),
     url(r'^xls/folder/now/$', staff_or_403(xlsFolderNow), name='xlsfoldernow'),
     url(r'^xls/folder/status0/$', staff_or_403(xlsFolderStatus0), name='xlsfolderstatus0'),
+    url(r'^xls/folder/status1/$', staff_or_403(xlsFolderStatus1), name='xlsfolderstatus1'),
     url(r'^xls/folder/sum/$', staff_or_403(xlsFolderSum), name='xlsfoldersum'),
 
     # HTML
     url(r'^html/folder/now/$', htmlFolderNow, name='htmlfoldernow'),
+    url(r'^html/folder/sum/$', htmlFolderSum, name='htmlfoldersum'),
     url(r'^html/grader/workv3/$', htmlGraderWorkv3, name='htmlgraderworkv3'),
     #url(r'^booking03/$', group_required_or_403('Grammateia', 'Filaxi', 'Apothiki')(TemplateView.as_view(template_name='ui-final.jinja/booking+v0.3.html'))),
     
+
+    #CHARTS
+    url(r'^chart/folder/sum$', chartFolderSum, name='chartfoldersum'),
+
+
     #XLS GRADER
     url(r'^xls/grader/$', staff_or_403(xlsGrader), name='xlsgrader'),
     url(r'^xls/grader/workv3/$', staff_or_403(xlsGraderWorkv3), name='xlsgraderworkv3'),

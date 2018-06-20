@@ -566,7 +566,7 @@ def xlsFolderStatus0(request, LessonID=None):
         lesson = None
         data = Folder.objects.all()
 
-    dataDB = data.values('codeLocation', 'codeStatus', 'codeType', 'LessonID', 'LessonID__name')\
+    dataDB = data.values('codeLocation', 'codeStatus', 'codeType', 'LessonID', 'LessonID__name', 'LessonID__booksABFolders', 'LessonID__booksCFolders', )\
         .annotate(countCodeType=Count('codeStatus'),)\
         .order_by('LessonID','codeType','codeStatus')
         #{'codeType': 0, 'countCodeType': 21, 'LessonID': 4, 'codeStatus': 0}    

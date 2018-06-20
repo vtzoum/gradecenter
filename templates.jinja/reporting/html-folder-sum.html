@@ -1,0 +1,73 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΣΥΝΟΛΑ ΦΑΚΕΛΩΝ
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+
+<div class="page-title">
+    <span class="title">ΣΥΝΟΛΑ ΦΑΚΕΛΩΝ</span>
+</div>                        
+ 
+
+<!-- active success info warning danger -->
+<div class="row">
+    <div class="col-sm-12 col-md-10">
+        <!-- <div class="sub-title">Contextual classes <span class="description">( .active , .success , .info , .warning , .danger )</span></div> -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ΜΑΘΗΜΑ</th>
+                    <th>Τύπος</th>
+                    <th>Κατηγορία</th>
+                    <th>Πλήθος</th>
+                    <th>Θέση</th>
+                    <th>Κατάσταση</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for d in data %}            
+            <!-- class="{{loop.cycle('active', 'success', 'info', 'warning', 'danger')}}" -->
+            <tr class="{{loop.cycle('active', 'warning')}}">
+                <td scope="row">{{loop.index}}</td>
+                <td >{{d['LessonID__name']}}</td>
+                <td >{{d['LessonID__type'] | lexLessonType}}</td>
+                <td >{{d['codeType'] | lexFolderCodeType}}</td>
+                <td >{{d['countCodeType']}}</td>
+                <td >{{d['codeLocation'] | lexFolderCodeLocation}}</td>   
+                <td >{{d['codeStatus'] | lexFolderCodeStatus}}</td>
+           </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">    
+
+$(document).ready(function () {
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

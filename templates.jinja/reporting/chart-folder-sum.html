@@ -1,0 +1,181 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΣΥΝΟΛΑ ΦΑΚΕΛΩΝ
+{% endblock %}
+
+<!-- Start Block HTML -->
+{% block html %}
+
+
+<div class="page-title">
+    <span class="title">ΣΥΝΟΛΑ ΦΑΚΕΛΩΝ</span>
+</div>                        
+ 
+<!-- Lesson-->
+<div id='jqxcomboboxLesson'></div>        
+
+<!-- chart --> 
+<div id='chartContainer' style="width: 850px; height: 500px;"></div>
+
+{% set chartData = data %}
+{{data}}
+<!-- End Block HTML -->
+{% endblock %}
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">    
+
+$(document).ready(function () {
+
+let searchParams = new URLSearchParams(window.location.search)
+let param = searchParams.get('LessonID'); // name
+
+var sampleDataPie = {{data}};
+
+    /*
+
+
+var sampleDataPie = [
+    {id: 'Internet Explorer', val: 33.3} , {id: 'Firefox', val: 26.5},  {id: 'Chrome', val: 25.4}, 
+    {id: 'Safari', val: 7.0},  {id: 'Opera', val: 4.6}, {id: 'Other', val: 3.2} 
+    ];
+
+
+var sampleDataPie = [
+    {'LessonID__name': 'x', 'LessonID': 1, 'countCodeLocation': 2, 'countCodeType': 2, 'codeLocation': 0, 'codeStatus': 0, 'codeType': 0, 'LessonID__type': 0, 'countCodeStatus': 2}, {'LessonID__name': 'ZZZZ', 'LessonID': 1, 'countCodeLocation': 18, 'countCodeType': 18, 'codeLocation': 2, 'codeStatus': 1, 'codeType': 0, 'LessonID__type': 0, 'countCodeStatus': 18}, {'LessonID__name': 'YYY', 'LessonID': 1, 'countCodeLocation': 10, 'countCodeType': 10, 'codeLocation': 0, 'codeStatus': 0, 'codeType': 1, 'LessonID__type': 0, 'countCodeStatus': 10}
+    ];
+*/
+//html = render(request, 'reporting/chart-folder-sum.html', {'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
+//alert (chartData);
+/*
+// prepare chart data as an array
+var source = {
+    datatype: "json",
+    datafields: [
+        { name: 'codeStatus' },
+        { name: 'codeType' },
+        { name: 'codeLocation' },
+        { name: 'LessonID__name' },
+        { name: 'countCodeType' }
+        { name: 'countCodeStatus' }
+        { name: 'countCodeLocation' }
+    ],
+    url: '/static/jqwidgets/demos/sampledata/desktop_browsers_share_dec2011.txt',
+    // [ {id: 'Internet Explorer', val: 33.3} , {id: 'Firefox', val: 26.5}, {id: 'Chrome', val: 25.4}, {id: 'Safari', val: 7.0}, {id: 'Opera', val: 4.6}, {id: 'Other', val: 3.2} ] ;
+    // [ {Internet Explorer, 33.3} , {Firefox, 26.5}, {Chrome, 25.4}, {Safari, 7.0}, {Opera, 4.6}, {Other, 3.2} ] ;
+};
+var dataAdapter = new $.jqx.dataAdapter(source, { 
+    async: false, autoBind: true, 
+    loadError: function (xhr, status, error) { 
+        alert('Error loading "' + source.url + '" : ' + error); 
+    }, //loadError
+});
+*/
+
+// prepare jqxChart settings
+var settings = {
+    title: "Desktop browsers share",
+    description: "(source: wikipedia.org)",
+    enableAnimations: true,
+    showLegend: false,
+    showBorderLine: true,
+    legendPosition: { left: 520, top: 140, width: 100, height: 100 },
+    padding: { left: 5, top: 5, right: 5, bottom: 5 },
+    titlePadding: { left: 0, top: 0, right: 0, bottom: 10 },
+    //source: dataAdapter,
+    source: sampleDataPie,
+    colorScheme: 'scheme02',
+    seriesGroups: [
+            { 
+                type: 'pie', showLabels: true,
+                series: [ { 
+                    dataField: 'countCodeLocation', displayText: 'Browser', 
+                    labelRadius: 120, initialAngle: 15,
+                    radius: 170, centerOffset: 0,
+                    formatSettings: { sufix: '%', decimalPlaces: 1 }
+                } ]
+            }
+        ] // series groups}
+};
+// setup the chart
+$('#chartContainer').jqxChart(settings);
+
+
+
+/**********************
+// jqxcomboboxLessons
+***********************/
+//Lessons > RecordSet  
+var sourceLesson = {
+    datatype: "json",
+    datafields: [
+        {name: "id"}, 
+        {name: "name"}, 
+        {name: 'category', type: 'string' },
+        {name: 'type', type: 'integer' }, // number, 
+        {name: 'lexType', value: 'type', values: { source: dataAdapterSchoolToGradeType.records, value: 'type', name: 'lexType' } },
+    ],
+    url: '/lesson/crud/', 
+}; //source
+
+// DataAdapter
+var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson,
+    {
+        beforeLoadComplete: function (records) {
+            for (var i = 0; i < records.length-1; i++) {
+                records[i]['name'] = records[i]['name']+"-"+ records[i]['category'] +"-"+ records[i]['lexType'] ;
+            }//for
+                return records;
+        }//beforeLoadComplete
+    }
+);
+//var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
+
+//http://jsfiddle.net/jqwidgets/5SnVH/
+$("#jqxcomboboxLesson").jqxComboBox({
+    source: dataAdapterLesson, 
+    valueMember: "id", 
+    displayMember: "name", 
+    //selectedIndex: param, //selectIndex:-1, 
+    placeHolder:"Επιλέξτε Μάθημα...",  
+    //itemHeight: 20, height: 30, 
+    width: '100%', theme:theme, 
+    renderer: function (index, label, value) {
+        //var datarecord = data[index];
+        var datarecord = dataAdapterLesson.records[index];    
+        //var row = "<b>"+label +"</b> " + datarecord.category + "[<u>" + datarecord.lexType + "</u>]" ;
+        var row = "<b>"+label +"</b> ";
+        return row;
+    }
+    /*
+    */
+});
+
+var item = $("#jqxcomboboxLesson").jqxComboBox('getItem', 0);
+var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex'); 
+$("#jqxcomboboxLesson").jqxComboBox('selectIndex', 1);
+//alert(item);
+
+
+//$("#jqxcomboboxLesson").jqxComboBox('selectItem', 2);
+// jqxcomboboxLesson > Events
+$('#jqxcomboboxLesson').on('change', function (event) {    
+    if (event.args) {
+        var data = dataAdapterLesson.records[event.args.index];
+        url = '/reporting/chart/folder/sum?LessonID='+ data.id;
+        window.location = url; // redirect
+    }
+});// combo.event
+
+
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+

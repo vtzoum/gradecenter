@@ -12,8 +12,9 @@
 </div>                        
 
 
-<div id="printLinks" class="row">
+<div class="row">
 
+  <div id="printLinks">
   <!-- START menuItem Αναφορές -->
   {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") %} 
 
@@ -24,7 +25,8 @@
      <a id="printSchoolCoverLetter" href="/reporting/pdf/school/coverletter/" class="btn btn-sm btn-primary" role="button">Διαβιβαστικό Σχολείων(PDF)</a>
      <a id="printSchoolCoverLetter" href="/reporting/doc/school/coverletter/" class="btn btn-sm btn-primary" role="button">Διαβιβαστικό Σχολείων(DOC)</a>
    </div>
-
+  </div>
+<!-- ./printLinks-->
     
    <!--  -->
     <div class="col-xs-2"> <!-- -->

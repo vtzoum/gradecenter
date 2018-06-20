@@ -24,9 +24,86 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from personel.models import *
 from personel.helpScripts import td2DayHourMin
 
-from .utils import *
+from reporting.utils import *
+from reporting.utils_chart import *
 #from .utils import get_temperatures, get_wind_speed, get_str_days, get_random_colors, precip_prob_sum, get_percentage, legendcolors = get_random_colors(10)
 
+
+###################################
+# JSON DATA fro HTML/CHART Views
+###################################
+def jsonFolderSum(request):
+    pass 
+
+#############################################
+# CHARTS
+#############################################
+def chartFolderSum(request, LessonID=None):
+    
+    #Lesson as filter
+    LessonID = request.GET.get('LessonID', None)    
+    LessonID = None 
+    if LessonID:
+        lesson = Lesson.objects.get(id=LessonID)
+        data = Folder.objects.filter(LessonID=LessonID)
+    else:
+        lesson = None
+        data = Folder.objects.all()
+     
+    #Data
+    #data = FolderJoinTables(LessonID, exclude=False).order_by('LessonID__name', 'codeType', 'no')
+    #Unicode FIELD 'LessonID__name'causes problems in jqxcharts - does not apply - So I removed it 
+    #data = data.values('codeStatus', 'codeType', 'codeLocation', 'LessonID', 'LessonID__name', 'LessonID__type',)\
+    data = data.values('codeStatus', 'codeType', 'LessonID', 'LessonID__name', 'LessonID__type',)\
+        .annotate(countCodeType=Count('codeType'), countCodeStatus=Count('codeStatus'), )\
+        .order_by('LessonID__name', 'LessonID__type', 'codeType')
+
+
+    """
+    sums = data.values('codeType', 'countCodeType', 'codeStatus', 'LessonID', 'LessonID__name', 'LessonID__type',)\
+        .order_by('LessonID','codeType')    
+    """
+    #print sums
+
+    chartData = makeDict4ChartData(data)
+    """    
+    fDict = [{'Lesson': 'A', 'AB':30,'A0':8,'A1':5,'A2':0, 'B0':6,'B1':4,'B2':7, 'C0':1,'C1':1,'C2':0}, 
+                {'Lesson': 'B', 'AB':22,'A0':4,'A1':5,'A2':0, 'B0':4,'B1':4,'B2':5, 'C0':0,'C1':2,'C2':1},
+            ]
+    """
+
+    #rint data
+    #print sums
+
+    html = render(request, 'reporting/chart-folder-sum-stackcol.html', {'chartData': chartData, 'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
+    #html = render(request, 'reporting/chart-folder-sum.html', {'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
+    return HttpResponse(html)
+
+
+
+
+#############################################
+# EIKONA FALKELVN 
+#############################################
+def htmlFolderSum(request, LessonID=None):
+    
+    #Lesson as filter
+    LessonID = request.GET.get('LessonID', None)
+    if LessonID:
+        lesson = Lesson.objects.get(id=LessonID)
+        data = Folder.objects.filter(LessonID=LessonID)
+    else:
+        lesson = None
+        data = Folder.objects.all()
+    
+    #Data
+    #data = FolderJoinTables(LessonID, exclude=False).order_by('LessonID__name', 'codeType', 'no')
+    data = data.values('codeStatus', 'codeType', 'codeLocation', 'LessonID', 'LessonID__name', 'LessonID__type',)\
+        .annotate(countCodeType=Count('codeType'), countCodeStatus=Count('codeStatus'), countCodeLocation=Count('codeLocation'))\
+        .order_by('LessonID','codeType')
+
+    html = render(request, 'reporting/html-folder-sum.html', {'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
+    return HttpResponse(html)
 
 #############################################
 # Fakeloi pou diorthonontai twra!
@@ -54,10 +131,9 @@ def htmlFolderNow(request, LessonID=None):
     #xlsx_data = doXlsFolderNow(dataObj, lesson)
     #response.write(xlsx_data)
    
-    html = render(request, 'reporting/html-folders-now.html', {'data': dataObj, 'lesson': lesson, "msg":"Hello"})
+    html = render(request, 'reporting/html-folder-now.html', {'data': dataObj, 'lesson': lesson, "msg":"Hello"})
     #html = render(request, 'reporting/html-folders-now.html', {'data': 'Foo', "msg":"Hello"})
     return HttpResponse(html)
-   
 
 #########################################
 #ΕΙΚΟΝΑ ΕΡΓΑΣΙΑΣ ΒΑΘΜΟΛΟΓΗΤΗ
@@ -88,7 +164,7 @@ def htmlGraderWorkv3(request, LessonID=None):
         for b in bSet: 
             print "\t", b['FolderID__id'], b['sumAction'], b['wasTypeOf']
         """
-    print data
+    #print data
 
 
     #return render_template("clever_template", clever_function=lambda x: clever_function x)

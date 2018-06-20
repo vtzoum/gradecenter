@@ -451,7 +451,7 @@ def doXlsBookingWeekdaysCount (dataDB, lesson=None):
         #worksheet_s.write(row, 5, val, cellC_STYLE)        
 
     # change column widths
-    worksheet_s.set_column('A:A', num_col_width)
+    worksheet_s.set_column('A:A', numColWidth)
     worksheet_s.set_column('B:C', afm_col_width)
     worksheet_s.set_column('D:E', nameColWidth)
     worksheet_s.set_column('F:F', 8)
@@ -563,7 +563,7 @@ def doXlsBookingWeekdaysDetails (dataDB, lesson=None):
     worksheet_s.set_column('C:C', numColWidth)  
     worksheet_s.set_column('D:D', dateColWidth)  # Lesson column
     worksheet_s.set_column('E:F', nameColWidth)  
-    worksheet_s.set_column('G:G', num_col_width)  
+    worksheet_s.set_column('G:G', numColWidth)  
     worksheet_s.set_column('H:H', dateColWidth)  
 
 
@@ -654,7 +654,7 @@ def doXlsBookingWeekendsCount (dataDB, lesson=None):
 
 
     # change column widths
-    worksheet_s.set_column('A:A', num_col_width)
+    worksheet_s.set_column('A:A', numColWidth)
     worksheet_s.set_column('B:C', afm_col_width)
     worksheet_s.set_column('D:E', nameColWidth)
     worksheet_s.set_column('F:F', 8)
@@ -773,7 +773,7 @@ def doXlsBookingWeekendsDetails (dataDB, lesson=None):
     worksheet_s.set_column('C:C', numColWidth)  
     worksheet_s.set_column('D:D', dateColWidth)  # Lesson column
     worksheet_s.set_column('E:F', nameColWidth)  
-    worksheet_s.set_column('G:G', num_col_width)  
+    worksheet_s.set_column('G:G', numColWidth)  
     worksheet_s.set_column('H:H', dateColWidth)  
 
     row = row + 1
@@ -1141,7 +1141,9 @@ def doXlsFolderStatus0 (dataDB, lesson=None):
     worksheet_s.write(start_row, 2, ugettext(u"Τύπος"), header_STYLE)
     worksheet_s.write(start_row, 3, ugettext(u"Κατάσταση"), header_STYLE)
     worksheet_s.write(start_row, 4, ugettext(u"Πλήθος"), header_STYLE)
-    #worksheet_s.write(start_row, 5, ugettext(u"Θέση"), header_STYLE)
+    
+    worksheet_s.write(start_row, 5, ugettext(u"ΦΑΚΕΛΟΙ(Α|Β)"), header_STYLE)
+    worksheet_s.write(start_row, 6, ugettext(u"ΦΑΚΕΛΟΙ(ΑNA)"), header_STYLE)
 
     # column widths
     lessonColWidth = 15
@@ -1169,14 +1171,14 @@ def doXlsFolderStatus0 (dataDB, lesson=None):
 
         #[{'countCodeLocation': 4, 'countCodeType': 4, 'codeStatus': 0, 'codeType': 0, 'LessonID': 4, 'countCodeStatus': 4},
         val = data['LessonID__name']
-        worksheet_s.write_string(row, 1, val, cell_STYLE)        
+        worksheet_s.write_string(row, 1, val, cellL_STYLE)        
         #if len(val) > lessonColWidth: lesson_col_width = len(val)
 
         val = (Folder.lexCodeType(Folder, data['codeType']))
         #val = data['codeType']
         worksheet_s.write_string(row, 2, val, cell_STYLE)        
         
-        val = (Folder.lexCodeStatus(Folder, data['codeStatus']))
+        val = (Folder.lexCodeStatus(Folder, data['codeStatus']))[0:4]
         #val = data['codeStatus']
         worksheet_s.write_string(row, 3, val, cell_STYLE)        
         
@@ -1184,11 +1186,17 @@ def doXlsFolderStatus0 (dataDB, lesson=None):
         val = data['countCodeType']
         worksheet_s.write_number(row, 4, val, cellC_STYLE)        
         
-        #val = data['codeLocation']
-        #worksheet_s.write_string(row, 4, val, cell_STYLE)        
+        val = data['LessonID__booksABFolders']
+        worksheet_s.write_number(row, 5, val, cell_STYLE)        
+        
+        val = data['LessonID__booksCFolders']
+        worksheet_s.write_number(row, 6, val, cell_STYLE)        
+        
         
     # change column widths
-    worksheet_s.set_column('B:E', strColWidth) 
+    worksheet_s.set_column('B:B', 30) 
+    worksheet_s.set_column('C:C', 10) 
+    worksheet_s.set_column('E:E', 7) 
 
     row = row + 1
 	

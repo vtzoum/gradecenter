@@ -506,6 +506,20 @@ function capitalizeFirstLetter(string) {
 ////////////////////////////
 // CHART funcs
 ////////////////////////////
+function unicodeToChar(text) {
+   return text.replace(/\\u[\dA-F]{4}/gi,
+          function (match) {
+               return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+          });
+}
+
+
+function unicodeEscape(str) {
+  return str.replace(/[\s\S]/g, function (escape) {
+    return '\\u' + ('0000' + escape.charCodeAt().toString(16)).slice(-4);
+  });
+}
+
 /**
 *
 * Create an instance of the BarGauge.
