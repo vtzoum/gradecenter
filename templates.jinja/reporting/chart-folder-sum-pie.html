@@ -4,9 +4,17 @@
     ΣΥΝΟΛΑ ΦΑΚΕΛΩΝ
 {% endblock %}
 
+
 <!-- Start Block HTML -->
 {% block html %}
 
+ <style>
+.chart {
+    width: 50%;
+    height: 300px;
+}
+
+</style>
 
 <div class="page-title">
     <span class="title">ΣΥΝΟΛΑ ΦΑΚΕΛΩΝ</span>
@@ -14,14 +22,21 @@
  
 <!-- Lesson-->
 <div id='jqxcomboboxLesson'></div>        
-
 <!-- chart --> 
+<div id='parent'></div>
+
 <div id='chartContainer' style="width: 850px; height: 500px;"></div>
 
-{% set chartData = data %}
-{{data}}
+{% set chartData1 = chartData %}
+{# data #}
+<!-- <h2>chartData</h2> -->
+{{ chartData }}
+
+    
+
 <!-- End Block HTML -->
 {% endblock %}
+
 
 
 <!-- Block JS -->
@@ -32,82 +47,110 @@ $(document).ready(function () {
 
 let searchParams = new URLSearchParams(window.location.search)
 let param = searchParams.get('LessonID'); // name
-
-var sampleDataPie = {{data}};
-
-    /*
-
-
-var sampleDataPie = [
-    {id: 'Internet Explorer', val: 33.3} , {id: 'Firefox', val: 26.5},  {id: 'Chrome', val: 25.4}, 
-    {id: 'Safari', val: 7.0},  {id: 'Opera', val: 4.6}, {id: 'Other', val: 3.2} 
-    ];
-
-
-var sampleDataPie = [
-    {'LessonID__name': 'x', 'LessonID': 1, 'countCodeLocation': 2, 'countCodeType': 2, 'codeLocation': 0, 'codeStatus': 0, 'codeType': 0, 'LessonID__type': 0, 'countCodeStatus': 2}, {'LessonID__name': 'ZZZZ', 'LessonID': 1, 'countCodeLocation': 18, 'countCodeType': 18, 'codeLocation': 2, 'codeStatus': 1, 'codeType': 0, 'LessonID__type': 0, 'countCodeStatus': 18}, {'LessonID__name': 'YYY', 'LessonID': 1, 'countCodeLocation': 10, 'countCodeType': 10, 'codeLocation': 0, 'codeStatus': 0, 'codeType': 1, 'LessonID__type': 0, 'countCodeStatus': 10}
-    ];
-*/
-//html = render(request, 'reporting/chart-folder-sum.html', {'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
-//alert (chartData);
+var sampleData = {{chartData}};
 /*
-// prepare chart data as an array
-var source = {
-    datatype: "json",
-    datafields: [
-        { name: 'codeStatus' },
-        { name: 'codeType' },
-        { name: 'codeLocation' },
-        { name: 'LessonID__name' },
-        { name: 'countCodeType' }
-        { name: 'countCodeStatus' }
-        { name: 'countCodeLocation' }
-    ],
-    url: '/static/jqwidgets/demos/sampledata/desktop_browsers_share_dec2011.txt',
-    // [ {id: 'Internet Explorer', val: 33.3} , {id: 'Firefox', val: 26.5}, {id: 'Chrome', val: 25.4}, {id: 'Safari', val: 7.0}, {id: 'Opera', val: 4.6}, {id: 'Other', val: 3.2} ] ;
-    // [ {Internet Explorer, 33.3} , {Firefox, 26.5}, {Chrome, 25.4}, {Safari, 7.0}, {Opera, 4.6}, {Other, 3.2} ] ;
-};
-var dataAdapter = new $.jqx.dataAdapter(source, { 
-    async: false, autoBind: true, 
-    loadError: function (xhr, status, error) { 
-        alert('Error loading "' + source.url + '" : ' + error); 
-    }, //loadError
-});
+var sampleData = [{'AB ': 0, 'A1': 4, 'A0': 3, 'A2': 0, 'B0': 12, 'B1': 5, 'B2': 6, 'C2': 0, 'Lesson': u'\u03a6\u03a5\u03a3\u0399\u039a\u0397', 'C0': 0, 'C1': 0}, 
+    {'AB ': 0, 'A1': 4, 'A0': 3, 'A2': 0, 'B0': 12, 'B1': 5, 'B2': 6, 'C2': 0, 'Lesson': 'Φ2' , 'C0': 0, 'C1': 0}
+];
+  
+var sampleDataPie = [
+    {'LessonID__name': 'x', 'LessonID': 1, 'countCodeLocation': 2, 'countCodeType': 2, 'codeLocation': 0, 'codeStatus': 0, 'codeType': 0, 'LessonID__type': 0, 'countCodeStatus': 2}, 
+    {'LessonID__name': 'ZZZZ', 'LessonID': 1, 'countCodeLocation': 18, 'countCodeType': 18, 'codeLocation': 2, 'codeStatus': 1, 'codeType': 0, 'LessonID__type': 0, 'countCodeStatus': 18},
+    {'LessonID__name': 'YYY', 'LessonID': 1, 'countCodeLocation': 10, 'countCodeType': 10, 'codeLocation': 0, 'codeStatus': 0, 'codeType': 1, 'LessonID__type': 0, 'countCodeStatus': 10}
+];
+
+//NA DV PALI
+var sampleData = [
+    {'LessonID__name': 'x', 'LessonID': 1, 'LessonID__type': 0, 'codeStatus': 0, 'countCodeStatus': 12}, 
+    {'LessonID__name': 'ZZZZ', 'LessonID': 1, 'LessonID__type': 0, 'codeStatus': 1, 'countCodeStatus': 38}, 
+    {'LessonID__name': 'YYY', 'LessonID': 1, 'LessonID__type': 0, 'codeStatus': 0, 'countCodeStatus': 10},
+];
+ */
+
+//var sampleData2 = sampleData.slice();
+//var sampleData2 = sampleData.slice();
+// TRANSFORM UNICODE NAME
+/*
+for (var i = 0; i < sampleData.length-1; i++) {
+    sampleData[i]['LessonID__name'] = unicodeToChar(sampleData[i]['LessonID__name']);
+    //sampleData[i]['LessonID__name'] = 'LessonID__name';
+};//for
 */
 
-// prepare jqxChart settings
+
 var settings = {
     title: "Desktop browsers share",
+    //title: unicodeToChar(sampleData[0]['LessonID__name']),
+    title: unicodeToChar(sampleData[0]['LessonID__name']),
     description: "(source: wikipedia.org)",
     enableAnimations: true,
-    showLegend: false,
+    showLegend: true,
     showBorderLine: true,
-    legendPosition: { left: 520, top: 140, width: 100, height: 100 },
+    legendPosition: { left: 520, top: 140, width: 100, height: 100, },
+
     padding: { left: 5, top: 5, right: 5, bottom: 5 },
     titlePadding: { left: 0, top: 0, right: 0, bottom: 10 },
     //source: dataAdapter,
-    source: sampleDataPie,
+    source: sampleData,
     colorScheme: 'scheme02',
     seriesGroups: [
             { 
                 type: 'pie', showLabels: true,
                 series: [ { 
-                    dataField: 'countCodeLocation', displayText: 'Browser', 
+                    dataField: 'countCodeStatus', 
+                    displayText: unicodeToChar('codeStatus'), 
                     labelRadius: 120, initialAngle: 15,
                     radius: 170, centerOffset: 0,
-                    formatSettings: { sufix: '%', decimalPlaces: 1 }
+                    formatSettings: { sufix: 'Φ', decimalPlaces: 0 }
                 } ]
             }
         ] // series groups}
-};
-// setup the chart
+};// settings
+
+/////////////////////////////////////
+// Dynamic DIVS+(Charts)
+/////////////////////////////////////
+/*
+//var toAdd = document.createDocumentFragment();
+var toAdd = document.getElementById('parent');
+for(var i=0; i < sampleData.length; i++){
+	var newDivA = document.createElement('div');
+    var title = unicodeToChar(sampleData['Lesson']);	
+    newDivA.id = 'A'+i;
+	newDivA.innerHTML = "<h3>"+title+"</h3>";	
+	//newDivA.innerHTML = "<h3>A"+i+"</h3>";	
+	document.getElementById('parent').appendChild(newDivA);
+	
+	var newDiv = document.createElement('div');	
+	newDiv.id = 'chartContainer'+i;
+	newDiv.className = 'chart';
+	newDiv.innerHTML = "I'm the " + i + " div ";	
+		
+	document.getElementById('A'+i).appendChild(newDiv);
+   	//toAdd.appendChild(newDiv);	
+	
+	// setup the chart
+    //newDiv.jqxChart(settings);
+	//document.getElementById('#chartContainer'+i).jqxChart(settings);
+    $('#chartContainer'+i).jqxChart(settings);
+    $('#chartContainer'+i).jqxChart({
+        title:unicodeToChar(sampleData[i]['Lesson']), 
+        source:Array(sampleData[i]),
+    }); //.jqxChart
+
+} //for
+*/
+
+//$('#chartContainer'+1).jqxChart(settings);
 $('#chartContainer').jqxChart(settings);
+    
+  
+// setup the chart
+//$('#chartContainer').jqxChart(settings);
 
-
-
-/**********************
-// jqxcomboboxLessons
-***********************/
+/////////////////////////////////////
+// COMBO LESSON jqxcomboboxLessons
+/////////////////////////////////////
 //Lessons > RecordSet  
 var sourceLesson = {
     datatype: "json",
@@ -126,13 +169,14 @@ var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson,
     {
         beforeLoadComplete: function (records) {
             for (var i = 0; i < records.length-1; i++) {
-                records[i]['name'] = records[i]['name']+"-"+ records[i]['category'] +"-"+ records[i]['lexType'] ;
+                records[i]['name'] = records[i]['name']+"-"+ records[i]['category'] +"-"+ records[i]['lexType'];
             }//for
-                return records;
+            var item = {'name':'ΟΛΑ ΤΑ ΜΑΘΗΜΑΤΑ' , 'id':-1};
+            records.splice(0, 0, item);            
+            return records;
         }//beforeLoadComplete
     }
 );
-//var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
 
 //http://jsfiddle.net/jqwidgets/5SnVH/
 $("#jqxcomboboxLesson").jqxComboBox({
@@ -142,7 +186,7 @@ $("#jqxcomboboxLesson").jqxComboBox({
     //selectedIndex: param, //selectIndex:-1, 
     placeHolder:"Επιλέξτε Μάθημα...",  
     //itemHeight: 20, height: 30, 
-    width: '100%', theme:theme, 
+    width: '60%', theme:theme, 
     renderer: function (index, label, value) {
         //var datarecord = data[index];
         var datarecord = dataAdapterLesson.records[index];    
@@ -154,28 +198,41 @@ $("#jqxcomboboxLesson").jqxComboBox({
     */
 });
 
+/*
+$("#jqxcomboboxLesson").jqxComboBox('selectIndex', 1);
 var item = $("#jqxcomboboxLesson").jqxComboBox('getItem', 0);
 var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex'); 
-$("#jqxcomboboxLesson").jqxComboBox('selectIndex', 1);
-//alert(item);
-
-
 //$("#jqxcomboboxLesson").jqxComboBox('selectItem', 2);
+//alert(item);
+*/
+
 // jqxcomboboxLesson > Events
 $('#jqxcomboboxLesson').on('change', function (event) {    
     if (event.args) {
         var data = dataAdapterLesson.records[event.args.index];
-        url = '/reporting/chart/folder/sum?LessonID='+ data.id;
+        var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex'); 
+		if (index == 0) {// ALL
+			url = '/reporting/chart/folder/sum/pie';
+		}
+		else { 	// lessonid
+            url = '/reporting/chart/folder/sum/pie?LessonID='+ data.id;            
+		}
+		//alert(url);
         window.location = url; // redirect
     }
 });// combo.event
 
 
 
-
-
 }); //doc.ready
+
+
 </script>
 {% endblock %}
+
+
+
+
+
 
 

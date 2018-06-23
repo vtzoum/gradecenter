@@ -655,6 +655,45 @@
         {% endif %} 
 
 
+       <!-- START menuItem Αναφορές -->
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or 
+            request.user is has_group("Reports") %} 
+        
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-stats">
+                <span class="icon fa fa-file"></span><span class="title">Στατιστικά</span>
+            </a>
+            <!-- Dropdown level 1 -->
+            <div id="dropdown-stats" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/reporting/html/folder/now/"> <i class="fa fa-fw fa-file-excel-o"></i>Φάκελοι-Τώρα</a></li>
+                        <li><a href="/reporting/chart/folder/sum/stackcol"> <i class="fa fa-fw fa-file-excel-o"></i>Φάκελοι-Σύνολο</a></li>
+                          <li><a href="/reporting/html/grader/workv3/"> <i class="fa fa-fw fa-building-o"></i>Βαθμολογητής-Εργασία</a></li>
+                        <!--
+                        <li><a href="/reporting/barcodes"> <i class="fa fa-fw fa-barcode"></i>Barcodes</a></li>
+                        <li><a href="/reporting/letter"> <i class="fa fa-fw fa-file-pdf-o"></i> Επιστολές(.pdf)</a></li>
+                        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") %} 
+                          <li><a href="/reporting/schools/"> <i class="fa fa-fw fa-building-o"></i>Σχολείων</a></li>
+                        {% endif %} 
+                        -->
+                        <!--
+                        <li><a href="/reporting/general"> <i class="fa fa-fw fa-file-excel-o"></i> Γενικές </a></li>
+                        <li><a href="/reporting/secretariat"> <i class="fa fa-fw fa-file-excel-o"></i> Γραματεία </a></li>
+                        <li><a href="/reporting/coordinators"> <i class="fa fa-fw fa-file-excel-o"></i> Συντονιστές </a></li>
+                        
+                        <li><a href="/reporting/home/pdf/"> <i class="fa fa-fw fa-file-pdf-o"></i> Αναφορές (PDF) </a></li>
+                        <li><a href="/reporting/home/xls/"> <i class="fa fa-fw fa-file-excel-o"></i> Αναφορές (XLSX) </a></li>
+                        -->
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        {% endif %} 
+
+
+
         {#JINJA2#}
 
         <!-- START menuItem UIkits-->

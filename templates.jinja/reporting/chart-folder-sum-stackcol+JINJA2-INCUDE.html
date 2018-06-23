@@ -33,6 +33,14 @@
 <!-- /.row -->
 
 
+{% for i in chartData %}
+    {% with chartDataItem=i %}
+    {% include "reporting/000foo.html" %}
+    {% include "reporting/000foo+Chart.html" %}
+    {% endwith %}
+{% endfor %}
+
+
 <!-- .row -->
 <div class="row no-margin-bottom">
 
@@ -115,11 +123,6 @@
 </div>
 <!-- /.row -->
 
-{#
-{% for i in chartData %}
-    {% include "reporting/000foo.html" %}
-{% endfor %}
-#}
 
 <!-- End Block HTML -->
 {% endblock %}
@@ -159,170 +162,6 @@ var toolTipCustomFormatFn = function (value, itemIndex, serie, group, categoryVa
             dataAdapter.formatNumber(dataItem['S&P 500'], 'f') + '</DIV>';
     */
 };
-
-
-
-
-//alert (sampleData);
-// prepare jqxChart settings
-var settings = {
-    title: "",
-    //description: "Time spent in vigorous exercise by activity",
-    enableAnimations: true,
-    showLegend: true,
-    showToolTips: true, 
-    //the tooltip format: "serie display text", "x-axis text" : "y-axis text"
-    //The text used for the x-axis axis (x-axis text) values will have a prefix 'Country'
-    padding: { left: 0, top: 5, right: 0, bottom: 5 },
-    titlePadding: { left: 90, top: 0, right: 0, bottom: 10 },
-    source: sampleData,
-    colorScheme: 'scheme10',
-    xAxis:
-    {
-        dataField: 'LessonID__name',
-        formatFunction: function (value, itemIndex, serie, group) {
-            // value is from 0-6 (see 'Day' field in sampleData above)
-            var days = 
-                ['Monday', 'Tuesday', 'Wednesday', 
-                'Thursday', 'Friday', 'Saturday', 'Sunday'];            
-            //return unescape(JSON.parse(value));
-            //return unicodeEscape(value);    
-            //return value.normalize();
-            //return (value.replace(/u'(?=[^:]+')/g, "'"));
-            return unicodeToChar(value);            
-            //return days[value];
-            //return  value;
-        }, // func format
-
-        unitInterval: 1,
-        tickMarks: {
-            visible: true,
-            unitInterval: 1,
-            color: '#888888'
-        },
-        gridLines: {
-            visible: false,
-            unitInterval: 1,
-            color: '#888888'
-        }
-    }, //x-axis
-    valueAxis:
-    {
-        unitInterval: 10,
-        minValue: 0,
-        maxValue: 70,
-        visible: true,
-        title: { text: 'Time in minutes<br>' },
-        tickMarks: { color: '#888888' },
-        gridLines: { color: '#888888' }
-    },
-    seriesGroups:
-        [
-            {
-                type: 'stackedcolumn',
-                toolTipFormatFunction: toolTipCustomFormatFn,
-                columnsGapPercent: 0,
-                seriesGapPercent: 0,
-                columnsMaxWidth: 40,
-                //VTZOUM
-                orientation: 'vertical',
-                showLabels: true, 
-                series: [
-                        { dataField: '02', displayText: 'ΦΑ-ΟΛ' },   // arrayfoldertype[2]
-                        { dataField: '01', displayText: 'ΦΑ-ΧΡ' },
-                        { dataField: '00', displayText: 'ΦΑ-ΑΧ' },
-                ],
-                fillColor: '#000000',
-                /*
-                bands:
-                [
-                    { minValue: 20, maxValue: 250, color: '#FFAABB', opacity: 0.15},
-                    { minValue: 10, maxValue: 110, color: '#FF0000', opacity: 0.20}
-                ] 
-                */
-            }, //stack#1
-            {
-                type: 'stackedcolumn',
-                columnsGapPercent: 0,
-                seriesGapPercent: 0,
-                columnsMaxWidth: 40,
-                showLabels: true, 
-                series: [
-                        { dataField: '12', displayText: 'ΦB-ΟΛ' }, 
-                        { dataField: '11', displayText: 'ΦB-ΧΡ' },
-                        { dataField: '10', displayText: 'ΦB-AX' },
-                ],
-            }, //stack#2
-            {
-                type: 'stackedcolumn',
-                columnsGapPercent: 0,
-                seriesGapPercent: 0,
-                columnsMaxWidth: 40,
-                showLabels: true, 
-                series: [
-                        { dataField: '22', displayText: 'ΦΝ-ΟΛ' }, 
-                        { dataField: '21', displayText: 'ΦΝ-ΧΡ' },
-                        { dataField: '20', displayText: 'ΦN-ΑΧ' },
-                ],
-            }, //stack#3
-            
-        ]
-};
-
-/*
-*/
-// HACK TO DISPLAY 1 CHART. IF REMOVED WILL BE ALL CHARTS 
-var maxCharts = 1;
-//for(var i=0; i < sampleData.length; i++){
-// -> for(var i=0; i < maxCharts; i++){
-
-//var toAdd = document.createDocumentFragment();
-var toAdd = document.getElementById('parent');
-for(var i=0; i < maxCharts; i++){
-//for(var i=0; i < sampleData.length; i++){
-	
-    var newDivA = document.createElement('div');
-    var title = unicodeToChar(sampleData[i]['LessonID__name']);	
-    newDivA.id = 'A'+i;
-	//newDivA.innerHTML = "<h3>"+title+"</h3>";	
-	//newDivA.innerHTML = "<h3>A"+i+"</h3>";	
-	document.getElementById('parent').appendChild(newDivA);
-	
-    var newDiv = document.createElement('div');	
-	newDiv.id = 'chartContainer'+i;
-	newDiv.className = 'chart';
-	newDiv.innerHTML = "I'm the " + i + " div ";	
-		
-	document.getElementById('A'+i).appendChild(newDiv);
-   	//toAdd.appendChild(newDiv);	
-	
-	// setup the chart
-    //newDiv.jqxChart(settings);
-	//document.getElementById('#chartContainer'+i).jqxChart(settings);
-    $('#chartContainer'+i).jqxChart(settings);
-    $('#chartContainer'+i).jqxChart({
-        title:unicodeToChar(sampleData[i]['LessonID__name']),
-        source:Array(sampleData[i]), 
-        valueAxis:  
-        {
-            title: {text: 'Values'},
-            //unitInterval: 10,
-            minValue: 0,
-            maxValue: sampleData[i]['AB']+10,
-            //gridLines: { visible: true, step: 3, color: '#888888'}        
-        }, //valueAxis 
-    }); //.jqxChart
-
-} //for
-
-
-
-//$('#chartContainer'+1).jqxChart(settings);
-//$('#chartContainer'+1).jqxChart(settings);
-    
- 
-//$('#chartContainer').jqxChart(settings);
-//$('#chartContainer').jqxChart(settings);
 
 /////////////////////////////////////
 // COMBO LESSON jqxcomboboxLessons

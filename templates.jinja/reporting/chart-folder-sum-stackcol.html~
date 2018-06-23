@@ -1,0 +1,227 @@
+﻿{% extends "base+jqx+flat-admin-bootstrap.html" %}
+
+{% block title %}
+    ΣΥΝΟΛΑ ΦΑΚΕΛΩΝ
+{% endblock %}
+
+
+<!-- Start Block HTML -->
+{% block html %}
+
+ <style>
+.chart {
+    width: 40%;
+    height: 400px;
+}
+
+</style>
+
+<div class="page-title">
+    <span class="title">ΣΥΝΟΛΑ ΦΑΚΕΛΩΝ-STACk-COL</span>
+</div>                        
+ 
+<!-- Lesson-->
+<div id='jqxcomboboxLesson'></div>        
+
+<!-- chart --> 
+<div id='chartContainer' style="width: 850px; height: 500px;"></div>
+
+{% set chartData1 = data %}
+{{data}}
+<!-- <h2>chartData</h2> -->
+{{ chartData }}
+
+
+<div id='parent'></div>
+    
+<!-- End Block HTML -->
+{% endblock %}
+
+
+
+<!-- Block JS -->
+{% block js %}
+<script type="text/javascript">    
+
+$(document).ready(function () {
+
+let searchParams = new URLSearchParams(window.location.search)
+let param = searchParams.get('LessonID'); // name
+var sampleData = {{chartData}};
+/*
+var sampleData = [{'AB ': 0, 'A1': 4, 'A0': 3, 'A2': 0, 'B0': 12, 'B1': 5, 'B2': 6, 'C2': 0, 'Lesson': u'\u03a6\u03a5\u03a3\u0399\u039a\u0397', 'C0': 0, 'C1': 0}, 
+    {'AB ': 0, 'A1': 4, 'A0': 3, 'A2': 0, 'B0': 12, 'B1': 5, 'B2': 6, 'C2': 0, 'Lesson': 'Φ2' , 'C0': 0, 'C1': 0}
+];
+ */
+// prepare jqxChart settings
+var settings = {
+    title: "Fitness & exercise weekly scorecard",
+    description: "Time spent in vigorous exercise by activity",
+    enableAnimations: true,
+    showLegend: true,
+    showToolTips: true, 
+    padding: { left: 0, top: 5, right: 0, bottom: 5 },
+    titlePadding: { left: 90, top: 0, right: 0, bottom: 10 },
+    source: sampleData,
+    colorScheme: 'scheme10',
+    xAxis:
+    {
+        dataField: 'Lesson',
+        formatFunction: function (value, itemIndex, serie, group) {
+            // value is from 0-6 (see 'Day' field in sampleData above)
+            var days = 
+                ['Monday', 'Tuesday', 'Wednesday', 
+                'Thursday', 'Friday', 'Saturday', 'Sunday'];                
+            
+            //return unescape(JSON.parse(value));
+            //return unicodeEscape(value);    
+            //return value.normalize();
+            //return (value.replace(/u'(?=[^:]+')/g, "'"));
+            return unicodeToChar(value);            
+            //return days[value];
+            //return  value;
+        }, // func format
+
+        unitInterval: 1,
+        tickMarks: {
+            visible: true,
+            unitInterval: 1,
+            color: '#888888'
+        },
+        gridLines: {
+            visible: false,
+            unitInterval: 1,
+            color: '#888888'
+        }
+    },
+    valueAxis:
+    {
+        unitInterval: 10,
+        minValue: 0,
+        maxValue: 110,
+        visible: true,
+        title: { text: 'Time in minutes<br>' },
+        tickMarks: { color: '#888888' },
+        gridLines: { color: '#888888' }
+    },
+    seriesGroups:
+        [
+            {
+                type: 'stackedcolumn',
+                columnsGapPercent: 0,
+                seriesGapPercent: 0,
+                columnsMaxWidth: 40,
+                //VTZOUM
+                orientation: 'vertical',                
+                series: [
+                        { dataField: 'A2', displayText: ArrayFolderType[0] + ArrayFolderStatus[2]},   // arrayfoldertype[2]
+                        { dataField: 'A1', displayText: 'A1' },
+                        { dataField: 'A0', displayText: 'A0' },
+                ],
+                fillColor: '#000000',
+                /*
+                bands:
+                [
+                    { minValue: 20, maxValue: 250, color: '#FFAABB', opacity: 0.15},
+                    { minValue: 10, maxValue: 110, color: '#FF0000', opacity: 0.20}
+                ] 
+                */
+            }, //stack#1
+            {
+                type: 'stackedcolumn',
+                columnsGapPercent: 0,
+                seriesGapPercent: 0,
+                columnsMaxWidth: 40,
+                series: [
+                        { dataField: 'B2', displayText: 'B2' }, 
+                        { dataField: 'B1', displayText: 'B1' },
+                        { dataField: 'B0', displayText: 'B0' },
+                ],
+            }, //stack#2
+            {
+                type: 'stackedcolumn',
+                columnsGapPercent: 0,
+                seriesGapPercent: 0,
+                columnsMaxWidth: 40,
+                series: [
+                        { dataField: 'C2', displayText: 'C2' }, 
+                        { dataField: 'C1', displayText: 'C1' },
+                        { dataField: 'C0', displayText: 'C0' },
+                ],
+            }, //stack#3
+            
+        ]
+};
+
+/*
+*/
+
+//$('<div>hello</div>').appendTo('#parent');
+/*
+$('#parent').append('<div>hello</div>');    
+
+var toAdd = document.createDocumentFragment();
+*/
+
+//var toAdd = document.createDocumentFragment();
+var toAdd = document.getElementById('parent');
+for(var i=0; i < sampleData.length; i++){
+	var newDivA = document.createElement('div');
+	newDivA.id = 'A'+i;
+	newDivA.innerHTML = "<h3>A"+i+"</h3>";	
+	document.getElementById('parent').appendChild(newDivA);
+	
+	var newDiv = document.createElement('div');	
+	newDiv.id = 'chartContainer'+i;
+	newDiv.className = 'chart';
+	newDiv.innerHTML = "I'm the " + i + " div ";	
+		
+	document.getElementById('A'+i).appendChild(newDiv);
+   	//toAdd.appendChild(newDiv);	
+	
+	// setup the chart
+    //newDiv.jqxChart(settings);
+	//document.getElementById('#chartContainer'+i).jqxChart(settings);
+    $('#chartContainer'+i).jqxChart(settings);
+    $('#chartContainer'+i).jqxChart({source:Array(sampleData[i])});
+    //$('#chartContainer'+i).jqxChart({x-axis:{valueAxis:{maxValue: 50}}});
+
+} //for
+/*
+*/
+//$('#chartContainer'+1).jqxChart(settings);
+//$('#chartContainer'+1).jqxChart(settings);
+    
+    
+/*
+var iDiv = document.createElement('div');
+iDiv.id = 'block';
+iDiv.className = 'block';
+document.getElementsByTagName('body')[0].appendChild(iDiv);
+
+iDiv.innerHTML = "I'm the first div";
+
+// Now create and append to iDiv
+var innerDiv = document.createElement('div');
+innerDiv.className = 'block-2';
+
+// The variable iDiv is still good... Just append to it.
+iDiv.appendChild(innerDiv);
+innerDiv.innerHTML = "I'm the inner div";
+*/
+
+
+
+//document.appendChild(toAdd);
+
+// setup the chart
+$('#chartContainer').jqxChart(settings);
+
+
+
+}); //doc.ready
+</script>
+{% endblock %}
+
+
+

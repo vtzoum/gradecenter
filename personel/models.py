@@ -165,7 +165,7 @@ class School(models.Model):
 ###################################
 """ School to get books from """
 class SchoolToGrade (models.Model):
-    SCHOOL_TYPE = ( (0, 'ΗΜΕΡΗΣΙΟ'), (1, 'ΕΣΠΕΡΙΝΟ'), ) 
+    SCHOOL_TYPE = ( (0, u'ΗΜΕΡΗΣΙΟ'), (1, u'ΕΣΠΕΡΙΝΟ'), ) 
     #SCHOOL_TYPE = ( (0, 'KENO'), (1, 'ΗΜΕΡΗΣΙΟ'), (2, 'ΕΣΠΕΡΙΝΟ'), ) 
 
     code = models.CharField(max_length=6, blank=False, null = False)
@@ -181,6 +181,13 @@ class SchoolToGrade (models.Model):
     address = models.CharField(max_length=48, default='')
     city = models.CharField(max_length=32, default='')
     tk = models.CharField(max_length=6, default='')
+
+    @staticmethod
+    def lexSchoolToGradeType(cls, id):
+        if id in[0,1]:
+            return cls.SCHOOL_TYPE[id][1]
+        else: 
+            return "ΑΓΝΩΣΤΟ"
 
     def __unicode__(self):
         return "%s %s" %(self.SCHOOL_TYPE[type], self.name)

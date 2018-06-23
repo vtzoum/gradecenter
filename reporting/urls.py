@@ -87,6 +87,8 @@ urlpatterns = [
 
     #CHARTS
     url(r'^chart/folder/sum$', chartFolderSum, name='chartfoldersum'),
+    url(r'^chart/folder/sum/pie$', chartFolderSumPie, name='chartfoldersumpie'),
+    url(r'^chart/folder/sum/stackcol$', chartFolderSumStackCol, name='chartfoldersumstackcol'),
 
 
     #XLS GRADER

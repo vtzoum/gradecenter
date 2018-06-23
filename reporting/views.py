@@ -36,13 +36,17 @@ def jsonFolderSum(request):
     pass 
 
 #############################################
-# CHARTS
+# CHARTS - NEED TO OPTIMIZE via commonF(arg)
 #############################################
+# 
 def chartFolderSum(request, LessonID=None):
-    
+    pass
+
+# STACK COL CHARTS + COmbos
+def chartFolderSumStackCol(request, LessonID=None):
+
     #Lesson as filter
     LessonID = request.GET.get('LessonID', None)    
-    LessonID = None 
     if LessonID:
         lesson = Lesson.objects.get(id=LessonID)
         data = Folder.objects.filter(LessonID=LessonID)
@@ -51,32 +55,53 @@ def chartFolderSum(request, LessonID=None):
         data = Folder.objects.all()
      
     #Data
-    #data = FolderJoinTables(LessonID, exclude=False).order_by('LessonID__name', 'codeType', 'no')
-    #Unicode FIELD 'LessonID__name'causes problems in jqxcharts - does not apply - So I removed it 
-    #data = data.values('codeStatus', 'codeType', 'codeLocation', 'LessonID', 'LessonID__name', 'LessonID__type',)\
-    data = data.values('codeStatus', 'codeType', 'LessonID', 'LessonID__name', 'LessonID__type',)\
+    #Unicode FIELD 'LessonID__name'causes problems in jqxcharts 
+    data = data.values('codeStatus', 'codeType', 'LessonID', 'LessonID__name', 'LessonID__type',\
+            'LessonID__booksABFolders', 'LessonID__booksCFolders', )\
         .annotate(countCodeType=Count('codeType'), countCodeStatus=Count('codeStatus'), )\
         .order_by('LessonID__name', 'LessonID__type', 'codeType')
 
-
-    """
-    sums = data.values('codeType', 'countCodeType', 'codeStatus', 'LessonID', 'LessonID__name', 'LessonID__type',)\
-        .order_by('LessonID','codeType')    
-    """
-    #print sums
-
     chartData = makeDict4ChartData(data)
-    """    
-    fDict = [{'Lesson': 'A', 'AB':30,'A0':8,'A1':5,'A2':0, 'B0':6,'B1':4,'B2':7, 'C0':1,'C1':1,'C2':0}, 
-                {'Lesson': 'B', 'AB':22,'A0':4,'A1':5,'A2':0, 'B0':4,'B1':4,'B2':5, 'C0':0,'C1':2,'C2':1},
-            ]
+    
+    html = render(request, 'reporting/chart-folder-sum-stackcol.html', 
+            {'chartData': chartData, 'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
+    return HttpResponse(html)
+
+
+# PIE CHARTS = COmbos
+def chartFolderSumPie(request, LessonID=None):
+    
+    #Lesson as filter
+    LessonID = request.GET.get('LessonID', None)    
+    if LessonID:
+        lesson = Lesson.objects.get(id=LessonID)
+        data = Folder.objects.filter(LessonID=LessonID)
+    else:
+        lesson = None
+        data = Folder.objects.all()
+     
+    #Data
+    #Unicode FIELD 'LessonID__name'causes problems in jqxcharts - does not apply - So I removed it 
     """
+    data = data.values('codeStatus', 'codeType', 'LessonID', 'LessonID__name', 'LessonID__type',)\
+        .annotate(countCodeType=Count('codeType'), countCodeStatus=Count('codeStatus'), )\
+        .order_by('LessonID__name', 'LessonID__type', 'codeType')
+    """
+    
+    data = data.values('codeStatus', 'LessonID', 'LessonID__name', 'LessonID__type',)\
+        .annotate(countCodeStatus=Count('codeStatus'), )\
+        .order_by('LessonID__name', 'LessonID__type',)
 
-    #rint data
-    #print sums
+    # Repalce name 
+    for d in data:
+        d['LessonID__name']=json.dumps(d['LessonID__name'])
+    
+    print data
+    #chartData = makeDict4ChartData__PIE(data)
+    chartData = data
 
-    html = render(request, 'reporting/chart-folder-sum-stackcol.html', {'chartData': chartData, 'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
-    #html = render(request, 'reporting/chart-folder-sum.html', {'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
+    html = render(request, 'reporting/chart-folder-sum-pie.html', 
+            {'chartData': chartData, 'data': data, 'lesson': lesson, 'CLesson': Lesson, 'CFolder':Folder, "msg":"Hello"})
     return HttpResponse(html)
 
 
