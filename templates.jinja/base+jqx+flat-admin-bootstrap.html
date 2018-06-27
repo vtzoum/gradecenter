@@ -562,7 +562,7 @@
            request.user is has_group("Apothiki") %} 
         <li class="panel panel-default dropdown">
             <a data-toggle="collapse" href="#dropdown-warehouse0">
-                <span class="icon fa fa-desktop"></span><span class="title"> Αποθήκη </span>
+                <span class="icon fa fa-exchange"></span><span class="title"> Αποθήκη </span>
             </a>                   <!-- fa-desktop  -->
             <div id="dropdown-warehouse0" class="panel-collapse collapse">
                 <div class="panel-body">
@@ -581,7 +581,7 @@
             request.user is has_group("Filaxi") %} 
         <li class="panel panel-default dropdown">
             <a data-toggle="collapse" href="#dropdown-warehouse1">
-                <span class="icon fa fa-desktop"></span><span class="title"> Φύλαξη </span>
+                <span class="icon fa fa-exchange"></span><span class="title"> Φύλαξη </span>
             </a>                   <!-- fa-desktop  -->
             <div id="dropdown-warehouse1" class="panel-collapse collapse">
                 <div class="panel-body">
@@ -617,13 +617,36 @@
         {% endif %} 
 
 
-        <!-- START menuItem Αναφορές -->
+       <!-- START menuItem Αναφορές -->
+        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or 
+            request.user is has_group("Reports") %} 
+        
+        <li class="panel panel-default dropdown">
+            <a data-toggle="collapse" href="#dropdown-stats">
+                <span class="icon fa fa-desktop"></span><span class="title">Αναφορές</span>
+            </a>
+            <!-- Dropdown level 1 -->
+            <div id="dropdown-stats" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/reporting/html/folder/now/"> <i class="fa fa-fw fa-desktop"></i> Φάκελοι που Διορθώνονται Τώρα</a></li>
+                        <li><a href="/reporting/chart/folder/sum/stackcol"> <i class="fa fa-fw fa-desktop"></i> Φάκελοι Συνολικά</a></li>
+                        <li><a href="/reporting/html/grader/workv3/"> <i class="fa fa-fw fa-desktop"></i> Εικόνα Εργασίας ανα Βαθμoloγητή</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        {% endif %} 
+
+
+        <!-- START menuItem Εκτυπώσεις -->
         {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or 
             request.user is has_group("Reports") %} 
         
         <li class="panel panel-default dropdown">
             <a data-toggle="collapse" href="#dropdown-report">
-                <span class="icon fa fa-file"></span><span class="title"> Εκτυπώσεις </span>
+                <span class="icon fa fa-file-excel-o"></span><span class="title"> Εκτυπώσεις </span>
             </a>
             <!-- Dropdown level 1 -->
             <div id="dropdown-report" class="panel-collapse collapse">
@@ -631,7 +654,7 @@
                     <ul class="nav navbar-nav">
                         <li><a href="/reporting/accepting"> <i class="fa fa-fw fa-file-excel-o"></i>Παραλαβών</a></li>
                         <li><a href="/reporting/grading"> <i class="fa fa-fw fa-file-excel-o"></i>Βαθμολόγησης</a></li>
-                          <li><a href="/reporting/closing"> <i class="fa fa-fw fa-building-o"></i>Ολοκλήρωσης</a></li>
+                          <li><a href="/reporting/closing"> <i class="fa fa-fw fa-file-word-o"></i>Ολοκλήρωσης</a></li>
                         <!--
                         <li><a href="/reporting/barcodes"> <i class="fa fa-fw fa-barcode"></i>Barcodes</a></li>
                         <li><a href="/reporting/letter"> <i class="fa fa-fw fa-file-pdf-o"></i> Επιστολές(.pdf)</a></li>
@@ -654,43 +677,6 @@
 
         {% endif %} 
 
-
-       <!-- START menuItem Αναφορές -->
-        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") or 
-            request.user is has_group("Reports") %} 
-        
-        <li class="panel panel-default dropdown">
-            <a data-toggle="collapse" href="#dropdown-stats">
-                <span class="icon fa fa-file"></span><span class="title">Στατιστικά</span>
-            </a>
-            <!-- Dropdown level 1 -->
-            <div id="dropdown-stats" class="panel-collapse collapse">
-                <div class="panel-body">
-                    <ul class="nav navbar-nav">
-                        <li><a href="/reporting/html/folder/now/"> <i class="fa fa-fw fa-file-excel-o"></i>Φάκελοι-Τώρα</a></li>
-                        <li><a href="/reporting/chart/folder/sum/stackcol"> <i class="fa fa-fw fa-file-excel-o"></i>Φάκελοι-Σύνολο</a></li>
-                          <li><a href="/reporting/html/grader/workv3/"> <i class="fa fa-fw fa-building-o"></i>Βαθμολογητής-Εργασία</a></li>
-                        <!--
-                        <li><a href="/reporting/barcodes"> <i class="fa fa-fw fa-barcode"></i>Barcodes</a></li>
-                        <li><a href="/reporting/letter"> <i class="fa fa-fw fa-file-pdf-o"></i> Επιστολές(.pdf)</a></li>
-                        {% if request.user is has_group("Admin") or request.user is has_group("Grammateia") %} 
-                          <li><a href="/reporting/schools/"> <i class="fa fa-fw fa-building-o"></i>Σχολείων</a></li>
-                        {% endif %} 
-                        -->
-                        <!--
-                        <li><a href="/reporting/general"> <i class="fa fa-fw fa-file-excel-o"></i> Γενικές </a></li>
-                        <li><a href="/reporting/secretariat"> <i class="fa fa-fw fa-file-excel-o"></i> Γραματεία </a></li>
-                        <li><a href="/reporting/coordinators"> <i class="fa fa-fw fa-file-excel-o"></i> Συντονιστές </a></li>
-                        
-                        <li><a href="/reporting/home/pdf/"> <i class="fa fa-fw fa-file-pdf-o"></i> Αναφορές (PDF) </a></li>
-                        <li><a href="/reporting/home/xls/"> <i class="fa fa-fw fa-file-excel-o"></i> Αναφορές (XLSX) </a></li>
-                        -->
-                    </ul>
-                </div>
-            </div>
-        </li>
-
-        {% endif %} 
 
 
 

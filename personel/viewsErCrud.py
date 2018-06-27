@@ -253,6 +253,8 @@ def jsonLessonStatus(request):
     if request.is_ajax() and request.method == 'POST':
         id = request.POST.get('id', None)
         status = request.POST.get('status', None)
+        bypass = request.POST.get('bypass', 0)  
+        #bypass: force recheck Acceptance if we have Remote SChools (aka PAXOI 2018)
         #print id, status 
         
         if (id is None) or (status is None): 
@@ -266,7 +268,7 @@ def jsonLessonStatus(request):
             print 'Improper Action (To see staus 6-7)'
             raise Http404    
         """        
-        (success, msg, tag) = l.changeStatus(int(status))
+        (success, msg, tag) = l.changeStatus(int(status), int(bypass))
         helperMessageLog(request, msg, tag)
         #print "success:(%0), msg:%1, tag:%2" %(success, msg, tag)
         print success, msg, tag

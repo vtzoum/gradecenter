@@ -4,13 +4,109 @@
     ΕΙΚΟΝΑ ΕΡΓΑΣΙΑΣ ΒΑΘΜΟΛΟΓΗΤΗ
 {% endblock %}
 
+
 <!-- Start Block HTML -->
 {% block html %}
 
-<!-- Lesson-->
+{% if lesson is not none %}   
+    {%set lessonName = lesson.name %}
+{% else %}
+    {%set lessonName = 'ΟΛΑ ΤΑ ΜΑΘΗΜΑΤΑ' %}
+{%endif %}
 
 
-{# include "file" #}
+<!-- AJAXMessages Box -->
+<div id="jsonMessages"></div>
+
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+<div class="col-lg-12 no-margin-bottom">
+    <div class="panel panel-primary fresh-color neg20-margin-bottom">
+        <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> ΜΑΘΗΜΑ: <span id='spanLessonName'>{{lessonName}}</span></h3>
+        </div>
+        <div class="panel-body" >
+        <!-- Lesson-->
+        <div id='jqxcomboboxLesson'></div>        
+        </div>
+    </div>
+</div>
+</div>
+<!-- /.row -->
+
+
+<!-- .row -->
+<div class="row no-margin-bottom">
+    
+    <div class="col-lg-12 no-margin-bottom"  style="margin: 10px -0px 0px -0px;">
+
+        <div class="panel panel-primary fresh-color">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-book fa-fw"></i> ΦΑΚΕΛΟΙ </h3>
+            </div>
+            <div class="panel-body no-padding">                    
+            
+            <!-- table Data -->
+            <table class="table" style="margin:0px 0 0 0px;">
+                <thead>
+                    <tr>
+                        <th class="col-md-1" >#</th>
+                        <th class="col-md-2">ΜΑΘΗΜΑ</th>
+                        <th class="col-md-1">ΕΠΩΝΥΜΟ</th>
+                        <th class="col-md-1">ΟΝΟΜΑ</th>
+                        <th class="col-md-1">ΦΑΚΕΛΟΣ</th>
+                    </tr>
+                </thead>
+                <!-- Grader loop -->                
+                <tbody>
+                {% for d in data %}
+                <TR class="{{loop.cycle('active', 'warning')}}">
+                   <TD scope="row">{{loop.index}}</th>
+                   <TD >{{d['g'].LessonID.name}}</TD>
+                   <TD >{{d['g'].TeacherID.surname}}</TD>
+                   <TD >{{d['g'].TeacherID.name}}</TD>
+                    <!-- FOLDER loop -->                
+                    {% for b in d['bSums'] %}
+                    
+                        {% set folder = b['FolderID__no'] %}
+                        {% set ftype = b['wasTypeOf'] | lexFolderCodeType %}
+                        {# set totalTime = td2DayHourMin(b['sumAction']) if b['sumAction'] else "" #}
+                        {% if b['sumAction'] %}  
+                            {% set totalTime = (b['sumAction'] | td2DayHourMin ) %}
+                        {% else %}          
+                            {% set totalTime = "" %}
+                        {% endif %}
+                        <!-- class="col-lg-3 col-md-6 col-sm-6 col-xs-12" -->
+                        <!-- <TD class="col-md-1">({{loop.index}})-Φ{{folder}}({{ftype}}) {{totalTime}}</TD> -->
+                        <TD class="col-md-1">Φ{{folder}}({{ftype[2:3]}})<br/>{{totalTime}}</TD>
+                    {% endfor %}
+                    <!-- // FOLDER loop -->                        
+                </TR>
+                {% endfor %}
+            <!-- // Grader loop -->                
+            </tbody>
+
+        </table>
+        <!-- /.table -->
+        
+    </div>
+    </div>
+    <!-- /.panel -->
+
+</div>
+<!-- /.col -->
+
+</div>
+<!-- /.row -->
+
+
+<!-- End Block HTML -->
+{% endblock %}
+
+
+
+
 
 <!-- Paste this code into the BODY section of your HTML document  -->
 <!--
@@ -23,68 +119,7 @@
 </select> 
 -->
 
-<div class="page-title">
-    <span class="title">ΕΙΚΟΝΑ ΕΡΓΑΣΙΑΣ ΒΑΘΜΟΛΟΓΗΤΗ</span><span id="lesson"></span>
-</div>                        
  
-<!-- Lesson-->
-<div id='jqxcomboboxLesson'></div>        
-
-<!-- TABLE -->
-<div class="row no-margin-bottom">
-    <div class="col-lg-12 no-margin-bottom">
-    <table class="table" style="margin:0px 0 0 0px;">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th class="col-md-2">ΜΑΘΗΜΑ</th>
-                <th class="col-md-2">ΕΠΩΝΥΜΟ</th>
-                <th class="col-md-2">ΟΝΟΜΑ</th>
-                <th class="col-md-1">ΦΑΚΕΛΟΣ</th>
-            </tr>
-        </thead>
-
-        <!-- Grader loop -->                
-        <tbody>
-        {% for d in data %}
-        <TR class="{{loop.cycle('active', 'warning')}}">
-           <TD scope="row">{{loop.index}}</th>
-           <TD >{{d['g'].LessonID.name}}</TD>
-           <TD >{{d['g'].TeacherID.surname}}</TD>
-           <TD >{{d['g'].TeacherID.name}}</TD>
-            <!-- FOLDER loop -->                
-            {% for b in d['bSums'] %}
-            
-                {% set folder = b['FolderID__no'] %}
-                {% set ftype = b['wasTypeOf'] %}
-                {# set totalTime = td2DayHourMin(b['sumAction']) if b['sumAction'] else "" #}
-                {% if b['sumAction'] %}  
-                    {% set totalTime = (b['sumAction'] | td2DayHourMin ) %}
-                {% else %}          
-                    {% set totalTime = "" %}
-                {% endif %}
-                <!-- class="col-lg-3 col-md-6 col-sm-6 col-xs-12" -->
-                <TD class="col-md-1">({{loop.index}})-Φ{{folder}} ({{ftype}}) {{totalTime}}</TD>
-
-            {% endfor %}
-            <!-- // FOLDER loop -->                
-            
-        </TR>
-        {% endfor %}
-    <!-- // Grader loop -->                
-    </tbody>
-
-  </table>
-
-</div>
-
-</div>
-<!-- .row -->
-
-
-<!-- End Block HTML -->
-{% endblock %}
-
 
 <!-- Block JS -->
 {% block js %}
@@ -97,9 +132,12 @@ $(document).ready(function () {
 let searchParams = new URLSearchParams(window.location.search)
 let param = searchParams.get('LessonID'); // name
 
-/**********************
-// jqxcomboboxLessons
-***********************/
+//alert(param);
+//if (typeof param !== 'undefined' ) {
+
+/////////////////////////////////////
+// COMBO LESSON jqxcomboboxLessons
+/////////////////////////////////////
 //Lessons > RecordSet  
 var sourceLesson = {
     datatype: "json",
@@ -118,13 +156,15 @@ var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson,
     {
         beforeLoadComplete: function (records) {
             for (var i = 0; i < records.length-1; i++) {
-                records[i]['name'] = records[i]['name']+"-"+ records[i]['category'] +"-"+ records[i]['lexType'] ;
+                records[i]['name'] = records[i]['lexType'].slice(0,4) + "-" + records[i]['name']+"-"+ records[i]['category'] ;
+                //records[i]['name'] = records[i]['name']+"-"+ records[i]['category'] +"-"+ records[i]['lexType'];
             }//for
-                return records;
+            var item = {'name':'ΟΛΑ ΤΑ ΜΑΘΗΜΑΤΑ' , 'id':-1};
+            records.splice(0, 0, item);            
+            return records;
         }//beforeLoadComplete
     }
 );
-//var dataAdapterLesson = new $.jqx.dataAdapter(sourceLesson);
 
 //http://jsfiddle.net/jqwidgets/5SnVH/
 $("#jqxcomboboxLesson").jqxComboBox({
@@ -133,7 +173,7 @@ $("#jqxcomboboxLesson").jqxComboBox({
     displayMember: "name", 
     //selectedIndex: param, //selectIndex:-1, 
     placeHolder:"Επιλέξτε Μάθημα...",  
-    //itemHeight: 20, height: 30, 
+    itemHeight: 40, height: 40, 
     width: '100%', theme:theme, 
     renderer: function (index, label, value) {
         //var datarecord = data[index];
@@ -146,21 +186,39 @@ $("#jqxcomboboxLesson").jqxComboBox({
     */
 });
 
+/*
 var item = $("#jqxcomboboxLesson").jqxComboBox('getItem', 0);
 var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex'); 
 $("#jqxcomboboxLesson").jqxComboBox('selectIndex', 1);
-//alert(item);
-
-
 //$("#jqxcomboboxLesson").jqxComboBox('selectItem', 2);
+//alert(item);
+*/
+//alert(param); alert(param); 
+//var datarecord = dataAdapterLesson.records[param];    
+//alert(datarecord); 
+//$('#spanLessonName').html(datarecord);
+
+
 // jqxcomboboxLesson > Events
 $('#jqxcomboboxLesson').on('change', function (event) {    
     if (event.args) {
         var data = dataAdapterLesson.records[event.args.index];
-        url = '/reporting/html/grader/workv3/?LessonID='+ data.id;
+        var index = $("#jqxcomboboxLesson").jqxComboBox('getSelectedIndex'); 
+		if (index == 0) {// ALL
+            url = '/reporting/html/grader/workv3';
+		}
+		else { 	// lessonid
+            url = '/reporting/html/grader/workv3/?LessonID='+ data.id;
+            //url = '/reporting/chart/folder/sum/stackcol?LessonID='+ data.id;            
+		}
+		//alert(url);
         window.location = url; // redirect
     }
 });// combo.event
+
+
+
+
 
 
 

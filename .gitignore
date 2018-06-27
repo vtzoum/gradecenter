@@ -22,20 +22,22 @@ templates/
 
 #Upload dirs
 uploads/*
-/uploads-toUPLOAD
+uploads-toUPLOAD*/*
 
 ####################
 # FILES
 ####################
 #All Vim Sessions
-Session-*.vim
+Session*.vim
 
 #All SQLITE DB
 db*.sqlite3*
 
+#All TEMP Files
+*.html~
 *.py~
 *.pyc
 *.swo
-
+*.swp
 *.csv
 

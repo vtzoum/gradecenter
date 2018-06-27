@@ -46,6 +46,9 @@ urlpatterns = [
     #Closing reports
     url(r'^closing/$', staff_or_403(TemplateView.as_view(template_name='reporting/closing.html')), name='reportclosing'),
 
+    url(r'^coordinators/$', TemplateView.as_view(template_name='reporting/coordinators.html'), name='reportcoordinators'),
+
+
     ###########################################
     #DOCX
     ###########################################

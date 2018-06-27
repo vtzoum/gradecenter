@@ -355,14 +355,20 @@ class Lesson(models.Model):
 
 
     #ACCEPTING Methods
-    def changeStatus(self, status = None):        #aka Make changes
+    #Bypass: 0=False/1=True force recheck Acceptance if we have Remote SChools (aka PAXOI 2018) 
+    def changeStatus(self, status = None, bypass=0):        #aka Make changes     
         
-        print "Lesson Status (%d) Change to Status (%d)" % (self.status , status)
         #Status value check
-        if self.status + 1 != status:
-            #log
+        #print "Lesson Status (%d) Change to Status (%d)" % (self.status , status)
+        if  (bypass==1):
+            self.status = status
+            self.save()
+
+        print "2Lesson Status (%d) Change to Status (%d) bypass  (%d)" % (self.status , status, bypass)
+        if  ( (self.status + 1 != status) and (bypass==0) ):
             msg, tag = ('Σφάλμα τιμών για το Status του Μαθήματος (Status not +1)!', 'error')
             return False, msg, tag
+
 
         #Status=0->1 'ΠΡΟΕΤΟΙΜΑΣΙΑ ΠΑΡΑΛΑΒΩΝ'  | 'PREPARE Accepting'
         elif self.status == 0:

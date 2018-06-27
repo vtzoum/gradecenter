@@ -1,5 +1,5 @@
 virtualenv==1.11.4
-Django==1.09
+Django==1.11
 django-registration-redux==1.4
 Jinja==1.2
 Jinja2==2.8

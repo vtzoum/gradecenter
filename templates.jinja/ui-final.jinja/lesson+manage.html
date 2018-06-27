@@ -29,6 +29,9 @@
             <button id="btnLessonReload" type='button' class='btn btn-info' style='float: right; margin: -5px 10px 0px 10px;width:110px;'>
                 <i class="fa fa-bar-chart-o fa-fw"></i>Ανανέωση 
             </button>
+            <button id="btnBypass" type='button' class='btn btn-info' style='float: right; margin: -5px 10px 0px 10px;width:110px;'>
+                <i class="fa fa-bar-chart-o fa-fw"></i>btnBypass 
+            </button>
         </div>
         <div class="panel-body">
         <!-- Status -->
@@ -190,14 +193,11 @@ $("#jqxgridLesson").jqxGrid({
 
         //var container = $("<div style='position: relative; margin: 5px; '></div>");
         var reloadButton = $("<button type='button' class='btn btn-primary' style='float: right; margin-right: 10px;'> Ανανέωση </button>");
-        //var reloadButton = $("<div style='float: right; margin-left: 10px;'><span> Ανανέωση </span></div>");
-        //container.append(reloadButton);
-        //statusbar.append(container);
         reloadButton.jqxButton();
-        // reload grid data.
         reloadButton.click(function (event) {
             $("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
         });
+
     } //render toolbar
     //selectionmode: 'multiplerowsextended', 'singlecell',
 });//Lesson grid
@@ -230,6 +230,10 @@ $( '#btnLessonReload' ).click(function (event) {
 });
 
 
+$( '#btnBypass' ).click(function (event) {
+    handleStatusClick (2,1); // 3 = prepare accept 1 = Yes Bypass
+    $("#jqxgridLesson").jqxGrid({ source: dataAdapterLesson });
+});
 
 /****************************
 // make Status Buttons 
@@ -250,7 +254,7 @@ function makeStatusButtons() {
                 + i + '" class="foo">' + ArrayLessonStatus2[i] + '</ button>');
         $("#jqxbuttonStatus-" + i).jqxButton({ width: '9%', height: 23, theme: theme });
     } 
-
+    
     $("#jqxLessonStatus").jqxButtonGroup({ mode: 'checkbox' });  //mode: 'default' 
 }    
 
@@ -379,6 +383,39 @@ $("#jqxLessonStatus").on('buttonclick', function (event) {
     event.preventDefault();
     console.log("Clicked: " + clickedButton[0].id);
 });
+
+
+
+
+/* ButtonGroup > events*/
+function handleStatusClick (status, bypass){
+   
+    var row = $('#jqxgridLesson').jqxGrid('getselectedrowindex');
+    var rowdata = $('#jqxgridLesson').jqxGrid('getrowdata', row);
+    
+    //alert ("status="+status + "bypass="+bypass + "id="+rowdata.id);
+
+    $.ajax({
+        method: 'POST', 
+        url: '/lesson/status/', 
+        data:  {id: rowdata.id, status: 2, bypass: 1}, 
+        dataType: 'json',
+        success: function (response) {            
+            console.log("AJAX success");
+            console.log(response);
+            $('#jqxgridLesson').jqxGrid('updatebounddata');            
+            $('#jqxloaderAction').jqxLoader('close'); 
+            $('#jqxgridLesson').show();
+        },
+        
+        error: function(jqxhr, textstatus, errorthrown) {
+            console.log("error");
+        }
+    }); //.ajax
+    
+    event.preventDefault();
+};
+
 
 
 }); //doc.ready
